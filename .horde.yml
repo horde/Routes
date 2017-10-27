@@ -8,3 +8,35 @@ description: >
   (http://routes.groovie.org).
 list: dev
 type: library
+homepage: https://www.horde.org/libraries/Horde_Routes
+authors:
+  -
+    name: Mike Naberezny
+    user: mnaberez
+    email: mike@maintainable.com
+    active: true
+    role: lead
+  -
+    name: Chuck Hagenbuch
+    user: chuck
+    email: chuck@horde.org
+    active: true
+    role: lead
+version:
+  release: 2.0.6
+  api: 1.1.0
+state:
+  release: stable
+  api: stable
+license:
+  identifier: BSD-2-Clause
+  uri: http://www.horde.org/licenses/bsd
+dependencies:
+  required:
+    php: ^5.3 || ^7
+    pear:
+      pear.horde.org/Horde_Exception: ^2
+      pear.horde.org/Horde_Util: ^2
+  optional:
+    pear:
+      pear.horde.org/Horde_Test: ^2.1
