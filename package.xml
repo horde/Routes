@@ -17,7 +17,7 @@
   <email>chuck@horde.org</email>
   <active>yes</active>
  </lead>
- <date>2017-10-20</date>
+ <date>2017-10-27</date>
  <version>
   <release>2.0.6</release>
   <api>1.1.0</api>
@@ -34,6 +34,7 @@
    <dir name="doc">
     <dir name="Horde">
      <dir name="Routes">
+      <file name="CHANGES" role="doc" />
       <file name="integration.txt" role="doc" />
       <file name="manual.txt" role="doc" />
      </dir> <!-- /doc/Horde/Routes -->
@@ -113,6 +114,7 @@
  </dependencies>
  <phprelease>
   <filelist>
+   <install as="CHANGES" name="doc/Horde/Routes/CHANGES" />
    <install as="integration.txt" name="doc/Horde/Routes/integration.txt" />
    <install as="manual.txt" name="doc/Horde/Routes/manual.txt" />
    <install as="Horde/Routes/Exception.php" name="lib/Horde/Routes/Exception.php" />
@@ -360,7 +362,7 @@
    <stability>
     <release>stable</release>
     <api>stable</api></stability>
-   <date>2017-10-20</date>
+   <date>2017-10-27</date>
    <license uri="http://www.horde.org/licenses/bsd">BSD-2-Clause</license>
    <notes>
    </notes>
