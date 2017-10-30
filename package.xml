@@ -17,7 +17,7 @@
   <email>chuck@horde.org</email>
   <active>yes</active>
  </lead>
- <date>2016-02-02</date>
+ <date>2017-10-30</date>
  <version>
   <release>2.0.6</release>
   <api>1.1.0</api>
@@ -35,6 +35,7 @@
    <dir name="doc">
     <dir name="Horde">
      <dir name="Routes">
+      <file name="CHANGES" role="doc" />
       <file name="COPYING" role="doc" />
       <file name="integration.txt" role="doc" />
       <file name="manual.txt" role="doc" />
@@ -115,6 +116,7 @@
  </dependencies>
  <phprelease>
   <filelist>
+   <install as="CHANGES" name="doc/Horde/Routes/CHANGES" />
    <install as="COPYING" name="doc/Horde/Routes/COPYING" />
    <install as="Horde/Routes/integration.txt" name="doc/Horde/Routes/integration.txt" />
    <install as="Horde/Routes/manual.txt" name="doc/Horde/Routes/manual.txt" />
@@ -363,7 +365,7 @@
    <stability>
     <release>stable</release>
     <api>stable</api></stability>
-   <date>2016-02-02</date>
+   <date>2017-10-30</date>
    <license uri="http://www.horde.org/licenses/bsd">BSD-2-Clause</license>
    <notes>
 * 
