@@ -3,7 +3,7 @@
  <name>Horde_Routes</name>
  <channel>pear.horde.org</channel>
  <extends>Routes</extends>
- <summary>Horde Routes URL mapping system</summary>
+ <summary>URL routing/mapping library</summary>
  <description>Classes for mapping URLs into the controllers and actions of an MVC system. It is a port of a Python library, Routes, by Ben Bangert (http://routes.groovie.org).</description>
  <lead>
   <name>Mike Naberezny</name>
@@ -17,7 +17,7 @@
   <email>chuck@horde.org</email>
   <active>yes</active>
  </lead>
- <date>2017-10-27</date>
+ <date>2017-11-11</date>
  <version>
   <release>2.0.6</release>
   <api>1.1.0</api>
@@ -363,7 +363,7 @@
    <stability>
     <release>stable</release>
     <api>stable</api></stability>
-   <date>2017-10-27</date>
+   <date>2017-11-11</date>
    <license uri="http://www.horde.org/licenses/bsd">BSD-2-Clause</license>
    <notes>
 * 
