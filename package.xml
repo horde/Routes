@@ -69,7 +69,6 @@
       <file name="AllTests.php" role="test" />
       <file name="bootstrap.php" role="test" />
       <file name="GenerationTest.php" role="test" />
-      <file name="phpunit.xml" role="test" />
       <file name="RecognitionTest.php" role="test" />
       <file name="TestHelper.php" role="test" />
       <file name="UtilTest.php" role="test" />
@@ -129,7 +128,6 @@
    <install as="Horde/Routes/AllTests.php" name="test/Horde/Routes/AllTests.php" />
    <install as="Horde/Routes/bootstrap.php" name="test/Horde/Routes/bootstrap.php" />
    <install as="Horde/Routes/GenerationTest.php" name="test/Horde/Routes/GenerationTest.php" />
-   <install as="Horde/Routes/phpunit.xml" name="test/Horde/Routes/phpunit.xml" />
    <install as="Horde/Routes/RecognitionTest.php" name="test/Horde/Routes/RecognitionTest.php" />
    <install as="Horde/Routes/TestHelper.php" name="test/Horde/Routes/TestHelper.php" />
    <install as="Horde/Routes/UtilTest.php" name="test/Horde/Routes/UtilTest.php" />
