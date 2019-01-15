@@ -14,7 +14,7 @@ authors:
     name: Mike Naberezny
     user: mnaberez
     email: mike@maintainable.com
-    active: true
+    active: false
     role: lead
   -
     name: Chuck Hagenbuch
