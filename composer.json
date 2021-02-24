@@ -36,9 +36,6 @@
     "autoload": {
         "psr-0": {
             "Horde_Routes": "lib/"
-        },
-        "psr-4": {
-            "Horde\\Routes\\": "src/"
         }
     }
 }
