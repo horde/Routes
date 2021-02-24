@@ -3,8 +3,8 @@ id: Routes
 name: Routes
 full: URL routing/mapping library
 description: >-
-  A library for mapping URLs into the controllers and actions of an MVC system. It
-  is a port of a Python library, Routes, by Ben Bangert
+  A library for mapping URLs into the controllers and actions of an MVC system.
+  It is a port of a Python library, Routes, by Ben Bangert
   (http://routes.groovie.org).
 list: dev
 type: library
@@ -23,11 +23,11 @@ authors:
     active: false
     role: lead
 version:
-  release: 2.0.6
-  api: 1.1.0
+  release: 3.0.0alpha1
+  api: 3.0.0alpha1
 state:
-  release: stable
-  api: stable
+  release: alpha
+  api: alpha
 license:
   identifier: BSD-2-Clause
   uri: http://www.horde.org/licenses/bsd

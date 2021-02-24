@@ -4,27 +4,27 @@
  <channel>pear.horde.org</channel>
  <extends>Routes</extends>
  <summary>URL routing/mapping library</summary>
- <description>Classes for mapping URLs into the controllers and actions of an MVC system. It is a port of a Python library, Routes, by Ben Bangert (http://routes.groovie.org).</description>
+ <description>A library for mapping URLs into the controllers and actions of an MVC system. It is a port of a Python library, Routes, by Ben Bangert (http://routes.groovie.org).</description>
  <lead>
   <name>Mike Naberezny</name>
   <user>mnaberez</user>
   <email>mike@maintainable.com</email>
-  <active>yes</active>
+  <active>no</active>
  </lead>
  <lead>
   <name>Chuck Hagenbuch</name>
   <user>chuck</user>
   <email>chuck@horde.org</email>
-  <active>yes</active>
+  <active>no</active>
  </lead>
- <date>2017-11-11</date>
+ <date>2021-02-24</date>
  <version>
-  <release>2.0.6</release>
-  <api>1.1.0</api>
+  <release>3.0.0alpha1</release>
+  <api>3.0.0alpha1</api>
  </version>
  <stability>
-  <release>stable</release>
-  <api>stable</api>
+  <release>alpha</release>
+  <api>alpha</api>
  </stability>
  <license uri="http://www.horde.org/licenses/bsd">BSD-2-Clause</license>
  <notes>
@@ -358,12 +358,12 @@
   </release>
   <release>
    <version>
-    <release>2.0.6</release>
-    <api>1.1.0</api></version>
+    <release>3.0.0alpha1</release>
+    <api>3.0.0alpha1</api></version>
    <stability>
-    <release>stable</release>
-    <api>stable</api></stability>
-   <date>2017-11-11</date>
+    <release>alpha</release>
+    <api>alpha</api></stability>
+   <date>2021-02-24</date>
    <license uri="http://www.horde.org/licenses/bsd">BSD-2-Clause</license>
    <notes>
 * 
