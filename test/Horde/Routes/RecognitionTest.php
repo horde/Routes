@@ -11,11 +11,14 @@
  * @license http://www.horde.org/licenses/bsd BSD
  * @package Routes
  */
+namespace Horde\Routes;
+use PHPUnit\Framework\TestCase;
+use \Horde_Routes_Mapper;
 
 /**
  * @package Routes
  */
-class Horde_Routes_RecognitionTest extends PHPUnit_Framework_TestCase
+class RecognitionTest extends TestCase
 {
     public function testRegexpCharEscaping()
     {
@@ -940,12 +943,10 @@ class Horde_Routes_RecognitionTest extends PHPUnit_Framework_TestCase
         $m = new Horde_Routes_Mapper();
         $m->connect(':name/:(action)-:(id)', array('controller' => 'content'));
         $m->controllerScan = false;
-        try {
-            $m->match('/group/view-3');
-            $this->fail();
-        } catch (Horde_Routes_Exception $e) {
-            $this->assertRegExp('/must generate the regular expressions/i', $e->getMessage());
-        }
+        
+        $this->expectException('Horde_Routes_Exception');
+        $m->match('/group/view-3');
+        $this->assertRegExp('/must generate the regular expressions/i', $e->getMessage());
     }
 
     public function testRoutematch()
