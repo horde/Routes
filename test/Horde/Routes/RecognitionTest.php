@@ -60,12 +60,18 @@ class RecognitionTest extends TestCase
 
     public function testUnicode()
     {
-        // php version does not handing decoding
+        // Stop here and mark this test as incomplete.
+        $this->markTestIncomplete(
+            'This test has not been implemented yet.'
+        );
     }
 
     public function testDisablingUnicode()
     {
-        // php version does not handing decoding
+        // Stop here and mark this test as incomplete.
+        $this->markTestIncomplete(
+             'This test has not been implemented yet.'
+        );
     }
 
     public function testBasicDynamic()
