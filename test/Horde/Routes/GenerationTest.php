@@ -11,11 +11,14 @@
  * @license http://www.horde.org/licenses/bsd BSD
  * @package Routes
  */
+namespace Horde\Routes;
+use PHPUnit\Framework\TestCase;
+use \Horde_Routes_Mapper;
 
 /**
  * @package Routes
  */
-class Horde_Routes_GenerationTest extends PHPUnit_Framework_TestCase
+class GenerationTest extends TestCase
 {
 
     public function testAllStaticNoReqs()
