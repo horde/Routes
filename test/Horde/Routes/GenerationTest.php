@@ -446,7 +446,7 @@ class GenerationTest extends TestCase
                                                        'month' => null, 'day' => null));
 
         $this->assertEquals('/archive/2004',
-                            $m->generate(array('controller' => 'blog', 'action' => 'view',
+            $m->generate(array('controller' => 'blog', 'action' => 'view',
                                                'year' => 2004)));
     }
 
@@ -456,6 +456,11 @@ class GenerationTest extends TestCase
         $m->connect(':(controller)/:(action)/:(id)');
         $m->connect('archive/:(year)/:(month)/:(day)', array('controller' => 'blog', 'action' => 'view',
                                                              'month' => null, 'day' => null));
+
+        //Stop here and mark this test as incomplete.
+        $this->markTestIncomplete(
+            'This test has not been implemented yet.'
+        );
     }
 
     public function testTheSmallestRoute()
@@ -923,12 +928,18 @@ class GenerationTest extends TestCase
 
     public function testUnicode()
     {
-        // php version does not handing decoding
+        // Stop here and mark this test as incomplete.
+        $this->markTestIncomplete(
+            'This test has not been implemented yet.'
+        );
     }
 
     public function testUnicodeStatic()
     {
-        // php version does not handing decoding
+        // Stop here and mark this test as incomplete.
+        $this->markTestIncomplete(
+            'This test has not been implemented yet.'
+        );
     }
 
     public function testOtherSpecialChars()
