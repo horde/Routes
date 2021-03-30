@@ -11,11 +11,14 @@
  * @license http://www.horde.org/licenses/bsd BSD
  * @package Routes
  */
+namespace Horde\Routes;
+use PHPUnit\Framework\TestCase;
+use \Horde_Routes_Mapper;
 
 /**
  * @package Routes
  */
-class Horde_Routes_GenerationTest extends PHPUnit_Framework_TestCase
+class GenerationTest extends TestCase
 {
 
     public function testAllStaticNoReqs()
@@ -443,7 +446,7 @@ class Horde_Routes_GenerationTest extends PHPUnit_Framework_TestCase
                                                        'month' => null, 'day' => null));
 
         $this->assertEquals('/archive/2004',
-                            $m->generate(array('controller' => 'blog', 'action' => 'view',
+            $m->generate(array('controller' => 'blog', 'action' => 'view',
                                                'year' => 2004)));
     }
 
@@ -453,6 +456,11 @@ class Horde_Routes_GenerationTest extends PHPUnit_Framework_TestCase
         $m->connect(':(controller)/:(action)/:(id)');
         $m->connect('archive/:(year)/:(month)/:(day)', array('controller' => 'blog', 'action' => 'view',
                                                              'month' => null, 'day' => null));
+
+        //Stop here and mark this test as incomplete.
+        $this->markTestIncomplete(
+            'This test has not been implemented yet.'
+        );
     }
 
     public function testTheSmallestRoute()
@@ -920,12 +928,18 @@ class Horde_Routes_GenerationTest extends PHPUnit_Framework_TestCase
 
     public function testUnicode()
     {
-        // php version does not handing decoding
+        // Stop here and mark this test as incomplete.
+        $this->markTestIncomplete(
+            'This test has not been implemented yet.'
+        );
     }
 
     public function testUnicodeStatic()
     {
-        // php version does not handing decoding
+        // Stop here and mark this test as incomplete.
+        $this->markTestIncomplete(
+            'This test has not been implemented yet.'
+        );
     }
 
     public function testOtherSpecialChars()
