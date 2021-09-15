@@ -155,6 +155,11 @@ class Horde_Routes_Route
      */
     protected $_parentResource;
 
+    /**
+     * An environment of pre and post filters for the route
+     * @var iterable|null
+     */
+    public $stack;
 
     /**
      *  Initialize a route, with a given routepath for matching/generation
@@ -181,6 +186,12 @@ class Horde_Routes_Route
 
         // Don't bother forming stuff we don't need if its a static route
         $this->static = isset($kargs['_static']) ? $kargs['_static'] : false;
+
+
+        if (isset($kargs['stack'])) {
+            $this->stack = $kargs['stack'];
+            unset ($kargs['stack']);
+        }
 
         $this->filter = isset($kargs['_filter']) ? $kargs['_filter'] : null;
         unset($kargs['_filter']);
@@ -673,6 +684,10 @@ class Horde_Routes_Route
         // Add the sub-domain if there is one
         if (!empty($kargs['subDomains'])) {
             $result['subDomain'] = $subDomain;
+        }
+
+        if (!empty($this->stack)) {
+            $result['stack'] = $this->stack;
         }
 
         // If there's a function, call it with environ and expire if it
