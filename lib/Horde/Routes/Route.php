@@ -686,7 +686,12 @@ class Horde_Routes_Route
             $result['subDomain'] = $subDomain;
         }
 
-        if (!empty($this->stack)) {
+        /* 
+         * The stack can be null/unset, an empty array or an iterable 
+         * An explicitly empty array expresses "no middleware",
+         * a null or unset stack means default
+         */
+        if ($this->stack !== null) {
             $result['stack'] = $this->stack;
         }
 
