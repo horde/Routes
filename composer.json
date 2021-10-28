@@ -1,4 +1,5 @@
 {
+    "minimum-stability": "dev",
     "name": "horde/routes",
     "description": "URL routing/mapping library",
     "type": "library",
@@ -25,13 +26,14 @@
     ],
     "require": {
         "php": "^7.4 || ^8",
-        "horde/exception": "^3",
-        "horde/util": "^3",
+        "horde/exception": "^3 || dev-FRAMEWORK_6_0",
+        "horde/util": "^3 || dev-FRAMEWORK_6_0",
+        "horde/support": "^3 || dev-FRAMEWORK_6_0",
         "psr/http-message": "^1"
     },
     "require-dev": {},
     "suggest": {
-        "horde/test": "^3"
+        "horde/test": "^3 || dev-FRAMEWORK_6_0"
     },
     "autoload": {
         "psr-0": {
