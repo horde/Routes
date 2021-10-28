@@ -17,7 +17,7 @@
   <email>chuck@horde.org</email>
   <active>no</active>
  </lead>
- <date>2021-10-08</date>
+ <date>2021-10-28</date>
  <version>
   <release>3.0.0alpha5</release>
   <api>3.0.0alpha1</api>
@@ -28,7 +28,7 @@
  </stability>
  <license uri="http://www.horde.org/licenses/bsd">BSD-2-Clause</license>
  <notes>
-* 
+* |+
  </notes>
  <contents>
   <dir baseinstalldir="/" name="/">
@@ -36,6 +36,7 @@
     <dir name="workflows">
      <file name="ci.yml" role="php" />
      <file name="phpdoc.yml" role="php" />
+     <file name="phpstan.yml" role="php" />
      <file name="update-satis.yml" role="php" />
     </dir> <!-- /.github/workflows -->
    </dir> <!-- /.github -->
@@ -60,6 +61,14 @@
      </dir> <!-- /lib/Horde/Routes -->
     </dir> <!-- /lib/Horde -->
    </dir> <!-- /lib -->
+   <dir name="src">
+    <file name="Exception.php" role="php" />
+    <file name="Mapper.php" role="php" />
+    <file name="Matcher.php" role="php" />
+    <file name="Printer.php" role="php" />
+    <file name="Route.php" role="php" />
+    <file name="Utils.php" role="php" />
+   </dir> <!-- /src -->
    <dir name="test">
     <dir name="Horde">
      <dir name="Routes">
@@ -88,9 +97,9 @@
  <dependencies>
   <required>
    <php>
-    <min>7.0.0</min>
-    <max>8.0.0alpha1</max>
-    <exclude>8.0.0alpha1</exclude>
+    <min>7.4.0</min>
+    <max>9.0.0alpha1</max>
+    <exclude>9.0.0alpha1</exclude>
    </php>
    <pearinstaller>
     <min>1.7.0</min>
@@ -101,6 +110,7 @@
   <filelist>
    <install as="workflows/ci.yml" name=".github/workflows/ci.yml" />
    <install as="workflows/phpdoc.yml" name=".github/workflows/phpdoc.yml" />
+   <install as="workflows/phpstan.yml" name=".github/workflows/phpstan.yml" />
    <install as="workflows/update-satis.yml" name=".github/workflows/update-satis.yml" />
    <install as="CHANGES" name="doc/Horde/Routes/CHANGES" />
    <install as="integration.txt" name="doc/Horde/Routes/integration.txt" />
@@ -112,6 +122,12 @@
    <install as="Horde/Routes/Route.php" name="lib/Horde/Routes/Route.php" />
    <install as="Horde/Routes/Utils.php" name="lib/Horde/Routes/Utils.php" />
    <install as="LICENSE" name="LICENSE" />
+   <install as="Exception.php" name="src/Exception.php" />
+   <install as="Mapper.php" name="src/Mapper.php" />
+   <install as="Matcher.php" name="src/Matcher.php" />
+   <install as="Printer.php" name="src/Printer.php" />
+   <install as="Route.php" name="src/Route.php" />
+   <install as="Utils.php" name="src/Utils.php" />
    <install as="Horde/Routes/AllTests.php" name="test/Horde/Routes/AllTests.php" />
    <install as="Horde/Routes/bootstrap.php" name="test/Horde/Routes/bootstrap.php" />
    <install as="Horde/Routes/fixtures/controllers/admin/users.php" name="test/Horde/Routes/fixtures/controllers/admin/users.php" />
@@ -125,26 +141,6 @@
   </filelist>
  </phprelease>
  <changelog>
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
   <release>
    <version>
     <release>0.4.0</release>
@@ -458,7 +454,7 @@
    <date>2021-10-08</date>
    <license uri="http://www.horde.org/licenses/bsd">BSD-2-Clause</license>
    <notes>
-* 
+* |+
    </notes>
   </release>
  </changelog>
