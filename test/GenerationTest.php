@@ -11,9 +11,9 @@
  * @license http://www.horde.org/licenses/bsd BSD
  * @package Routes
  */
-namespace Horde\Routes;
+namespace Horde\Routes\Test;
 use PHPUnit\Framework\TestCase;
-use \Horde_Routes_Mapper;
+use \Horde\Routes\Mapper;
 
 /**
  * @package Routes
@@ -23,7 +23,7 @@ class GenerationTest extends TestCase
 
     public function testAllStaticNoReqs()
     {
-        $m = new Horde_Routes_Mapper();
+        $m = new Mapper();
         $m->connect('hello/world');
 
         $this->assertEquals('/hello/world', $m->generate());
@@ -32,7 +32,7 @@ class GenerationTest extends TestCase
     public function testBasicDynamic()
     {
         foreach (array('hi/:fred', 'hi/:(fred)') as $path) {
-            $m = new Horde_Routes_Mapper();
+            $m = new Mapper();
             $m->connect($path);
 
             $this->assertEquals('/hi/index', $m->generate(array('fred' => 'index')));
@@ -45,7 +45,7 @@ class GenerationTest extends TestCase
     public function testDynamicWithDefault()
     {
         foreach (array('hi/:action', 'hi/:(action)') as $path) {
-            $m = new Horde_Routes_Mapper();
+            $m = new Mapper();
             $m->connect($path);
 
             $this->assertEquals('/hi',      $m->generate(array('action' => 'index')));
@@ -62,7 +62,7 @@ class GenerationTest extends TestCase
      */
     public function testDynamicWithFalseEquivs()
     {
-        $m = new Horde_Routes_Mapper();
+        $m = new Mapper();
         $m->connect('article/:page', array('page' => false));
         $m->connect(':controller/:action/:id');
 
@@ -90,7 +90,7 @@ class GenerationTest extends TestCase
 
     public function testDynamicWithUnderscoreParts()
     {
-        $m = new Horde_Routes_Mapper();
+        $m = new Mapper();
         $m->connect('article/:small_page', array('small_page' => false));
         $m->connect(':(controller)/:(action)/:(id)');
 
@@ -113,7 +113,7 @@ class GenerationTest extends TestCase
 
     public function testDynamicWithFalseEquivsAndSplits()
     {
-        $m = new Horde_Routes_Mapper();
+        $m = new Mapper();
         $m->connect('article/:(page)', array('page' => false));
         $m->connect(':(controller)/:(action)/:(id)');
 
@@ -138,7 +138,7 @@ class GenerationTest extends TestCase
         $this->assertEquals('/article',
                             $m->generate(array('page' => null)));
 
-        $m = new Horde_Routes_Mapper();
+        $m = new Mapper();
         $m->connect('view/:(home)/:(area)', array('home' => 'austere', 'area' => null));
 
         $this->assertEquals('/view/sumatra',
@@ -146,7 +146,7 @@ class GenerationTest extends TestCase
         $this->assertEquals('/view/austere/chicago',
                             $m->generate(array('area' => 'chicago')));
 
-        $m = new Horde_Routes_Mapper();
+        $m = new Mapper();
         $m->connect('view/:(home)/:(area)', array('home' => null, 'area' => null));
 
         $this->assertEquals('/view/null/chicago',
@@ -156,7 +156,7 @@ class GenerationTest extends TestCase
     public function testDynamicWithRegExpCondition()
     {
         foreach (array('hi/:name', 'hi/:(name)') as $path) {
-            $m = new Horde_Routes_Mapper();
+            $m = new Mapper();
             $m->connect($path, array('requirements' => array('name' => '[a-z]+')));
 
             $this->assertEquals('/hi/index', $m->generate(array('name' => 'index')));
@@ -171,7 +171,7 @@ class GenerationTest extends TestCase
     public function testDynamicWithDefaultAndRegexpCondition()
     {
         foreach (array('hi/:action', 'hi/:(action)') as $path) {
-            $m = new Horde_Routes_Mapper();
+            $m = new Mapper();
             $m->connect($path, array('requirements' => array('action' => '[a-z]+')));
 
             $this->assertEquals('/hi', $m->generate(array('action' => 'index')));
@@ -187,7 +187,7 @@ class GenerationTest extends TestCase
     public function testPath()
     {
         foreach (array('hi/*file', 'hi/*(file)') as $path) {
-            $m = new Horde_Routes_Mapper();
+            $m = new Mapper();
             $m->connect($path);
 
             $this->assertEquals('/hi',
@@ -202,7 +202,7 @@ class GenerationTest extends TestCase
     public function testPathBackwards()
     {
         foreach (array('*file/hi', '*(file)/hi') as $path) {
-            $m = new Horde_Routes_Mapper();
+            $m = new Mapper();
             $m->connect($path);
 
             $this->assertEquals('/hi',
@@ -217,7 +217,7 @@ class GenerationTest extends TestCase
     public function testController()
     {
         foreach (array('hi/:controller', 'hi/:(controller)') as $path) {
-            $m = new Horde_Routes_Mapper();
+            $m = new Mapper();
             $m->connect($path);
 
             $this->assertEquals('/hi/content',
@@ -230,7 +230,7 @@ class GenerationTest extends TestCase
     public function testControllerWithStatic()
     {
         foreach (array('hi/:controller', 'hi/:(controller)') as $path) {
-            $m = new Horde_Routes_Mapper();
+            $m = new Mapper();
             $utils = $m->utils;
             $m->connect($path);
             $m->connect('google', 'http://www.google.com', array('_static' => true));
@@ -246,7 +246,7 @@ class GenerationTest extends TestCase
     public function testStandardRoute()
     {
         foreach (array(':controller/:action/:id', ':(controller)/:(action)/:(id)') as $path) {
-            $m = new Horde_Routes_Mapper();
+            $m = new Mapper();
             $m->connect($path);
 
             $this->assertEquals('/content',
@@ -267,7 +267,7 @@ class GenerationTest extends TestCase
 
     public function testMultiroute()
     {
-        $m = new Horde_Routes_Mapper();
+        $m = new Mapper();
         $m->connect('archive/:year/:month/:day', array('controller' => 'blog', 'action' => 'view',
                                                        'month' => null, 'day' => null,
                                                        'requirements' => array('month' => '\d{1,2}',
@@ -293,7 +293,7 @@ class GenerationTest extends TestCase
 
     public function testMultirouteWithSplits()
     {
-        $m = new Horde_Routes_Mapper();
+        $m = new Mapper();
         $m->connect('archive/:(year)/:(month)/:(day)', array('controller' => 'blog', 'action' => 'view',
                                                              'month' => null, 'day' => null,
                                                              'requirements' => array('month' => '\d{1,2}',
@@ -318,7 +318,7 @@ class GenerationTest extends TestCase
 
     public function testBigMultiroute()
     {
-        $m = new Horde_Routes_Mapper();
+        $m = new Mapper();
         $m->connect('', array('controller' => 'articles', 'action' => 'index'));
         $m->connect('admin', array('controller' => 'admin/general', 'action' => 'index'));
 
@@ -379,7 +379,7 @@ class GenerationTest extends TestCase
 
     public function testBigMultirouteWithSplits()
     {
-        $m = new Horde_Routes_Mapper();
+        $m = new Mapper();
         $m->connect('', array('controller' => 'articles', 'action' => 'index'));
         $m->connect('admin', array('controller' => 'admin/general', 'action' => 'index'));
 
@@ -440,7 +440,7 @@ class GenerationTest extends TestCase
 
     public function testNoExtras()
     {
-        $m = new Horde_Routes_Mapper();
+        $m = new Mapper();
         $m->connect(':controller/:action/:id');
         $m->connect('archive/:year/:month/:day', array('controller' => 'blog', 'action' => 'view',
                                                        'month' => null, 'day' => null));
@@ -452,7 +452,7 @@ class GenerationTest extends TestCase
 
     public function testNoExtrasWithSplits()
     {
-        $m = new Horde_Routes_Mapper();
+        $m = new Mapper();
         $m->connect(':(controller)/:(action)/:(id)');
         $m->connect('archive/:(year)/:(month)/:(day)', array('controller' => 'blog', 'action' => 'view',
                                                              'month' => null, 'day' => null));
@@ -466,7 +466,7 @@ class GenerationTest extends TestCase
     public function testTheSmallestRoute()
     {
         foreach (array('pages/:title', 'pages/:(title)') as $path) {
-            $m = new Horde_Routes_Mapper();
+            $m = new Mapper();
             $m->connect('', array('controller' => 'page', 'action' => 'view', 'title' => 'HomePage'));
             $m->connect($path, array('controller' => 'page', 'action' => 'view'));
 
@@ -479,7 +479,7 @@ class GenerationTest extends TestCase
 
     public function testExtras()
     {
-        $m = new Horde_Routes_Mapper();
+        $m = new Mapper();
         $m->connect('viewpost/:id', array('controller' => 'post', 'action' => 'view'));
         $m->connect(':controller/:action/:id');
 
@@ -495,7 +495,7 @@ class GenerationTest extends TestCase
 
     public function testExtrasWithSplits()
     {
-        $m = new Horde_Routes_Mapper();
+        $m = new Mapper();
         $m->connect('viewpost/:(id)', array('controller' => 'post', 'action' => 'view'));
         $m->connect(':(controller)/:(action)/:(id)');
 
@@ -511,7 +511,7 @@ class GenerationTest extends TestCase
 
     public function testStatic()
     {
-        $m = new Horde_Routes_Mapper();
+        $m = new Mapper();
         $m->connect('hello/world', array('controller' => 'content', 'action' => 'index',
                                          'known' => 'known_value'));
 
@@ -527,7 +527,7 @@ class GenerationTest extends TestCase
     public function testTypical()
     {
         foreach (array(':controller/:action/:id', ':(controller)/:(action)/:(id)') as $path) {
-            $m = new Horde_Routes_Mapper();
+            $m = new Mapper();
             $m->connect($path, array('action' => 'index', 'id' => null));
 
             $this->assertEquals('/content',
@@ -550,7 +550,7 @@ class GenerationTest extends TestCase
 
     public function testRouteWithFixnumDefault()
     {
-        $m = new Horde_Routes_Mapper();
+        $m = new Mapper();
         $m->connect('page/:id', array('controller' => 'content', 'action' => 'show_page', 'id' => 1));
 
         $m->connect(':controller/:action/:id');
@@ -575,7 +575,7 @@ class GenerationTest extends TestCase
 
     public function testRouteWithFixnumDefaultWithSplits()
     {
-        $m = new Horde_Routes_Mapper();
+        $m = new Mapper();
         $m->connect('page/:(id)', array('controller' => 'content', 'action' => 'show_page', 'id' => 1));
         $m->connect(':(controller)/:(action)/:(id)');
 
@@ -600,7 +600,7 @@ class GenerationTest extends TestCase
     public function testUppercaseRecognition()
     {
         foreach (array(':controller/:action/:id', ':(controller)/:(action)/:(id)') as $path) {
-            $m = new Horde_Routes_Mapper();
+            $m = new Mapper();
             $m->connect($path);
 
             $this->assertEquals('/Content',
@@ -617,7 +617,7 @@ class GenerationTest extends TestCase
 
     public function testBackwards()
     {
-        $m = new Horde_Routes_Mapper();
+        $m = new Mapper();
         $m->connect('page/:id/:action', array('controller' => 'pages', 'action' => 'show'));
         $m->connect(':controller/:action/:id');
 
@@ -629,7 +629,7 @@ class GenerationTest extends TestCase
 
     public function testBackwardsWithSplits()
     {
-        $m = new Horde_Routes_Mapper();
+        $m = new Mapper();
         $m->connect('page/:(id)/:(action)', array('controller' => 'pages', 'action' => 'show'));
         $m->connect(':(controller)/:(action)/:(id)');
 
@@ -641,7 +641,7 @@ class GenerationTest extends TestCase
 
     public function testBothRequirementAndOptional()
     {
-        $m = new Horde_Routes_Mapper();
+        $m = new Mapper();
         $m->connect('test/:year', array('controller' => 'post', 'action' => 'show',
                                         'year' => null, 'requirements' => array('year' => '\d{4}')));
 
@@ -653,7 +653,7 @@ class GenerationTest extends TestCase
 
     public function testSetToNilForgets()
     {
-        $m = new Horde_Routes_Mapper();
+        $m = new Mapper();
         $m->connect('pages/:year/:month/:day',
                     array('controller' => 'content', 'action' => 'list_pages',
                           'month' => null, 'day' => null));
@@ -672,7 +672,7 @@ class GenerationTest extends TestCase
 
     public function testUrlWithNoActionSpecified()
     {
-        $m = new Horde_Routes_Mapper();
+        $m = new Mapper();
         $m->connect('', array('controller' => 'content'));
         $m->connect(':controller/:action/:id');
 
@@ -684,7 +684,7 @@ class GenerationTest extends TestCase
 
     public function testUrlWithPrefix()
     {
-        $m = new Horde_Routes_Mapper();
+        $m = new Mapper();
         $m->prefix = '/blog';
         $m->connect(':controller/:action/:id');
         $m->createRegs(array('content', 'blog', 'admin/comments'));
@@ -699,7 +699,7 @@ class GenerationTest extends TestCase
 
     public function testUrlWithPrefixDeeper()
     {
-        $m = new Horde_Routes_Mapper();
+        $m = new Mapper();
         $m->prefix = '/blog/phil';
         $m->connect(':controller/:action/:id');
         $m->createRegs(array('content', 'blog', 'admin/comments'));
@@ -714,7 +714,7 @@ class GenerationTest extends TestCase
 
     public function testUrlWithEnvironEmpty()
     {
-        $m = new Horde_Routes_Mapper();
+        $m = new Mapper();
         $m->environ = array('SCRIPT_NAME' => '');
 
         $m->connect(':controller/:action/:id');
@@ -730,7 +730,7 @@ class GenerationTest extends TestCase
 
     public function testUrlWithEnviron()
     {
-        $m = new Horde_Routes_Mapper();
+        $m = new Mapper();
         $m->environ = array('SCRIPT_NAME' => '/blog');
 
         $m->connect(':controller/:action/:id');
@@ -757,7 +757,7 @@ class GenerationTest extends TestCase
 
     public function testUrlWithEnvironAndAbsolute()
     {
-        $m = new Horde_Routes_Mapper();
+        $m = new Mapper();
         $m->environ = array('SCRIPT_NAME' => '/blog');
 
         $utils = $m->utils;
@@ -780,7 +780,7 @@ class GenerationTest extends TestCase
 
     public function testRouteWithOddLeftovers()
     {
-        $m = new Horde_Routes_Mapper();
+        $m = new Mapper();
         $m->environ = array();
 
         $m->connect(':controller/:(action)-:(id)');
@@ -794,7 +794,7 @@ class GenerationTest extends TestCase
 
     public function testRouteWithEndExtension()
     {
-        $m = new Horde_Routes_Mapper();
+        $m = new Mapper();
         $m->environ = array();
 
         $m->connect(':controller/:(action)-:(id).html');
@@ -811,7 +811,7 @@ class GenerationTest extends TestCase
 
     public function testResources()
     {
-        $m = new Horde_Routes_Mapper();
+        $m = new Mapper();
         $m->environ = array();
 
         $utils = $m->utils;
@@ -842,7 +842,7 @@ class GenerationTest extends TestCase
 
     public function testResourcesWithPathPrefix()
     {
-        $m = new Horde_Routes_Mapper();
+        $m = new Mapper();
         $m->resource('message', 'messages', array('pathPrefix' => '/thread/:threadid'));
         $m->createRegs(array('messages'));
         $options = array('controller' => 'messages', 'threadid' => '5');
@@ -851,7 +851,7 @@ class GenerationTest extends TestCase
 
     public function testResourcesWithCollectionAction()
     {
-        $m = new Horde_Routes_Mapper();
+        $m = new Mapper();
         $utils = $m->utils;
         $m->resource('message', 'messages', array('collection' => array('rss' => 'GET')));
         $m->createRegs(array('messages'));
@@ -872,7 +872,7 @@ class GenerationTest extends TestCase
     public function testResourcesWithMemberAction()
     {
         foreach (array('put', 'post') as $method) {
-            $m = new Horde_Routes_Mapper();
+            $m = new Mapper();
             $m->resource('message', 'messages', array('member' => array('mark' => $method)));
             $m->createRegs(array('messages'));
 
@@ -892,7 +892,7 @@ class GenerationTest extends TestCase
 
     public function testResourcesWithNewAction()
     {
-        $m = new Horde_Routes_Mapper();
+        $m = new Mapper();
         $utils = $m->utils;
         $m->resource('message', 'messages/', array('new' => array('preview' => 'POST')));
         $m->createRegs(array('messages'));
@@ -912,7 +912,7 @@ class GenerationTest extends TestCase
 
     public function testResourcesWithNamePrefix()
     {
-        $m = new Horde_Routes_Mapper();
+        $m = new Mapper();
         $utils = $m->utils;
         $m->resource('message', 'messages', array('namePrefix' => 'category_',
                                                   'new'        => array('preview' => 'POST')));
@@ -944,7 +944,7 @@ class GenerationTest extends TestCase
 
     public function testOtherSpecialChars()
     {
-        $m = new Horde_Routes_Mapper();
+        $m = new Mapper();
         $m->connect('/:year/:(slug).:(format),:(locale)', array('locale' => 'en', 'format' => 'html'));
         $m->createRegs(array('content'));
 

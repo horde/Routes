@@ -11,11 +11,10 @@
  * @license http://www.horde.org/licenses/bsd BSD
  * @package Routes
  */
-namespace Horde\Routes;
+namespace Horde\Routes\Test;
 use PHPUnit\Framework\TestCase;
-use \Horde_Routes_Mapper;
-use \Horde_Routes_TestHelper;
-use \Horde_Routes_Utils;
+use \Horde\Routes\Mapper;
+use \Horde\Routes\Utils;
 
 require_once __DIR__ . '/TestHelper.php';
 
@@ -27,7 +26,7 @@ class UtilTest extends TestCase
 
     public function setUp(): void
     {
-        $m = new Horde_Routes_Mapper();
+        $m = new Mapper();
         $m->environ = array('HTTP_HOST' => 'www.test.com');
 
         $m->connect('archive/:year/:month/:day',
@@ -97,7 +96,7 @@ class UtilTest extends TestCase
 
         $environ = array('SCRIPT_NAME' => '', 'HTTP_HOST' => 'www.example.com',
                          'PATH_INFO' => '/blog/view/4');
-        Horde_Routes_TestHelper::updateMapper($m, $environ);
+        TestHelper::updateMapper($m, $environ);
 
         $this->assertEquals('/blog/view/4', $utils->urlFor());
         $this->assertEquals('/post/index/4', $utils->urlFor(array('controller' => 'post')));
@@ -106,7 +105,7 @@ class UtilTest extends TestCase
         $this->assertEquals('/viewpost/4', $utils->urlFor(array('controller' => 'post', 'action' => 'view', 'id' => 4)));
 
         $environ = array('SCRIPT_NAME' => '', 'HTTP_HOST' => 'www.example.com:8080', 'PATH_INFO' => '/blog/view/4');
-        Horde_Routes_TestHelper::updateMapper($m, $environ);
+        TestHelper::updateMapper($m, $environ);
 
         $this->assertEquals('/post/index/4',
                             $utils->urlFor(array('controller' => 'post')));
@@ -208,7 +207,7 @@ class UtilTest extends TestCase
         $utils->mapperDict = array();
 
         $environ = array('SCRIPT_NAME' => '', 'HTTP_HOST' => 'example.com');
-        Horde_Routes_TestHelper::updateMapper($m, $environ);
+        TestHelper::updateMapper($m, $environ);
 
         $m->connect(':controller/:action/:id');
         $m->connect('home', 'http://www.groovie.org/', array('_static' => true));
@@ -344,7 +343,7 @@ class UtilTest extends TestCase
 
     public function testRouteFilter()
     {
-        $m = new Horde_Routes_Mapper();
+        $m = new Mapper();
         $m->environ = array('SCRIPT_NAME' => '', 'HTTP_HOST' => 'example.com');
 
         $utils = $m->utils;
@@ -384,7 +383,7 @@ class UtilTest extends TestCase
 
     public function testWithSslEnviron()
     {
-        $m = new Horde_Routes_Mapper();
+        $m = new Mapper();
         $m->environ = array('SCRIPT_NAME' => '', 'HTTPS' => 'on', 'SERVER_PORT' => '443',
                             'PATH_INFO' => '/', 'HTTP_HOST' => 'example.com',
                             'SERVER_NAME' => 'example.com');
@@ -421,7 +420,7 @@ class UtilTest extends TestCase
 
     public function testWithHttpEnviron()
     {
-        $m = new Horde_Routes_Mapper();
+        $m = new Mapper();
         $m->environ = array('SCRIPT_NAME' => '', 'SERVER_PORT' => '1080', 'PATH_INFO' => '/',
                             'HTTP_HOST' => 'example.com', 'SERVER_NAME' => 'example.com');
 
@@ -441,7 +440,7 @@ class UtilTest extends TestCase
 
     public function testSubdomains()
     {
-        $m = new Horde_Routes_Mapper();
+        $m = new Mapper();
         $m->environ = array('SCRIPT_NAME' => '', 'PATH_INFO' => '/',
                             'HTTP_HOST' => 'example.com', 'SERVER_NAME' => 'example.com');
 
@@ -469,7 +468,7 @@ class UtilTest extends TestCase
 
     public function testSubdomainsWithExceptions()
     {
-        $m = new Horde_Routes_Mapper();
+        $m = new Mapper();
         $m->environ = array('SCRIPT_NAME' => '', 'PATH_INFO' => '/',
                             'HTTP_HOST' => 'example.com', 'SERVER_NAME' => 'example.com');
 
@@ -508,7 +507,7 @@ class UtilTest extends TestCase
 
     public function testSubdomainsWithNamedRoutes()
     {
-        $m = new Horde_Routes_Mapper();
+        $m = new Mapper();
         $m->environ = array('SCRIPT_NAME' => '', 'PATH_INFO' => '/',
                             'HTTP_HOST' => 'example.com', 'SERVER_NAME' => 'example.com');
 
@@ -535,7 +534,7 @@ class UtilTest extends TestCase
 
     public function testSubdomainsWithPorts()
     {
-        $m = new Horde_Routes_Mapper();
+        $m = new Mapper();
         $m->environ = array('SCRIPT_NAME' => '', 'PATH_INFO' => '/',
                             'HTTP_HOST' => 'example.com:8000', 'SERVER_NAME' => 'example.com');
 
@@ -571,7 +570,7 @@ class UtilTest extends TestCase
         $hereDir = __DIR__;
         $controllerDir = "$hereDir/fixtures/controllers";
 
-        $controllers = Horde_Routes_Utils::controllerScan($controllerDir);
+        $controllers = Utils::controllerScan($controllerDir);
 
         $this->assertEquals(3, count($controllers));
         $this->assertEquals('admin/users', $controllers[0]);
@@ -584,7 +583,7 @@ class UtilTest extends TestCase
         $hereDir = __DIR__;
         $controllerDir = "$hereDir/fixtures/controllers";
 
-        $m = new Horde_Routes_Mapper(array('directory' => $controllerDir));
+        $m = new Mapper(array('directory' => $controllerDir));
         $m->alwaysScan = true;
 
         $m->connect(':controller/:action/:id');

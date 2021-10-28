@@ -11,10 +11,9 @@
  * @license http://www.horde.org/licenses/bsd BSD
  * @package Routes
  */
-namespace Horde\Routes;
+namespace Horde\Routes\Test;
 use PHPUnit\Framework\TestCase;
-use \Horde_Routes_Mapper;
-use \Horde_Routes_TestHelper;
+use \Horde\Routes\Mapper;
 
 require_once __DIR__ . '/TestHelper.php';
 
@@ -25,7 +24,7 @@ class UtilWithExplicitTest extends TestCase {
 
     public function setUp(): void
     {
-        $m = new Horde_Routes_Mapper(array('explicit' => true));
+        $m = new Mapper(array('explicit' => true));
         $m->connect('archive/:year/:month/:day',
             array('controller' => 'blog',
                   'action' => 'view',
@@ -119,7 +118,7 @@ class UtilWithExplicitTest extends TestCase {
 
         $environ = array('SCRIPT_NAME' => '', 'SERVER_NAME' => 'www.example.com',
                          'SERVER_PORT' => '80', 'PATH_INFO' => '/blog/view/4');
-        Horde_Routes_TestHelper::updateMapper($m, $environ);
+        TestHelper::updateMapper($m, $environ);
 
         $this->assertNull($utils->urlFor());
         $this->assertNull($utils->urlFor(array('controller' => 'post')));
@@ -132,7 +131,7 @@ class UtilWithExplicitTest extends TestCase {
                             $utils->urlFor(array('controller' => 'post', 'action' => 'view', 'id' => 4)));
 
         $environ = array('SCRIPT_NAME' => '', 'HTTP_HOST' => 'www.example.com:8080', 'PATH_INFO' => '/blog/view/4');
-        Horde_Routes_TestHelper::updateMapper($m, $environ);
+        TestHelper::updateMapper($m, $environ);
 
         $this->assertNull($utils->urlFor(array('controller' => 'post')));
         $this->assertEquals('http://www.example.com:8080/blog/view/4',
@@ -190,7 +189,7 @@ class UtilWithExplicitTest extends TestCase {
 
     public function testWithResourceRouteNames()
     {
-        $m = new Horde_Routes_Mapper();
+        $m = new Mapper();
         $utils = $m->utils;
         $utils->mapperDict = array();
 

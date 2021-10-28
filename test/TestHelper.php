@@ -11,21 +11,22 @@
  * @license http://www.horde.org/licenses/bsd BSD
  * @package Routes
  */
-
+namespace Horde\Routes\Test;
+use \Horde\Routes\Mapper;
 /**
  * @package Routes
  */
-class Horde_Routes_TestHelper
+class TestHelper
 {
     /**
      * Update a Mapper instance with a new $environ.  If PATH_INFO
      * is present, try to match it and update mapperDict.
      * 
-     * @param  Horde_Routes_Mapper  $mapper   Mapper instance to update
+     * @param  Mapper  $mapper   Mapper instance to update
      * @param  array                $environ  Environ to set in Mapper
      * @return void
      */
-    public static function updateMapper($mapper, $environ)
+    public static function updateMapper(Mapper $mapper, $environ)
     {
         $mapper->environ = $environ;
         $mapper->utils->mapperdict = null;
@@ -35,5 +36,4 @@ class Horde_Routes_TestHelper
             $mapper->utils->mapperDict = isset($result) ? $result[0] : null;
         }
     }
-
 }

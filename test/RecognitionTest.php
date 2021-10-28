@@ -11,9 +11,9 @@
  * @license http://www.horde.org/licenses/bsd BSD
  * @package Routes
  */
-namespace Horde\Routes;
+namespace Horde\Routes\Test;
 use PHPUnit\Framework\TestCase;
-use \Horde_Routes_Mapper;
+use \Horde\Routes\Mapper;
 
 /**
  * @package Routes
@@ -22,7 +22,7 @@ class RecognitionTest extends TestCase
 {
     public function testRegexpCharEscaping()
     {
-        $m = new Horde_Routes_Mapper();
+        $m = new Mapper();
         $m->connect(':controller/:(action).:(id)');
         $m->createRegs(array('content'));
 
@@ -45,7 +45,7 @@ class RecognitionTest extends TestCase
 
     public function testAllStatic()
     {
-        $m = new Horde_Routes_Mapper();
+        $m = new Mapper();
         $m->connect('hello/world/how/are/you', array('controller' => 'content', 'action' => 'index'));
         $m->createRegs(array());
 
@@ -77,7 +77,7 @@ class RecognitionTest extends TestCase
     public function testBasicDynamic()
     {
         foreach(array('hi/:name', 'hi/:(name)') as $path) {
-            $m = new Horde_Routes_Mapper();
+            $m = new Mapper();
             $m->connect($path, array('controller' => 'content'));
             $m->createRegs();
 
@@ -95,7 +95,7 @@ class RecognitionTest extends TestCase
     public function testBasicDynamicBackwards()
     {
         foreach (array(':name/hi', ':(name)/hi') as $path) {
-            $m = new Horde_Routes_Mapper();
+            $m = new Mapper();
             $m->connect($path);
             $m->createRegs();
 
@@ -115,7 +115,7 @@ class RecognitionTest extends TestCase
 
     public function testDynamicWithUnderscores()
     {
-        $m = new Horde_Routes_Mapper();
+        $m = new Mapper();
         $m->connect('article/:small_page', array('small_page' => false));
         $m->connect(':(controller)/:(action)/:(id)');
         $m->createRegs(array('article', 'blog'));
@@ -130,7 +130,7 @@ class RecognitionTest extends TestCase
     public function testDynamicWithDefault()
     {
         foreach (array('hi/:action', 'hi/:(action)') as $path) {
-            $m = new Horde_Routes_Mapper();
+            $m = new Mapper();
             $m->connect($path, array('controller' => 'content'));
             $m->createRegs();
 
@@ -152,7 +152,7 @@ class RecognitionTest extends TestCase
     public function testDynamicWithDefaultBackwards()
     {
         foreach (array(':action/hi', ':(action)/hi') as $path) {
-            $m = new Horde_Routes_Mapper();
+            $m = new Mapper();
             $m->connect($path, array('controller' => 'content'));
             $m->createRegs();
 
@@ -173,7 +173,7 @@ class RecognitionTest extends TestCase
     public function testDynamicWithStringCondition()
     {
         foreach (array(':name/hi', ':(name)/hi') as $path) {
-            $m = new Horde_Routes_Mapper();
+            $m = new Mapper();
             $m->connect($path, array('controller'   => 'content',
                                      'requirements' => array('name' => 'index')));
             $m->createRegs();
@@ -192,7 +192,7 @@ class RecognitionTest extends TestCase
     public function testDynamicWithStringConditionBackwards()
     {
         foreach (array('hi/:name', 'hi/:(name)') as $path) {
-            $m = new Horde_Routes_Mapper();
+            $m = new Mapper();
             $m->connect($path, array('controller'   => 'content',
                                      'requirements' => array('name' => 'index')));
             $m->createRegs();
@@ -214,7 +214,7 @@ class RecognitionTest extends TestCase
     public function testDynamicWithRegexpCondition()
     {
         foreach (array('hi/:name', 'hi/:(name)') as $path) {
-            $m = new Horde_Routes_Mapper();
+            $m = new Mapper();
             $m->connect($path, array('controller'   => 'content',
                                      'requirements' => array('name' => '[a-z]+')));
             $m->createRegs();
@@ -239,7 +239,7 @@ class RecognitionTest extends TestCase
     public function testDynamicWithRegexpAndDefault()
     {
         foreach (array('hi/:action', 'hi/:(action)') as $path) {
-            $m = new Horde_Routes_Mapper();
+            $m = new Mapper();
             $m->connect($path, array('controller'   => 'content',
                                      'requirements' => array('action' => '[a-z]+')));
             $m->createRegs();
@@ -263,7 +263,7 @@ class RecognitionTest extends TestCase
     public function testDynamicWithDefaultAndStringConditionBackwards()
     {
         foreach (array(':action/hi', ':(action)/hi') as $path) {
-            $m = new Horde_Routes_Mapper();
+            $m = new Mapper();
             $m->connect($path);
             $m->createRegs();
 
@@ -280,7 +280,7 @@ class RecognitionTest extends TestCase
     public function testDynamicAndControllerWithStringAndDefaultBackwards()
     {
         foreach (array(':controller/:action/hi', ':(controller)/:(action)/hi') as $path) {
-            $m = new Horde_Routes_Mapper();
+            $m = new Mapper();
 
             $m->connect($path, array('controller' => 'content'));
             $m->createRegs(array('content', 'admin/user'));
@@ -292,7 +292,7 @@ class RecognitionTest extends TestCase
 
     public function testMultiroute()
     {
-        $m = new Horde_Routes_Mapper();
+        $m = new Mapper();
         $m->connect('archive/:year/:month/:day', array('controller' => 'blog', 'action' => 'view',
                                                        'month' => null, 'day' => null,
 	                                                   'requirements' => array('month' => '\d{1,2}',
@@ -319,7 +319,7 @@ class RecognitionTest extends TestCase
 
     public function testMultirouteWithSplits()
     {
-        $m = new Horde_Routes_Mapper();
+        $m = new Mapper();
         $m->connect('archive/:(year)/:(month)/:(day)', array('controller' => 'blog', 'action' => 'view',
                                                              'month' => null, 'day' => null,
 	                                                         'requirements' => array('month' => '\d{1,2}',
@@ -346,7 +346,7 @@ class RecognitionTest extends TestCase
 
     public function testDynamicWithRegexpDefaultsAndGaps()
     {
-        $m = new Horde_Routes_Mapper();
+        $m = new Mapper();
         $m->connect('archive/:year/:month/:day', array('controller' => 'blog', 'action' => 'view',
                                                        'month' => null, 'day' => null,
 	                                                   'requirements' => array('month' => '\d{1,2}')));
@@ -369,7 +369,7 @@ class RecognitionTest extends TestCase
 
     public function testDynamicWithRegexpDefaultsAndGapsAndSplits()
     {
-        $m = new Horde_Routes_Mapper();
+        $m = new Mapper();
         $m->connect('archive/:(year)/:(month)/:(day)', array('controller' => 'blog', 'action' => 'view',
                                                              'month' => null, 'day' => null,
 	                                                         'requirements' => array('month' => '\d{1,2}')));
@@ -393,7 +393,7 @@ class RecognitionTest extends TestCase
     public function testDynamicWithRegexpGapsControllers()
     {
         foreach(array('view/:id/:controller', 'view/:(id)/:(controller)') as $path) {
-            $m = new Horde_Routes_Mapper();
+            $m = new Mapper();
             $m->connect($path, array('id' => 2, 'action' => 'view', 'requirements' => array('id' => '\d{1,2}')));
             $m->createRegs(array('post', 'blog', 'admin/user'));
 
@@ -411,7 +411,7 @@ class RecognitionTest extends TestCase
     public function testDynamicWithTrailingStrings()
     {
         foreach (array('view/:id/:controller/super', 'view/:(id)/:(controller)/super') as $path) {
-            $m = new Horde_Routes_Mapper();
+            $m = new Mapper();
             $m->connect($path, array('controller' => 'blog', 'action' => 'view',
                                      'id' => 2, 'requirements' => array('id' => '\d{1,2}')));
             $m->createRegs(array('post', 'blog', 'admin/user'));
@@ -433,7 +433,7 @@ class RecognitionTest extends TestCase
 
     public function testDynamicWithTrailingNonKeywordStrings()
     {
-        $m = new Horde_Routes_Mapper();
+        $m = new Mapper();
         $m->connect('somewhere/:over/rainbow', array('controller' => 'blog'));
         $m->connect('somewhere/:over', array('controller' => 'post'));
         $m->createRegs(array('post', 'blog', 'admin/user'));
@@ -451,7 +451,7 @@ class RecognitionTest extends TestCase
     public function testDynamicWithTrailingDynamicDefaults()
     {
         foreach (array('archives/:action/:article', 'archives/:(action)/:(article)') as $path) {
-            $m = new Horde_Routes_Mapper();
+            $m = new Mapper();
             $m->connect($path, array('controller' => 'blog'));
             $m->createRegs(array('blog'));
 
@@ -473,7 +473,7 @@ class RecognitionTest extends TestCase
     public function testPath()
     {
         foreach (array('hi/*file', 'hi/*(file)') as $path) {
-            $m = new Horde_Routes_Mapper();
+            $m = new Mapper();
             $m->connect($path, array('controller' => 'content', 'action' => 'download'));
             $m->createRegs();
 
@@ -498,7 +498,7 @@ class RecognitionTest extends TestCase
     public function testDynamicWithPath()
     {
         foreach (array(':controller/:action/*url', ':(controller)/:(action)/*(url)') as $path) {
-            $m = new Horde_Routes_Mapper();
+            $m = new Mapper();
             $m->connect($path);
             $m->createRegs(array('content', 'admin/user'));
 
@@ -522,7 +522,7 @@ class RecognitionTest extends TestCase
     public function testPathWithDynamicAndDefault()
     {
         foreach (array(':controller/:action/*url', ':(controller)/:(action)/*(url)') as $path) {
-            $m = new Horde_Routes_Mapper();
+            $m = new Mapper();
             $m->connect($path, array('controller' => 'content', 'action' => 'view', 'url' => null));
             $m->createRegs(array('content', 'admin/user'));
 
@@ -545,7 +545,7 @@ class RecognitionTest extends TestCase
     public function testPathWithDynamicAndDefaultBackwards()
     {
         foreach (array('*file/login', '*(file)/login') as $path) {
-            $m = new Horde_Routes_Mapper();
+            $m = new Mapper();
             $m->connect($path, array('controller' => 'content', 'action' => 'download', 'file' => null));
             $m->createRegs();
 
@@ -570,7 +570,7 @@ class RecognitionTest extends TestCase
     public function testPathBackwards()
     {
         foreach (array('*file/login', '*(file)/login') as $path) {
-            $m = new Horde_Routes_Mapper();
+            $m = new Mapper();
             $m->connect($path, array('controller' => 'content', 'action' => 'download'));
             $m->createRegs();
 
@@ -592,7 +592,7 @@ class RecognitionTest extends TestCase
 
     public function testPathBackwardsWithController()
     {
-        $m = new Horde_Routes_Mapper();
+        $m = new Mapper();
         $m->connect('*url/login', array('controller' => 'content', 'action' => 'check_access'));
         $m->connect('*url/:controller', array('action' => 'view'));
         $m->createRegs(array('content', 'admin/user'));
@@ -626,7 +626,7 @@ class RecognitionTest extends TestCase
 
     public function testPathBackwardsWithControllerAndSplits()
     {
-        $m = new Horde_Routes_Mapper();
+        $m = new Mapper();
         $m->connect('*(url)/login', array('controller' => 'content', 'action' => 'check_access'));
         $m->connect('*(url)/:(controller)', array('action' => 'view'));
         $m->createRegs(array('content', 'admin/user'));
@@ -660,7 +660,7 @@ class RecognitionTest extends TestCase
 
     public function testController()
     {
-        $m = new Horde_Routes_Mapper();
+        $m = new Mapper();
         $m->connect('hi/:controller', array('action' => 'hi'));
         $m->createRegs(array('content', 'admin/user'));
 
@@ -680,7 +680,7 @@ class RecognitionTest extends TestCase
 
     public function testStandardRoute()
     {
-        $m = new Horde_Routes_Mapper();
+        $m = new Mapper();
         $m->connect(':controller/:action/:id');
         $m->createRegs(array('content', 'admin/user'));
 
@@ -708,7 +708,7 @@ class RecognitionTest extends TestCase
 
     public function testStandardRouteWithGaps()
     {
-        $m = new Horde_Routes_Mapper();
+        $m = new Mapper();
         $m->connect(':controller/:action/:(id).py');
         $m->createRegs(array('content', 'admin/user'));
 
@@ -724,7 +724,7 @@ class RecognitionTest extends TestCase
 
     public function testStandardRouteWithGapsAndDomains()
     {
-        $m = new Horde_Routes_Mapper();
+        $m = new Mapper();
         $m->connect('manage/:domain.:ext', array('controller' => 'admin/user', 'action' => 'view',
                                                  'ext' => 'html'));
         $m->connect(':controller/:action/:id');
@@ -756,7 +756,7 @@ class RecognitionTest extends TestCase
 
     public function testStandardWithDomains()
     {
-        $m = new Horde_Routes_Mapper();
+        $m = new Mapper();
         $m->connect('manage/:domain', array('controller' => 'domains', 'action' => 'view'));
         $m->createRegs(array('domains'));
 
@@ -766,7 +766,7 @@ class RecognitionTest extends TestCase
 
     public function testDefaultRoute()
     {
-        $m = new Horde_Routes_Mapper();
+        $m = new Mapper();
         $m->connect('', array('controller' => 'content', 'action' => 'index'));
         $m->createRegs(array('content'));
 
@@ -781,7 +781,7 @@ class RecognitionTest extends TestCase
 
     public function testDynamicWithPrefix()
     {
-        $m = new Horde_Routes_Mapper();
+        $m = new Mapper();
         $m->prefix = '/blog';
         $m->connect(':controller/:action/:id');
         $m->connect('', array('controller' => 'content', 'action' => 'index'));
@@ -810,7 +810,7 @@ class RecognitionTest extends TestCase
 
     public function testDynamicWithMultipleAndPrefix()
     {
-        $m = new Horde_Routes_Mapper();
+        $m = new Mapper();
         $m->prefix = '/blog';
         $m->connect(':controller/:action/:id');
         $m->connect('home/:action', array('controller' => 'archive'));
@@ -843,7 +843,7 @@ class RecognitionTest extends TestCase
 
     public function testSplitsWithExtension()
     {
-        $m = new Horde_Routes_Mapper();
+        $m = new Mapper();
         $m->connect('hi/:(action).html', array('controller' => 'content'));
         $m->createRegs();
 
@@ -861,7 +861,7 @@ class RecognitionTest extends TestCase
 
     public function testSplitsWithDashes()
     {
-        $m = new Horde_Routes_Mapper();
+        $m = new Mapper();
         $m->connect('archives/:(year)-:(month)-:(day).html',
                     array('controller' => 'archives', 'action' => 'view'));
         $m->createRegs();
@@ -884,7 +884,7 @@ class RecognitionTest extends TestCase
 
     public function testSplitsPackedWithRegexps()
     {
-        $m = new Horde_Routes_Mapper();
+        $m = new Mapper();
         $m->connect('archives/:(year):(month):(day).html',
                     array('controller' => 'archives', 'action' => 'view',
                           'requirements' => array('year' => '\d{4}', 'month' => '\d{2}',
@@ -911,7 +911,7 @@ class RecognitionTest extends TestCase
 
     public function testSplitsWithSlashes()
     {
-        $m = new Horde_Routes_Mapper();
+        $m = new Mapper();
         $m->connect(':name/:(action)-:(day)', array('controller' => 'content'));
 
         $this->assertNull($m->match('/something'));
@@ -928,7 +928,7 @@ class RecognitionTest extends TestCase
 
     public function testSplitsWithSlashesAndDefault()
     {
-        $m = new Horde_Routes_Mapper();
+        $m = new Mapper();
         $m->connect(':name/:(action)-:(id)', array('controller' => 'content'));
         $m->createRegs();
 
@@ -946,18 +946,18 @@ class RecognitionTest extends TestCase
 
     public function testNoRegMake()
     {
-        $m = new Horde_Routes_Mapper();
+        $m = new Mapper();
         $m->connect(':name/:(action)-:(id)', array('controller' => 'content'));
         $m->controllerScan = false;
         
-        $this->expectException('Horde_Routes_Exception');
+        $this->expectException('Exception');
         $m->match('/group/view-3');
         $this->assertRegExp('/must generate the regular expressions/i', $e->getMessage());
     }
 
     public function testRoutematch()
     {
-        $m = new Horde_Routes_Mapper();
+        $m = new Mapper();
         $m->connect(':controller/:action/:id');
         $m->createRegs(array('content'));
         $route = $m->matchList[0];
@@ -972,7 +972,7 @@ class RecognitionTest extends TestCase
 
     public function testRoutematchDebug()
     {
-        $m = new Horde_Routes_Mapper();
+        $m = new Mapper();
         $m->connect(':controller/:action/:id');
         $m->debug = true;
         $m->createRegs(array('content'));
@@ -992,7 +992,7 @@ class RecognitionTest extends TestCase
 
     public function testMatchDebug()
     {
-        $m = new Horde_Routes_Mapper();
+        $m = new Mapper();
         $m->connect('nowhere', 'http://nowhere.com/', array('_static' => true));
         $m->connect(':controller/:action/:id');
         $m->debug = true;
@@ -1013,7 +1013,7 @@ class RecognitionTest extends TestCase
 
     public function testResourceCollection()
     {
-        $m = new Horde_Routes_Mapper();
+        $m = new Mapper();
         $m->resource('message', 'messages');
         $m->createRegs(array('messages'));
 
@@ -1030,7 +1030,7 @@ class RecognitionTest extends TestCase
 
     public function testFormattedResourceCollection()
     {
-        $m = new Horde_Routes_Mapper();
+        $m = new Mapper();
         $m->resource('message', 'messages');
         $m->createRegs(array('messages'));
 
@@ -1049,7 +1049,7 @@ class RecognitionTest extends TestCase
 
     public function testResourceMember()
     {
-        $m = new Horde_Routes_Mapper();
+        $m = new Mapper();
         $m->resource('message', 'messages');
         $m->createRegs(array('messages'));
 
@@ -1076,7 +1076,7 @@ class RecognitionTest extends TestCase
 
     public function testFormattedResourceMember()
     {
-        $m = new Horde_Routes_Mapper();
+        $m = new Mapper();
         $m->resource('message', 'messages');
         $m->createRegs(array('messages'));
 
