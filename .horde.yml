@@ -39,6 +39,12 @@ dependencies:
       horde/util: ^3
       horde/support: ^3
       psr/http-message: ^1
-  optional:
+  dev:
     composer:
       horde/test: ^3
+      horde/cache: ^3
+      horde/controller: ^3
+  optional:
+    composer:
+      horde/cache: ^3
+      horde/controller: ^3
