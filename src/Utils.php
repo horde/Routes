@@ -11,10 +11,13 @@
  * @license http://www.horde.org/licenses/bsd BSD
  * @package Routes
  */
+
 namespace Horde\Routes;
+
 use RecursiveIteratorIterator;
 use RecursiveDirectoryIterator;
 use Horde_String;
+
 /**
  * Utility functions for use in templates and controllers
  *
@@ -94,7 +97,7 @@ class Utils
      * be added if present, otherwise the string will be used as the url with
      * keyword args becoming GET query args.
      */
-    public function urlFor($first = array(), $second = array())
+    public function urlFor($first = [], $second = [])
     {
         if (is_array($first)) {
             // urlFor(array('controller' => 'foo', ...))
@@ -108,14 +111,14 @@ class Utils
             $kargs = $second;
         }
 
-        $anchor    = isset($kargs['anchor'])    ? $kargs['anchor']    : null;
-        $host      = isset($kargs['host'])      ? $kargs['host']      : null;
-        $protocol  = isset($kargs['protocol'])  ? $kargs['protocol']  : null;
-        $qualified = isset($kargs['qualified']) ? $kargs['qualified'] : null;
+        $anchor    = $kargs['anchor'] ?? null;
+        $host      = $kargs['host'] ?? null;
+        $protocol  = $kargs['protocol'] ?? null;
+        $qualified = $kargs['qualified'] ?? null;
         unset($kargs['qualified']);
 
         // Remove special words from kargs, convert placeholders
-        foreach (array('anchor', 'host', 'protocol') as $key) {
+        foreach (['anchor', 'host', 'protocol'] as $key) {
             if (array_key_exists($key, $kargs)) {
                 unset($kargs[$key]);
             }
@@ -126,7 +129,7 @@ class Utils
         }
 
         $route = null;
-        $routeArgs = array();
+        $routeArgs = [];
         $static = false;
         $encoding = $this->mapper->encoding;
         $environ = $this->mapper->environ;
@@ -158,7 +161,7 @@ class Utils
             if ($static) {
                 if (!empty($kargs)) {
                     $url .= '?';
-                    $query_args = array();
+                    $query_args = [];
                     foreach ($kargs as $key => $val) {
                         $query_args[] = urlencode(utf8_decode($key)) . '=' .
                             urlencode(utf8_decode($val));
@@ -170,7 +173,7 @@ class Utils
 
         if (! $static) {
             if ($route) {
-                $routeArgs = array($route);
+                $routeArgs = [$route];
                 $newargs = $route->defaults;
                 foreach ($kargs as $key => $value) {
                     $newargs[$key] = $value;
@@ -203,14 +206,14 @@ class Utils
         }
 
         if (!empty($host) || !empty($qualified) || !empty($protocol)) {
-            $http_host   = isset($environ['HTTP_HOST']) ? $environ['HTTP_HOST'] : null;
-            $server_name = isset($environ['SERVER_NAME']) ? $environ['SERVER_NAME'] : null;
+            $http_host   = $environ['HTTP_HOST'] ?? null;
+            $server_name = $environ['SERVER_NAME'] ?? null;
             $fullhost = !is_null($http_host) ? $http_host : $server_name;
 
             if (empty($host) && empty($qualified)) {
                 $host = explode(':', $fullhost);
                 $host = $host[0];
-            } else if (empty($host)) {
+            } elseif (empty($host)) {
                 $host = $fullhost;
             }
             if (empty($protocol)) {
@@ -241,7 +244,7 @@ class Utils
      * @param   mixed  $second  Second argument in varargs
      * @return  mixed           Result of redirect callback
      */
-    public function redirectTo($first = array(), $second = array())
+    public function redirectTo($first = [], $second = [])
     {
         $target = $this->urlFor($first, $second);
         return call_user_func($this->redirect, $target);
@@ -250,11 +253,11 @@ class Utils
     /**
      * Pretty-print a listing of the routes connected to the mapper.
      *
-     * @param  stream|null  $stream  Output stream for printing (optional)
+     * @param  resource|null  $stream  Output stream resource for printing (optional)
      * @param  string|null  $eol     Line ending (optional)
      * @return void
      */
-    public function printRoutes($stream = null, $eol = PHP_EOL)
+    public function printRoutes($stream = null, ?string $eol = PHP_EOL)
     {
         $printer = new Printer($this->mapper);
         $printer->printRoutes($stream, $eol);
@@ -276,7 +279,7 @@ class Utils
      */
     public static function controllerScan($dirname = null, $prefix = '')
     {
-        $controllers = array();
+        $controllers = [];
 
         if ($dirname === null) {
             return $controllers;
@@ -285,7 +288,8 @@ class Utils
         $baseregexp = preg_quote($dirname . DIRECTORY_SEPARATOR, '/');
 
         foreach (new RecursiveIteratorIterator(
-                 new RecursiveDirectoryIterator($dirname)) as $entry) {
+            new RecursiveDirectoryIterator($dirname)
+        ) as $entry) {
             if (!$entry->isFile()) {
                 continue;
             }
@@ -298,8 +302,12 @@ class Utils
 
             // PrepareController -> prepare_controller -> prepare
             $controller = Horde_String::lower(
-                preg_replace('/([a-z])([A-Z])/',
-                             "\${1}_\${2}", $controller));
+                preg_replace(
+                    '/([a-z])([A-Z])/',
+                    "\${1}_\${2}",
+                    $controller
+                )
+            );
             if (preg_match('/_controller$/', $controller)) {
                 $controller = substr($controller, 0, -(strlen('_controller')));
             }
@@ -311,7 +319,7 @@ class Utils
             $controllers[] = $prefix . $controller;
         }
 
-        usort($controllers, array('Horde_Routes_Utils', 'longestFirst'));
+        usort($controllers, ['Horde_Routes_Utils', 'longestFirst']);
 
         return $controllers;
     }
@@ -325,7 +333,7 @@ class Utils
     {
         if ($this->mapper->explicit && $this->mapper->subDomains) {
             return $this->_subdomainCheck($kargs);
-        } else if ($this->mapper->explicit) {
+        } elseif ($this->mapper->explicit) {
             return $kargs;
         }
 
@@ -335,7 +343,7 @@ class Utils
             // If the controller name starts with '/', ignore route memory
             $kargs['controller'] = substr($kargs['controller'], 1);
             return $kargs;
-        } else if (!empty($controllerName) && !array_key_exists('action', $kargs)) {
+        } elseif (!empty($controllerName) && !array_key_exists('action', $kargs)) {
             // Fill in an action if we don't have one, but have a controller
             $kargs['action'] = 'index';
         }
@@ -344,12 +352,12 @@ class Utils
 
         // Remove keys from memory and kargs if kargs has them as null
         foreach ($kargs as $key => $value) {
-             if ($value === null) {
-                 unset($kargs[$key]);
-                 if (array_key_exists($key, $memoryKargs)) {
-                     unset($memoryKargs[$key]);
-                 }
-             }
+            if ($value === null) {
+                unset($kargs[$key]);
+                if (array_key_exists($key, $memoryKargs)) {
+                    unset($memoryKargs[$key]);
+                }
+            }
         }
 
         // Merge the new args on top of the memory args
@@ -376,8 +384,8 @@ class Utils
             unset($kargs['subDomain']);
 
             $environ = $this->mapper->environ;
-            $http_host   = isset($environ['HTTP_HOST']) ? $environ['HTTP_HOST'] : null;
-            $server_name = isset($environ['SERVER_NAME']) ? $environ['SERVER_NAME'] : null;
+            $http_host   = $environ['HTTP_HOST'] ?? null;
+            $server_name = $environ['SERVER_NAME'] ?? null;
             $fullhost = !is_null($http_host) ? $http_host : $server_name;
 
             $hostmatch = explode(':', $fullhost);
@@ -393,7 +401,7 @@ class Utils
             if ($subdomain && (substr($host, 0, strlen($subdomain)) != $subdomain)
                     && (! in_array($subdomain, $this->mapper->subDomainsIgnore))) {
                 $kargs['_host'] = $subdomain . '.' . $domain . $port;
-            } else if (($subdomain === null || in_array($subdomain, $this->mapper->subDomainsIgnore))
+            } elseif (($subdomain === null || in_array($subdomain, $this->mapper->subDomainsIgnore))
                     && $domain != $host) {
                 $kargs['_host'] = $domain . $port;
             }

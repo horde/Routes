@@ -11,9 +11,12 @@
  * @license http://www.horde.org/licenses/bsd BSD
  * @package Routes
  */
+
 namespace Horde\Routes;
-use \Horde_Cache;
-use \Horde_String;
+
+use Horde_Cache;
+use Horde_String;
+
 /**
  * The mapper class handles URL generation and recognition for web applications
  *
@@ -71,7 +74,7 @@ class Mapper
      * Array of sub-domains to ignore if using sub-domain support
      * @var array
      */
-    public $subDomainsIgnore = array();
+    public $subDomainsIgnore = [];
 
     /**
      * Append trailing slash ('/') to generated routes?
@@ -89,19 +92,19 @@ class Mapper
      * Array of connected routes
      * @var array
      */
-    public $matchList = array();
+    public $matchList = [];
 
     /**
      * Array of connected named routes, indexed by name
      * @var array
      */
-    public $routeNames = array();
+    public $routeNames = [];
 
     /**
      * Cache of URLs used in generate()
      * @var array
      */
-    public $urlCache = array();
+    public $urlCache = [];
 
     /**
      * Encoding of routes URLs (not yet supported)
@@ -126,14 +129,14 @@ class Mapper
      * keys that each route could utilize.
      * @var array
      */
-    public $maxKeys = array();
+    public $maxKeys = [];
 
     /**
      * Array of all connected routes, indexed by the serialized array of the
      * minimum keys that each route needs.
      * @var array
      */
-    public $minKeys = array();
+    public $minKeys = [];
 
     /**
      * Utility functions like urlFor() and redirectTo() for this Mapper
@@ -163,13 +166,13 @@ class Mapper
      * Have generation hashes been created for all connected routes?
      * @var boolean
      */
-    protected $_createdGens = false;
+    protected $createdGens = false;
 
     /**
      * Generation hashes created for all connected routes
      * @var array
      */
-    protected $_gendict;
+    protected $gendict;
 
     /**
      * Temporary variable used to pass array of keys into _keysort() callback
@@ -207,14 +210,14 @@ class Mapper
      *      array('controller'=>'content', 'action'=>'index', 'id'=>null)?
      *      When set to True, these will not be added to route connections.
      */
-    public function __construct($kargs = array())
+    public function __construct($kargs = [])
     {
-        $callback = array(Utils::class, 'controllerScan');
+        $callback = [Utils::class, 'controllerScan'];
 
-        $defaultKargs = array('controllerScan' => $callback,
+        $defaultKargs = ['controllerScan' => $callback,
                               'directory'      => null,
                               'alwaysScan'     => false,
-                              'explicit'       => false);
+                              'explicit'       => false, ];
         $kargs = array_merge($defaultKargs, $kargs);
 
         // Most default assignments that were in the construct in the Python
@@ -257,7 +260,7 @@ class Mapper
             $routeName = $first;
             $routePath = $second;
             $kargs     = $third;
-        } else if ($second !== null) {
+        } elseif ($second !== null) {
             // 2 args given
             if (is_array($second)) {
                 // connect(':/controller/:action/:id', array('kargs'=>'here'))
@@ -268,14 +271,14 @@ class Mapper
                 // connect('route_name', ':/controller/:action/:id')
                 $routeName = $first;
                 $routePath = $second;
-                $kargs     = array();
+                $kargs     = [];
             }
         } else {
             // 1 arg given
             // connect('/:controller/:action/:id')
             $routeName = null;
             $routePath = $first;
-            $kargs     = array();
+            $kargs     = [];
         }
 
         if (!in_array('_explicit', $kargs)) {
@@ -309,10 +312,10 @@ class Mapper
         }
 
         if (!$exists) {
-            $this->maxKeys[serialize($route->maxKeys)] = array($route);
+            $this->maxKeys[serialize($route->maxKeys)] = [$route];
         }
 
-        $this->_createdGens = false;
+        $this->createdGens = false;
     }
 
     /**
@@ -337,8 +340,8 @@ class Mapper
             $cacheKey = 'horde.routes.' . sha1(serialize($this->matchList));
             $cachedDict = $this->cache->get($cacheKey, $this->cacheLifetime);
             if ($gendict = @unserialize($cachedDict)) {
-                $this->_gendict = $gendict;
-                $this->_createdGens = true;
+                $this->gendict = $gendict;
+                $this->createdGens = true;
                 return;
             }
         }
@@ -347,7 +350,7 @@ class Mapper
         // list iteration testing with foreach.  We include the '*' in the
         // case that a generate contains a controller/action that has no
         // hardcodes.
-        $actionList = $controllerList = array('*' => true);
+        $actionList = $controllerList = ['*' => true];
 
         // Assemble all the hardcoded/defaulted actions/controllers used
         foreach ($this->matchList as $route) {
@@ -368,7 +371,7 @@ class Mapper
         // Go through our list again, assemble the controllers/actions we'll
         // add each route to. If its hardcoded, we only add it to that dict key.
         // Otherwise we add it to every hardcode since it can be changed.
-        $gendict = array();  // Our generated two-deep hash
+        $gendict = [];  // Our generated two-deep hash
         foreach ($this->matchList as $route) {
             if ($route->static) {
                 continue;
@@ -376,23 +379,23 @@ class Mapper
             $clist = $controllerList;
             $alist = $actionList;
             if (in_array('controller', $route->hardCoded)) {
-                $clist = array($route->defaults['controller']);
+                $clist = [$route->defaults['controller']];
             }
             if (in_array('action', $route->hardCoded)) {
-                $alist = array($route->defaults['action']);
+                $alist = [$route->defaults['action']];
             }
             foreach ($clist as $controller) {
                 foreach ($alist as $action) {
                     if (in_array($controller, array_keys($gendict))) {
                         $actiondict = &$gendict[$controller];
                     } else {
-                        $gendict[$controller] = array();
+                        $gendict[$controller] = [];
                         $actiondict = &$gendict[$controller];
                     }
-                    if (in_array($action, array_keys($actiondict))) {
+                    if (array_key_exists($action, $actiondict)) {
                         $tmp = $actiondict[$action];
                     } else {
-                        $tmp = array(array(), array());
+                        $tmp = [[], []];
                     }
                     $tmp[0][] = $route;
                     $actiondict[$action] = $tmp;
@@ -400,7 +403,7 @@ class Mapper
             }
         }
         if (!isset($gendict['*'])) {
-            $gendict['*'] = array();
+            $gendict['*'] = [];
         }
 
         // Write to the cache
@@ -408,8 +411,8 @@ class Mapper
             $this->cache->set($cacheKey, serialize($gendict), $this->cacheLifetime);
         }
 
-        $this->_gendict = $gendict;
-        $this->_createdGens = true;
+        $this->gendict = $gendict;
+        $this->createdGens = true;
     }
 
     /**
@@ -464,7 +467,7 @@ class Mapper
             $this->createRegs();
         }
 
-        $matchLog = array();
+        $matchLog = [];
         if (!empty($this->prefix)) {
             if (preg_match('@' . $this->_regPrefix . '@', $url)) {
                 $url = preg_replace('@' . $this->_regPrefix . '@', '$1', $url);
@@ -472,31 +475,31 @@ class Mapper
                     $url = '/';
                 }
             } else {
-                return array(null, null, $matchLog);
+                return [null, null, $matchLog];
             }
         }
 
         foreach ($this->matchList as $route) {
             if ($route->static) {
                 if ($this->debug) {
-                    $matchLog[] = array('route' => $route, 'static' => true);
+                    $matchLog[] = ['route' => $route, 'static' => true];
                 }
                 continue;
             }
 
-            $match = $route->match($url, array('environ'          => $this->environ,
+            $match = $route->match($url, ['environ'          => $this->environ,
                                                'subDomains'       => $this->subDomains,
                                                'subDomainsIgnore' => $this->subDomainsIgnore,
-                                               'domainMatch'      => $this->domainMatch));
+                                               'domainMatch'      => $this->domainMatch, ]);
             if ($this->debug) {
-                $matchLog[] = array('route' => $route, 'regexp' => (bool)$match);
+                $matchLog[] = ['route' => $route, 'regexp' => (bool)$match];
             }
             if ($match) {
-                return array($match, $route, $matchLog);
+                return [$match, $route, $matchLog];
             }
         }
 
-        return array(null, null, $matchLog);
+        return [null, null, $matchLog];
     }
 
     /**
@@ -507,9 +510,10 @@ class Mapper
      *   $resultdict = $m->match('/joe/sixpack');
      *
      * @param  string      $url  URL to match
-     * @param  array|null        Array if matched, otherwise null
+     *
+     * @return  array|null        Array if matched, otherwise null
      */
-    public function match($url)
+    public function match(string $url): ?array
     {
         if (!strlen($url)) {
             $msg = 'No URL provided, the minimum URL necessary to match is "/"';
@@ -519,7 +523,7 @@ class Mapper
         $result = $this->_match($url);
 
         if ($this->debug) {
-            return array($result[0], $result[1], $result[2]);
+            return [$result[0], $result[1], $result[2]];
         }
 
         return ($result[0]) ? $result[0] : null;
@@ -534,17 +538,18 @@ class Mapper
      *   list($resultdict, $resultobj) = $m->match('/joe/sixpack');
      *
      * @param  string      $url  URL to match
-     * @param  array|null        Array if matched, otherwise null
+     *
+     * @return  array|null        Array if matched, otherwise null
      */
-    public function routematch($url)
+    public function routematch(string $url): ?array
     {
         $result = $this->_match($url);
 
         if ($this->debug) {
-            return array($result[0], $result[1], $result[2]);
+            return [$result[0], $result[1], $result[2]];
         }
 
-        return ($result[0]) ? array($result[0], $result[1]) : null;
+        return ($result[0]) ? [$result[0], $result[1]] : null;
     }
 
     /**
@@ -554,22 +559,23 @@ class Mapper
      * Usage:
      *   $m->generate(array('controller' => 'content', 'action' => 'view', 'id' => 10));
      *
-     * @param   array        $routeArgs  Optional explicit route list
-     * @param   array        $kargs      Keyword arguments (key/value pairs)
+     * @param   array|null        $first  Optional explicit route list
+     * @param   array|null        $second      Keyword arguments (key/value pairs)
+     *
      * @return  null|string              URL text or null
      */
-    public function generate($first = null, $second = null)
+    public function generate(?array $first = null, ?array $second = null): ?string
     {
         if ($second) {
             $routeArgs = $first;
-            $kargs = is_null($second) ? array() : $second;
+            $kargs = is_null($second) ? [] : $second;
         } else {
-            $routeArgs = array();
-            $kargs = is_null($first) ? array() : $first;
+            $routeArgs = [];
+            $kargs = is_null($first) ? [] : $first;
         }
 
         // Generate ourself if we haven't already
-        if (!$this->_createdGens) {
+        if (!$this->createdGens) {
             $this->_createGens();
         }
 
@@ -587,8 +593,8 @@ class Mapper
         }
 
         $environ = $this->environ;
-        $controller = isset($kargs['controller']) ? $kargs['controller'] : null;
-        $action = isset($kargs['action']) ? $kargs['action'] : null;
+        $controller = $kargs['controller'] ?? null;
+        $action = $kargs['action'] ?? null;
 
         // If the URL didn't depend on the SCRIPT_NAME, we'll cache it
         // keyed by just the $kargs; otherwise we need to cache it with
@@ -601,7 +607,7 @@ class Mapper
         }
 
         // Check the URL cache to see if it exists, use it if it does.
-        foreach (array($cacheKey, $cacheKeyScriptName) as $key) {
+        foreach ([$cacheKey, $cacheKeyScriptName] as $key) {
             if (in_array($key, array_keys($this->urlCache))) {
                 return $this->urlCache[$key];
             }
@@ -610,9 +616,9 @@ class Mapper
         if ($routeArgs) {
             $keyList = $routeArgs;
         } else {
-            $actionList = isset($this->_gendict[$controller]) ? $this->_gendict[$controller] : $this->_gendict['*'];
-            list($keyList, $sortCache) =
-                (isset($actionList[$action])) ? $actionList[$action] : ((isset($actionList['*'])) ? $actionList['*'] : array(null, null));
+            $actionList = $this->gendict[$controller] ?? $this->gendict['*'];
+            [$keyList, $sortCache] =
+                (isset($actionList[$action])) ? $actionList[$action] : ((isset($actionList['*'])) ? $actionList['*'] : [null, null]);
             if ($keyList === null) {
                 return null;
             }
@@ -639,7 +645,7 @@ class Mapper
         foreach ($keyList as $route) {
             $fail = false;
             foreach ($route->hardCoded as $key) {
-                $kval = isset($kargs[$key]) ? $kargs[$key] : null;
+                $kval = $kargs[$key] ?? null;
                 if ($kval == null) {
                     continue;
                 }
@@ -832,14 +838,14 @@ class Mapper
      * @param  array   $kargs           Keyword arguments (see above)
      * @return void
      */
-    public function resource($memberName, $collectionName, $kargs = array())
+    public function resource($memberName, $collectionName, $kargs = [])
     {
-        $defaultKargs = array('collection' => array(),
-                              'member' => array(),
-                              'new' => array(),
+        $defaultKargs = ['collection' => [],
+                              'member' => [],
+                              'new' => [],
                               'pathPrefix' => null,
                               'namePrefix' => null,
-                              'parentResource' => null);
+                              'parentResource' => null, ];
         $kargs = array_merge($defaultKargs, $kargs);
 
         // Generate ``pathPrefix`` if ``pathPrefix`` wasn't specified and
@@ -870,23 +876,23 @@ class Mapper
 
         // inline python method swap() moved below as _swap()
 
-        $collectionMethods = $this->_swap($kargs['collection'], array());
-        $memberMethods = $this->_swap($kargs['member'], array());
-        $newMethods = $this->_swap($kargs['new'], array());
+        $collectionMethods = $this->_swap($kargs['collection'], []);
+        $memberMethods = $this->_swap($kargs['member'], []);
+        $newMethods = $this->_swap($kargs['new'], []);
 
         // Insert create, update, and destroy methods
         if (!isset($collectionMethods['POST'])) {
-            $collectionMethods['POST'] = array();
+            $collectionMethods['POST'] = [];
         }
         array_unshift($collectionMethods['POST'], 'create');
 
         if (!isset($memberMethods['PUT'])) {
-            $memberMethods['PUT'] = array();
+            $memberMethods['PUT'] = [];
         }
         array_unshift($memberMethods['PUT'], 'update');
 
         if (!isset($memberMethods['DELETE'])) {
-            $memberMethods['DELETE'] = array();
+            $memberMethods['DELETE'] = [];
         }
         array_unshift($memberMethods['DELETE'], 'delete');
 
@@ -902,12 +908,12 @@ class Mapper
         $newPath = $path . '/new';
         $memberPath = $path . '/:(id)';
 
-        $options = array(
-            'controller' => (isset($kargs['controller']) ? $kargs['controller'] : $controller),
+        $options = [
+            'controller' => ($kargs['controller'] ?? $controller),
             '_memberName'     => $memberName,
             '_collectionName' => $collectionName,
-            '_parentResource' => $kargs['parentResource']
-        );
+            '_parentResource' => $kargs['parentResource'],
+        ];
 
         // inline python method requirements_for() moved below as _requirementsFor()
 
@@ -920,12 +926,16 @@ class Mapper
                 $routeOptions['action'] = $action;
                 $routeName = sprintf('%s%s_%s', $kargs['namePrefix'], $action, $collectionName);
 
-                $this->connect($routeName,
-                               sprintf("%s/%s", $collectionPath, $action),
-                               $routeOptions);
-                $this->connect('formatted_' . $routeName,
-                               sprintf("%s/%s.:(format)", $collectionPath, $action),
-                               $routeOptions);
+                $this->connect(
+                    $routeName,
+                    sprintf("%s/%s", $collectionPath, $action),
+                    $routeOptions
+                );
+                $this->connect(
+                    'formatted_' . $routeName,
+                    sprintf("%s/%s.:(format)", $collectionPath, $action),
+                    $routeOptions
+                );
             }
             if ($primary) {
                 $routeOptions['action'] = $primary;
@@ -936,14 +946,18 @@ class Mapper
 
         // Specifically add in the built-in 'index' collection method and its
         // formatted version
-        $connectkargs = array('action' => 'index',
-                              'conditions' => array('method' => array('GET')));
-        $this->connect($kargs['namePrefix'] . $collectionName,
-                       $collectionPath,
-                       array_merge($connectkargs, $options));
-        $this->connect('formatted_' . $kargs['namePrefix'] . $collectionName,
-                       $collectionPath . '.:(format)',
-                       array_merge($connectkargs, $options));
+        $connectkargs = ['action' => 'index',
+                              'conditions' => ['method' => ['GET']], ];
+        $this->connect(
+            $kargs['namePrefix'] . $collectionName,
+            $collectionPath,
+            array_merge($connectkargs, $options)
+        );
+        $this->connect(
+            'formatted_' . $kargs['namePrefix'] . $collectionName,
+            $collectionPath . '.:(format)',
+            array_merge($connectkargs, $options)
+        );
 
         // Add the routes that deal with new resource methods
         foreach ($newMethods as $method => $lst) {
@@ -968,8 +982,11 @@ class Mapper
                     $path = sprintf('%s/%s.:(format)', $newPath, $action);
                 }
 
-                $this->connect('formatted_' . $kargs['namePrefix'] . $name,
-                               $path, $routeOptions);
+                $this->connect(
+                    'formatted_' . $kargs['namePrefix'] . $name,
+                    $path,
+                    $routeOptions
+                );
             }
         }
 
@@ -978,9 +995,9 @@ class Mapper
         // Add the routes that deal with member methods of a resource
         foreach ($memberMethods as $method => $lst) {
             $routeOptions = $this->_requirementsFor($method, $options);
-            $routeOptions['requirements'] = array('id' => $requirementsRegexp);
+            $routeOptions['requirements'] = ['id' => $requirementsRegexp];
 
-            if (!in_array($method, array('POST', 'GET', 'any'))) {
+            if (!in_array($method, ['POST', 'GET', 'any'])) {
                 $primary = array_shift($lst);
             } else {
                 $primary = null;
@@ -988,12 +1005,16 @@ class Mapper
 
             foreach ($lst as $action) {
                 $routeOptions['action'] = $action;
-                $this->connect(sprintf('%s%s_%s', $kargs['namePrefix'], $action, $memberName),
-                               sprintf('%s/%s', $memberPath, $action),
-                               $routeOptions);
-                $this->connect(sprintf('formatted_%s%s_%s', $kargs['namePrefix'], $action, $memberName),
-                               sprintf('%s/%s.:(format)', $memberPath, $action),
-                               $routeOptions);
+                $this->connect(
+                    sprintf('%s%s_%s', $kargs['namePrefix'], $action, $memberName),
+                    sprintf('%s/%s', $memberPath, $action),
+                    $routeOptions
+                );
+                $this->connect(
+                    sprintf('formatted_%s%s_%s', $kargs['namePrefix'], $action, $memberName),
+                    sprintf('%s/%s.:(format)', $memberPath, $action),
+                    $routeOptions
+                );
             }
 
             if ($primary) {
@@ -1006,10 +1027,13 @@ class Mapper
         // Specifically add the member 'show' method
         $routeOptions = $this->_requirementsFor('GET', $options);
         $routeOptions['action'] = 'show';
-        $routeOptions['requirements'] = array('id' => $requirementsRegexp);
+        $routeOptions['requirements'] = ['id' => $requirementsRegexp];
         $this->connect($kargs['namePrefix'] . $memberName, $memberPath, $routeOptions);
-        $this->connect('formatted_' . $kargs['namePrefix'] . $memberName,
-                       $memberPath . '.:(format)', $routeOptions);
+        $this->connect(
+            'formatted_' . $kargs['namePrefix'] . $memberName,
+            $memberPath . '.:(format)',
+            $routeOptions
+        );
     }
 
     /**
@@ -1019,12 +1043,13 @@ class Mapper
      *
      * @param  string  $method   Request method ('get', 'post', etc.) or 'any'
      * @param  array   $options  Assoc. array to populate with 'conditions' key
-     * @return                   $options populated
+     *
+     * @return mixed[] $options populated
      */
-    protected function _requirementsFor($meth, $options)
+    protected function _requirementsFor(string $method, array $options): array
     {
-        if ($meth != 'any') {
-            $options['conditions'] = array('method' => array(Horde_String::upper($meth)));
+        if ($method != 'any') {
+            $options['conditions'] = ['method' => [Horde_String::upper($method)]];
         }
         return $options;
     }
@@ -1043,7 +1068,7 @@ class Mapper
         foreach ($dct as $key => $val) {
             $newkey = Horde_String::upper($val);
             if (!isset($newdct[$newkey])) {
-                $newdct[$newkey] = array();
+                $newdct[$newkey] = [];
             }
             $newdct[$newkey][] = $key;
         }
@@ -1068,7 +1093,9 @@ class Mapper
     protected function _keysort(&$array)
     {
         // arrays of size < 2 require no action.
-        if (count($array) < 2) { return; }
+        if (count($array) < 2) {
+            return;
+        }
 
         // split the array in half
         $halfway = count($array) / 2;
@@ -1086,21 +1113,24 @@ class Mapper
         }
 
         // merge the two sorted arrays into a single sorted array
-        $array = array();
+        $array = [];
         $ptr1 = 0;
         $ptr2 = 0;
         while ($ptr1 < count($array1) && $ptr2 < count($array2)) {
             if ($this->_keycmp($array1[$ptr1], $array2[$ptr2]) < 1) {
                 $array[] = $array1[$ptr1++];
-            }
-            else {
+            } else {
                 $array[] = $array2[$ptr2++];
             }
         }
 
         // merge the remainder
-        while ($ptr1 < count($array1)) { $array[] = $array1[$ptr1++]; }
-        while ($ptr2 < count($array2)) { $array[] = $array2[$ptr2++]; }
+        while ($ptr1 < count($array1)) {
+            $array[] = $array1[$ptr1++];
+        }
+        while ($ptr2 < count($array2)) {
+            $array[] = $array2[$ptr2++];
+        }
         return;
     }
 
@@ -1167,9 +1197,9 @@ class Mapper
     /**
      * Equivalent of Python's cmp() function.
      *
-     * @param  integer|float  $a  First item to compare
-     * @param  integer|flot   $b  Second item to compare
-     * @param  integer            Result of comparison
+     * @param  int|float  $a  First item to compare
+     * @param  int|float   $b  Second item to compare
+     * @return  int       Result of comparison
      */
     protected function _cmp($a, $b)
     {
@@ -1198,6 +1228,4 @@ class Mapper
         }
         return $name;
     }
-
 }
-

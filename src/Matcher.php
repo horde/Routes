@@ -9,10 +9,12 @@
  * @author   Gunnar Wrobel <wrobel@pardus.de>
  * @license  http://www.horde.org/licenses/lgpl21 LGPL 2.1
  */
+
 namespace Horde\Routes;
-use \Horde_Controller_Request;
-use \Horde_Support_Array;
-use \Psr\Http\Message\ServerRequestInterface;
+
+use Horde_Controller_Request;
+use Horde_Support_Array;
+use Psr\Http\Message\ServerRequestInterface;
 
 /**
  * Generates the match dictionary for the incoming request.
@@ -35,35 +37,35 @@ class Matcher
      *
      * @var Mapper
      */
-    protected $_mapper;
+    protected Mapper $mapper;
 
     /**
      * The incoming request.
      *
      * @var Horde_Controller_Request|ServerRequestInterface
      */
-    protected $_request;
+    protected $request;
 
     /**
      * The match dictionary.
      *
-     * @var array
+     * @var array|Horde_Support_Array
      */
-    protected $_match_dict;
+    protected $match_dict;
 
     /**
      * Constructor
      *
-     * @param Horde_Routes_Mapper $mapper        The mapper
+     * @param Mapper $mapper        The mapper
      * @param Horde_Controller_Request|ServerRequestInterface $request  A request object that implements a ::getPath()
      *                         method similar to Horde_Controller_Request::
      */
     public function __construct(
         Mapper $mapper,
-        $request)
-    {
-        $this->_mapper = $mapper;
-        $this->_request = $request;
+        $request
+    ) {
+        $this->mapper = $mapper;
+        $this->request = $request;
     }
 
     /**
@@ -73,17 +75,16 @@ class Matcher
      */
     public function getMatchDict()
     {
-        if ($this->_match_dict === null) {
-            $path = $this->_request->getPath();
+        if ($this->match_dict === null) {
+            $path = $this->request->getPath();
             if (($pos = strpos($path, '?')) !== false) {
                 $path = substr($path, 0, $pos);
             }
             if (!$path) {
                 $path = '/';
             }
-            $this->_match_dict = new Horde_Support_Array($this->_mapper->match($path));
+            $this->match_dict = new Horde_Support_Array($this->mapper->match($path));
         }
-        return $this->_match_dict;
+        return $this->match_dict;
     }
-
 }
