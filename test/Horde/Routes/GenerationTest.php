@@ -15,7 +15,7 @@
 /**
  * @package Routes
  */
-class Horde_Routes_GenerationTest extends PHPUnit_Framework_TestCase
+class Horde_Routes_GenerationTest extends Horde_Test_Case
 {
 
     public function testAllStaticNoReqs()
@@ -449,6 +449,8 @@ class Horde_Routes_GenerationTest extends PHPUnit_Framework_TestCase
 
     public function testNoExtrasWithSplits()
     {
+        $this->expectNotToPerformAssertions();
+
         $m = new Horde_Routes_Mapper();
         $m->connect(':(controller)/:(action)/:(id)');
         $m->connect('archive/:(year)/:(month)/:(day)', array('controller' => 'blog', 'action' => 'view',
@@ -920,11 +922,13 @@ class Horde_Routes_GenerationTest extends PHPUnit_Framework_TestCase
 
     public function testUnicode()
     {
+        $this->expectNotToPerformAssertions();
         // php version does not handing decoding
     }
 
     public function testUnicodeStatic()
     {
+        $this->expectNotToPerformAssertions();
         // php version does not handing decoding
     }
 

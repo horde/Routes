@@ -17,10 +17,10 @@ require_once __DIR__ . '/TestHelper.php';
 /**
  * @package Routes
  */
-class Horde_Routes_UtilTest extends PHPUnit_Framework_TestCase
+class Horde_Routes_UtilTest extends Horde_Test_Case
 {
 
-    public function setUp()
+    public function setUp(): void
     {
         $m = new Horde_Routes_Mapper();
         $m->environ = array('HTTP_HOST' => 'www.test.com');

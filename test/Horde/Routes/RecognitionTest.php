@@ -15,7 +15,7 @@
 /**
  * @package Routes
  */
-class Horde_Routes_RecognitionTest extends PHPUnit_Framework_TestCase
+class Horde_Routes_RecognitionTest extends Horde_Test_Case
 {
     public function testRegexpCharEscaping()
     {
@@ -57,11 +57,13 @@ class Horde_Routes_RecognitionTest extends PHPUnit_Framework_TestCase
 
     public function testUnicode()
     {
+        $this->expectNotToPerformAssertions();
         // php version does not handing decoding
     }
 
     public function testDisablingUnicode()
     {
+        $this->expectNotToPerformAssertions();
         // php version does not handing decoding
     }
 

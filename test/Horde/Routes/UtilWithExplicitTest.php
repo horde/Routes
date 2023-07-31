@@ -17,9 +17,9 @@ require_once __DIR__ . '/TestHelper.php';
 /**
  * @package Routes
  */
-class Horde_Routes_UtilWithExplicitTest extends PHPUnit_Framework_TestCase {
+class Horde_Routes_UtilWithExplicitTest extends Horde_Test_Case {
 
-    public function setUp()
+    public function setUp(): void
     {
         $m = new Horde_Routes_Mapper(array('explicit' => true));
         $m->connect('archive/:year/:month/:day',
