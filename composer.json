@@ -28,7 +28,7 @@
         "horde/exception": "^3 || dev-FRAMEWORK_6_0",
         "horde/util": "^3 || dev-FRAMEWORK_6_0",
         "horde/support": "^3 || dev-FRAMEWORK_6_0",
-        "psr/http-message": "^1"
+        "psr/http-message": "^2"
     },
     "require-dev": {
         "horde/test": "^3 || dev-FRAMEWORK_6_0",
