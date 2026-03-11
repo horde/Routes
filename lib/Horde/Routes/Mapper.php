@@ -333,7 +333,7 @@ class Horde_Routes_Mapper
         // Checked for a cached generator dictionary for $this->matchList
         if ($this->cache) {
             $cacheKey = 'horde.routes.' . sha1(serialize($this->matchList));
-            $cachedDict = $cache->get($cacheKey, $this->cacheLifetime);
+            $cachedDict = $this->cache->get($cacheKey, $this->cacheLifetime);
             if ($gendict = @unserialize($cachedDict)) {
                 $this->_gendict = $gendict;
                 $this->_createdGens = true;
