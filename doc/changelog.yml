@@ -9,7 +9,6 @@
     identifier: BSD-2-Clause
     uri: http://www.horde.org/licenses/bsd
   notes: |+
-    
 3.0.0alpha5:
   api: 3.0.0alpha1
   state:
@@ -62,6 +61,38 @@
     identifier: BSD-2-Clause
     uri: http://www.horde.org/licenses/bsd
   notes: ~
+3.0.0-alpha7:
+  api: 3.0.0-alpha7
+  state:
+    release: alpha
+    api: alpha
+  date: 2026-03-11
+  license:
+    identifier: BSD-2-Clause
+    uri: https://spdx.org/licenses/BSD-2-Clause.html
+  notes: |-
+    chore(test): Add more tests and modernize test infrastructure for PHPUnit 11-13
+    Update to PSR-7 2.0
+    Update metadata and workflows for PHP 8 support
+    Add PHP 8 unit tests
+    Fix github actions workflows
+    Pass PHPStan level 3
+    Modernize unit tests for src/ code.
+    Development mode for Routes-3.0.0alpha6
+    Released Routes-3.0.0alpha5
+    Add phpstan on level 1
+    Straight conversion to namespaced equivalent.
+    Fix issue with empty-array stack argument
+    Development mode for Routes-3.0.0alpha5
+    Released Routes-3.0.0alpha4
+    Properly support stacks as current implementation cripples array values.
+    Add CI job for satis repo update
+    Update bootstrap.php
+    no errors left, added ci & phpdoc.yml
+    adjusted bootstrap.php
+    no errors left
+    no errors, five risky tests (no assertions are made)
+    Development mode for Routes-3.0.0alpha5
 2.0.5:
   api: 1.1.0
   state:
@@ -117,17 +148,6 @@
     uri: http://www.horde.org/licenses/bsd
   notes: |
     [mms] Use new Horde_Test layout.
-2.0.0:
-  api: 1.1.0
-  state:
-    release: stable
-    api: stable
-  date: 2012-10-30
-  license:
-    identifier: BSD-2-Clause
-    uri: http://www.horde.org/licenses/bsd
-  notes: |
-    First stable release for Horde 5.
 2.0.0beta1:
   api: 1.1.0
   state:
@@ -150,6 +170,17 @@
     uri: http://www.horde.org/licenses/bsd
   notes: |
     First alpha release for Horde 5.
+2.0.0:
+  api: 1.1.0
+  state:
+    release: stable
+    api: stable
+  date: 2012-10-30
+  license:
+    identifier: BSD-2-Clause
+    uri: http://www.horde.org/licenses/bsd
+  notes: |
+    First stable release for Horde 5.
 1.1.2:
   api: 1.1.0
   state:
@@ -183,17 +214,17 @@
     uri: http://www.horde.org/licenses/bsd
   notes: |
     [mjr] Added Horde_Routes_Matcher helper class.
-1.0.0:
+1.0.0beta1:
   api: 1.0.0
   state:
-    release: stable
-    api: stable
-  date: 2011-04-06
+    release: beta
+    api: beta
+  date: 2011-03-16
   license:
     identifier: BSD-2-Clause
     uri: http://www.horde.org/licenses/bsd
   notes: |
-    First stable release for Horde 4.
+    First beta release for Horde 4.
 1.0.0RC2:
   api: 1.0.0
   state:
@@ -216,17 +247,17 @@
     uri: http://www.horde.org/licenses/bsd
   notes: |
     First release candidate for Horde 4.
-1.0.0beta1:
+1.0.0:
   api: 1.0.0
   state:
-    release: beta
-    api: beta
-  date: 2011-03-16
+    release: stable
+    api: stable
+  date: 2011-04-06
   license:
     identifier: BSD-2-Clause
     uri: http://www.horde.org/licenses/bsd
   notes: |
-    First beta release for Horde 4.
+    First stable release for Horde 4.
 0.4.0:
   api: 0.4.0
   state:
