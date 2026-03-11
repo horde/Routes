@@ -157,8 +157,8 @@ class Horde_Routes_Utils
                     $url .= '?';
                     $query_args = array();
                     foreach ($kargs as $key => $val) {
-                        $query_args[] = urlencode(utf8_decode($key)) . '=' .
-                            urlencode(utf8_decode($val));
+                        $query_args[] = urlencode(mb_convert_encoding($key, 'ISO-8859-1', 'UTF-8')) . '=' .
+                            urlencode(mb_convert_encoding($val, 'ISO-8859-1', 'UTF-8'));
                     }
                     $url .= implode('&', $query_args);
                 }
@@ -413,7 +413,9 @@ class Horde_Routes_Utils
         if ($encoding === null) {
             return str_replace('%2F', '/', urlencode($url));
         } else {
-            return str_replace('%2F', '/', urlencode(utf8_decode($url)));
+            // Convert from UTF-8 to ISO-8859-1 for URL encoding
+            $converted = mb_convert_encoding($url, 'ISO-8859-1', 'UTF-8');
+            return str_replace('%2F', '/', urlencode($converted));
         }
     }
 

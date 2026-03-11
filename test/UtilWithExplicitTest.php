@@ -22,6 +22,9 @@ require_once __DIR__ . '/TestHelper.php';
  */
 class UtilWithExplicitTest extends TestCase {
 
+    protected $mapper;
+    protected $utils;
+
     public function setUp(): void
     {
         $m = new Mapper(array('explicit' => true));

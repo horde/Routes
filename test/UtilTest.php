@@ -24,6 +24,10 @@ require_once __DIR__ . '/TestHelper.php';
 class UtilTest extends TestCase
 {
 
+    protected $mapper;
+    protected $utils;
+    protected $redirectToResult;
+
     public function setUp(): void
     {
         $m = new Mapper();

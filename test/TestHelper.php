@@ -29,8 +29,8 @@ class TestHelper
     public static function updateMapper(Mapper $mapper, $environ)
     {
         $mapper->environ = $environ;
-        $mapper->utils->mapperdict = null;
-        
+        $mapper->utils->mapperDict = null;
+
         if (isset($environ['PATH_INFO'])) {
             $result = $mapper->routeMatch($environ['PATH_INFO']);
             $mapper->utils->mapperDict = isset($result) ? $result[0] : null;
