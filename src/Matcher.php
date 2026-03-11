@@ -76,7 +76,23 @@ class Matcher
     public function getMatchDict()
     {
         if ($this->match_dict === null) {
-            $path = $this->request->getPath();
+            // Auto-populate environ from request
+            if (method_exists($this->request, 'getMethod')) {
+                $this->mapper->environ = ['REQUEST_METHOD' => $this->request->getMethod()];
+            }
+
+            // Extract path from request - handle both PSR-7 and Horde_Controller_Request
+            if (method_exists($this->request, 'getPath')) {
+                // Horde_Controller_Request or our TestRequest
+                $path = $this->request->getPath();
+            } elseif (method_exists($this->request, 'getUri')) {
+                // PSR-7 ServerRequestInterface
+                $path = $this->request->getUri()->getPath();
+            } else {
+                throw new \RuntimeException('Request must implement getPath() or getUri()');
+            }
+
+            // Strip query string
             if (($pos = strpos($path, '?')) !== false) {
                 $path = substr($path, 0, $pos);
             }

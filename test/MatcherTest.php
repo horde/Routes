@@ -25,15 +25,22 @@ use Horde_Support_Array;
 class TestRequest
 {
     private string $path;
+    private string $method;
 
-    public function __construct(string $path)
+    public function __construct(string $path, string $method = 'GET')
     {
         $this->path = $path;
+        $this->method = $method;
     }
 
     public function getPath(): string
     {
         return $this->path;
+    }
+
+    public function getMethod(): string
+    {
+        return $this->method;
     }
 }
 
@@ -285,5 +292,90 @@ class MatcherTest extends TestCase
         $this->assertEquals('johndoe', $matchDict['username']);
         $this->assertEquals('42', $matchDict['post_id']);
         $this->assertEquals('7', $matchDict['id']);
+    }
+
+    /**
+     * Test matcher automatically populates environ from request
+     */
+    public function testMatcherPopulatesEnvironFromRequest(): void
+    {
+        $mapper = new Mapper();
+
+        // Create routes that depend on HTTP method
+        $mapper->resource('message', 'messages');
+        $mapper->createRegs(['messages']);
+
+        // Before creating matcher, environ should be empty or default
+        $this->assertEmpty($mapper->environ);
+
+        // Create request with GET method
+        $request = new TestRequest('/messages');
+
+        // Create matcher - should auto-populate environ
+        $matcher = new Matcher($mapper, $request);
+        $matchDict = $matcher->getMatchDict();
+
+        // Verify environ was populated from request
+        $this->assertArrayHasKey('REQUEST_METHOD', $mapper->environ);
+        $this->assertEquals('GET', $mapper->environ['REQUEST_METHOD']);
+
+        // Verify route matched correctly with method
+        $this->assertEquals('messages', $matchDict['controller']);
+        $this->assertEquals('index', $matchDict['action']);
+    }
+
+    /**
+     * Test matcher respects HTTP method for RESTful routes
+     */
+    public function testMatcherRespectsHttpMethodForResources(): void
+    {
+        $mapper = new Mapper();
+        $mapper->resource('post', 'posts');
+        $mapper->createRegs(['posts']);
+
+        // Test GET /posts (index action)
+        $getRequest = new TestRequest('/posts', 'GET');
+        $getMatcher = new Matcher($mapper, $getRequest);
+        $getMatch = $getMatcher->getMatchDict();
+
+        $this->assertEquals('posts', $getMatch['controller']);
+        $this->assertEquals('index', $getMatch['action']);
+        $this->assertEquals('GET', $mapper->environ['REQUEST_METHOD']);
+
+        // Test POST /posts (create action)
+        $postRequest = new TestRequest('/posts', 'POST');
+        $postMatcher = new Matcher($mapper, $postRequest);
+        $postMatch = $postMatcher->getMatchDict();
+
+        $this->assertEquals('posts', $postMatch['controller']);
+        $this->assertEquals('create', $postMatch['action']);
+        $this->assertEquals('POST', $mapper->environ['REQUEST_METHOD']);
+    }
+
+    /**
+     * Test matcher works without setting environ manually
+     */
+    public function testMatcherWorksWithoutManualEnvironSetup(): void
+    {
+        $mapper = new Mapper();
+
+        // Define route that works regardless of method
+        $mapper->connect('blog/:action/:id', ['controller' => 'blog']);
+        $mapper->createRegs(['blog']);
+
+        // DON'T manually set environ (this is what we're testing)
+        // $mapper->environ = ['REQUEST_METHOD' => 'GET']; // OLD WAY
+
+        $request = new TestRequest('/blog/view/123');
+        $matcher = new Matcher($mapper, $request);
+        $matchDict = $matcher->getMatchDict();
+
+        // Should work even without manual environ setup
+        $this->assertEquals('blog', $matchDict['controller']);
+        $this->assertEquals('view', $matchDict['action']);
+        $this->assertEquals('123', $matchDict['id']);
+
+        // Environ should have been auto-populated
+        $this->assertArrayHasKey('REQUEST_METHOD', $mapper->environ);
     }
 }
