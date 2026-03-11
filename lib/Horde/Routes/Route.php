@@ -626,6 +626,7 @@ class Horde_Routes_Route
         }
 
         $host = isset($kargs['environ']['HTTP_HOST']) ? $kargs['environ']['HTTP_HOST'] : null;
+        $subDomain = null;
         if ($host !== null && !empty($kargs['subDomains'])) {
             $host = substr($host, 0, strpos(':', $host));
             $subMatch = '@^(.+?)\.' . $kargs['domainMatch'] . '$';
