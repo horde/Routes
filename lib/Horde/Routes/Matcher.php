@@ -70,7 +70,23 @@ class Horde_Routes_Matcher
     public function getMatchDict()
     {
         if ($this->_match_dict === null) {
-            $path = $this->_request->getPath();
+            // Auto-populate environ from request
+            if (method_exists($this->_request, 'getMethod')) {
+                $this->_mapper->environ = array('REQUEST_METHOD' => $this->_request->getMethod());
+            }
+
+            // Extract path from request - handle both PSR-7 and Horde_Controller_Request
+            if (method_exists($this->_request, 'getPath')) {
+                // Horde_Controller_Request
+                $path = $this->_request->getPath();
+            } elseif (method_exists($this->_request, 'getUri')) {
+                // PSR-7 ServerRequestInterface
+                $path = $this->_request->getUri()->getPath();
+            } else {
+                throw new RuntimeException('Request must implement getPath() or getUri()');
+            }
+
+            // Strip query string
             if (($pos = strpos($path, '?')) !== false) {
                 $path = substr($path, 0, $pos);
             }
