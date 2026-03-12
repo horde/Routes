@@ -162,6 +162,21 @@ class Horde_Routes_Route
     public $stack;
 
     /**
+     * Is this a secondary/legacy route that matches but doesn't generate?
+     *
+     * Secondary routes are useful for supporting alternative URLs (e.g., legacy
+     * URLs during migration) without affecting URL generation. They participate
+     * in matching but are excluded from the generation dictionary.
+     *
+     * This feature is designed for modern PSR-7/PSR-15 applications using the
+     * Rampage middleware framework (Horde\Http\Server). Legacy Horde_Controller
+     * applications may have limited support.
+     *
+     * @var boolean
+     */
+    public $secondary = false;
+
+    /**
      *  Initialize a route, with a given routepath for matching/generation
      *
      *  The set of keyword args will be used as defaults.
@@ -192,6 +207,10 @@ class Horde_Routes_Route
             $this->stack = $kargs['stack'];
             unset ($kargs['stack']);
         }
+
+        // Secondary routes match but don't generate URLs
+        $this->secondary = isset($kargs['_secondary']) ? $kargs['_secondary'] : false;
+        unset($kargs['_secondary']);
 
         $this->filter = isset($kargs['_filter']) ? $kargs['_filter'] : null;
         unset($kargs['_filter']);
