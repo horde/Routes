@@ -61,6 +61,22 @@
     identifier: BSD-2-Clause
     uri: http://www.horde.org/licenses/bsd
   notes: ~
+3.0.0-alpha8:
+  api: 3.0.0-alpha8
+  state:
+    release: alpha
+    api: alpha
+  date: 2026-03-12
+  license:
+    identifier: BSD-2-Clause
+    uri: https://spdx.org/licenses/BSD-2-Clause.html
+  notes: |-
+    test: convert leftover secondary route tests to PSR-style API
+    Feat: PSR-7 Uri input/output and RouteBuilder (#5)
+    feat(routes): Secondary Routes support and Route Analyzer
+    fix: static analyzer found potentially undefined variables
+    Merge pull request #2 from horde/feat/matcher-environ-psr7
+    feat(matcher): auto-set Request Method Verb from PSR-7 request
 3.0.0-alpha7:
   api: 3.0.0-alpha7
   state:

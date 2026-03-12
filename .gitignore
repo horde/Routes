@@ -50,3 +50,7 @@ run-tests.log
 # PHPStan cache directory
 /.phpstan.cache/
 /.phpunit.cache/
+
+# Added by horde-components QC --fix-qc-issues
+# Local PHP configuration files
+**/*.local.php
