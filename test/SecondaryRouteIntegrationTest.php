@@ -27,25 +27,14 @@ class SecondaryRouteIntegrationTest extends TestCase
     {
         $m = new Mapper();
 
-        // Modern canonical URLs
-        $m->connect('api_user_show', 'api/v2/users/:id', [
-            'controller' => 'Api\UserController',
-            'action' => 'show',
-            'requirements' => ['id' => '\d+']
-        ]);
-
-        // Legacy URLs from v1 API
-        $m->connectSecondary('api/v1/user/:id', [
-            'controller' => 'Api\UserController',
-            'action' => 'show',
-            'requirements' => ['id' => '\d+']
-        ]);
-
-        // Even older legacy URL
-        $m->connectSecondary('user.php', [
-            'controller' => 'Api\UserController',
-            'action' => 'show'
-        ]);
+        // Modern canonical URL with legacy alternatives
+        $m->buildRoute(uri: 'api/v2/users/:id', name: 'api_user_show')
+            ->withController('Api\UserController')
+            ->withAction('show')
+            ->requires('id', '\d+')
+            ->withSecondaryRoute('api/v1/user/:id')
+            ->withSecondaryRoute('user.php')
+            ->add();
 
         // Test all URLs match
         $result1 = $m->match('/api/v2/users/123');
@@ -76,33 +65,16 @@ class SecondaryRouteIntegrationTest extends TestCase
     {
         $m = new Mapper();
 
-        // Primary route
-        $m->connect('dashboard', 'dashboard', [
-            'controller' => 'Dashboard',
-            'action' => 'index'
-        ]);
-
-        // Alternative URLs (marketing campaigns, shortcuts, etc.)
-        $m->connectSecondary('home', [
-            'controller' => 'Dashboard',
-            'action' => 'index'
-        ]);
-        $m->connectSecondary('index', [
-            'controller' => 'Dashboard',
-            'action' => 'index'
-        ]);
-        $m->connectSecondary('start', [
-            'controller' => 'Dashboard',
-            'action' => 'index'
-        ]);
-        $m->connectSecondary('welcome', [
-            'controller' => 'Dashboard',
-            'action' => 'index'
-        ]);
-        $m->connectSecondary('portal', [
-            'controller' => 'Dashboard',
-            'action' => 'index'
-        ]);
+        // Primary route with multiple alternative URLs
+        $m->buildRoute(uri: 'dashboard', name: 'dashboard')
+            ->withController('Dashboard')
+            ->withAction('index')
+            ->withSecondaryRoute('home')
+            ->withSecondaryRoute('index')
+            ->withSecondaryRoute('start')
+            ->withSecondaryRoute('welcome')
+            ->withSecondaryRoute('portal')
+            ->add();
 
         // All URLs should match
         $paths = ['/dashboard', '/home', '/index', '/start', '/welcome', '/portal'];
@@ -125,19 +97,13 @@ class SecondaryRouteIntegrationTest extends TestCase
     {
         $m = new Mapper();
 
-        // Modern API endpoint with auth middleware
-        $m->connect('api/secure/data', [
-            'controller' => 'Api\SecureController',
-            'action' => 'getData',
-            'stack' => ['ApiAuth', 'RateLimit']
-        ]);
-
-        // Legacy endpoint (also requires same auth)
-        $m->connectSecondary('legacy/secure.php', [
-            'controller' => 'Api\SecureController',
-            'action' => 'getData',
-            'stack' => ['ApiAuth', 'RateLimit']
-        ]);
+        // Modern API endpoint with auth middleware and legacy endpoint
+        $m->buildRoute(uri: 'api/secure/data')
+            ->withController('Api\SecureController')
+            ->withAction('getData')
+            ->withMiddleware(['ApiAuth', 'RateLimit'])
+            ->withSecondaryRoute('legacy/secure.php')
+            ->add();
 
         // Both should have middleware stack
         $result1 = $m->match('/api/secure/data');
@@ -165,22 +131,18 @@ class SecondaryRouteIntegrationTest extends TestCase
     {
         $m = new Mapper();
 
-        $m->connect('api_list', 'api/items', [
-            'controller' => 'Item',
-            'action' => 'list',
-            'conditions' => ['method' => 'GET']
-        ]);
+        $m->buildRoute(uri: 'api/items', name: 'api_list')
+            ->withController('Item')
+            ->withAction('list')
+            ->withMethods(['GET'])
+            ->withSecondaryRoute('items')
+            ->add();
 
-        $m->connectSecondary('items', [
-            'controller' => 'Item',
-            'action' => 'list',
-            'conditions' => ['method' => 'GET']
-        ]);
-
-        $m->connectSecondary('legacy_items_list', 'list.php', [
-            'controller' => 'Item',
-            'action' => 'list'
-        ]);
+        $m->buildRoute(uri: 'list.php', name: 'legacy_items_list')
+            ->withController('Item')
+            ->withAction('list')
+            ->withDefaults(['_secondary' => true])
+            ->add();
 
         $routes = $m->getRouteList();
 
@@ -213,31 +175,25 @@ class SecondaryRouteIntegrationTest extends TestCase
         $m = new Mapper();
 
         // Modern RESTful routes
-        $m->connect('users', [
-            'controller' => 'User',
-            'action' => 'index',
-            'conditions' => ['method' => ['GET']]  // Must be array
-        ]);
-        $m->connect('users', [
-            'controller' => 'User',
-            'action' => 'create',
-            'conditions' => ['method' => ['POST']]  // Must be array
-        ]);
-        $m->connect('users/:id', [
-            'controller' => 'User',
-            'action' => 'show',
-            'conditions' => ['method' => ['GET']]  // Must be array
-        ]);
+        $m->buildRoute(uri: 'users')
+            ->withController('User')
+            ->withAction('index')
+            ->withMethods(['GET'])
+            ->withSecondaryRoute('user/list')
+            ->add();
 
-        // Legacy routes (different URL patterns)
-        $m->connectSecondary('user/list', [
-            'controller' => 'User',
-            'action' => 'index'
-        ]);
-        $m->connectSecondary('user/:id/view', [
-            'controller' => 'User',
-            'action' => 'show'
-        ]);
+        $m->buildRoute(uri: 'users')
+            ->withController('User')
+            ->withAction('create')
+            ->withMethods(['POST'])
+            ->add();
+
+        $m->buildRoute(uri: 'users/:id')
+            ->withController('User')
+            ->withAction('show')
+            ->withMethods(['GET'])
+            ->withSecondaryRoute('user/:id/view')
+            ->add();
 
         // Modern GET /users should match
         $m->environ = ['REQUEST_METHOD' => 'GET'];

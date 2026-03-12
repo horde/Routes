@@ -25,8 +25,11 @@ class SecondaryRouteTest extends TestCase
     public function testSecondaryRouteMatches(): void
     {
         $m = new Mapper();
-        $m->connect('api/users/:id', ['controller' => 'User', 'action' => 'show']);
-        $m->connectSecondary('user/:id', ['controller' => 'User', 'action' => 'show']);
+        $m->buildRoute(uri: 'api/users/:id')
+            ->withController('User')
+            ->withAction('show')
+            ->withSecondaryRoute('user/:id')
+            ->add();
 
         // Both should match
         $result1 = $m->match('/api/users/123');
@@ -48,8 +51,11 @@ class SecondaryRouteTest extends TestCase
     public function testSecondaryRouteNotGenerated(): void
     {
         $m = new Mapper();
-        $m->connect('api/users/:id', ['controller' => 'User', 'action' => 'show']);
-        $m->connectSecondary('user/:id', ['controller' => 'User', 'action' => 'show']);
+        $m->buildRoute(uri: 'api/users/:id')
+            ->withController('User')
+            ->withAction('show')
+            ->withSecondaryRoute('user/:id')
+            ->add();
 
         // Generation should only use primary route
         $url = $m->generate(['controller' => 'User', 'action' => 'show', 'id' => '123']);
@@ -65,9 +71,12 @@ class SecondaryRouteTest extends TestCase
     public function testPrimaryRouteStillGenerates(): void
     {
         $m = new Mapper();
-        $m->connect('users/:id/profile', ['controller' => 'User', 'action' => 'show']);
-        $m->connectSecondary('profile/:id', ['controller' => 'User', 'action' => 'show']);
-        $m->connectSecondary('member/:id', ['controller' => 'User', 'action' => 'show']);
+        $m->buildRoute(uri: 'users/:id/profile')
+            ->withController('User')
+            ->withAction('show')
+            ->withSecondaryRoute('profile/:id')
+            ->withSecondaryRoute('member/:id')
+            ->add();
 
         // Primary should be used for generation
         $url = $m->generate(['controller' => 'User', 'action' => 'show', 'id' => '42']);
@@ -80,10 +89,13 @@ class SecondaryRouteTest extends TestCase
     public function testMultipleSecondaryRoutes(): void
     {
         $m = new Mapper();
-        $m->connect('api/users/:id', ['controller' => 'User', 'action' => 'show']);
-        $m->connectSecondary('user/:id', ['controller' => 'User', 'action' => 'show']);
-        $m->connectSecondary('profile/:id', ['controller' => 'User', 'action' => 'show']);
-        $m->connectSecondary('member/:id', ['controller' => 'User', 'action' => 'show']);
+        $m->buildRoute(uri: 'api/users/:id')
+            ->withController('User')
+            ->withAction('show')
+            ->withSecondaryRoute('user/:id')
+            ->withSecondaryRoute('profile/:id')
+            ->withSecondaryRoute('member/:id')
+            ->add();
 
         // All should match
         $this->assertNotNull($m->match('/api/users/123'));
@@ -102,8 +114,11 @@ class SecondaryRouteTest extends TestCase
     public function testSecondaryNamedRoute(): void
     {
         $m = new Mapper();
-        $m->connect('user_profile', 'users/:id', ['controller' => 'User', 'action' => 'show']);
-        $m->connectSecondary('legacy_profile', 'profile/:id', ['controller' => 'User', 'action' => 'show']);
+        $m->buildRoute(uri: 'users/:id', name: 'user_profile')
+            ->withController('User')
+            ->withAction('show')
+            ->withSecondaryRoute('profile/:id')
+            ->add();
 
         // Both should match
         $this->assertNotNull($m->match('/users/123'));
@@ -120,8 +135,11 @@ class SecondaryRouteTest extends TestCase
     public function testSecondaryWithParameters(): void
     {
         $m = new Mapper();
-        $m->connect('posts/:year/:month/:slug', ['controller' => 'Post', 'action' => 'show']);
-        $m->connectSecondary('blog/:year/:month/:slug', ['controller' => 'Post', 'action' => 'show']);
+        $m->buildRoute(uri: 'posts/:year/:month/:slug')
+            ->withController('Post')
+            ->withAction('show')
+            ->withSecondaryRoute('blog/:year/:month/:slug')
+            ->add();
 
         // Secondary should extract parameters correctly
         $result = $m->match('/blog/2024/03/hello-world');
@@ -147,16 +165,12 @@ class SecondaryRouteTest extends TestCase
     public function testSecondaryWithRequirements(): void
     {
         $m = new Mapper();
-        $m->connect('api/users/:id', [
-            'controller' => 'User',
-            'action' => 'show',
-            'requirements' => ['id' => '\d+']
-        ]);
-        $m->connectSecondary('user/:id', [
-            'controller' => 'User',
-            'action' => 'show',
-            'requirements' => ['id' => '\d+']
-        ]);
+        $m->buildRoute(uri: 'api/users/:id')
+            ->withController('User')
+            ->withAction('show')
+            ->requires('id', '\d+')
+            ->withSecondaryRoute('user/:id')
+            ->add();
 
         // Numeric ID should match
         $this->assertNotNull($m->match('/user/123'));
@@ -171,16 +185,12 @@ class SecondaryRouteTest extends TestCase
     public function testSecondaryWithConditions(): void
     {
         $m = new Mapper();
-        $m->connect('api/users/:id', [
-            'controller' => 'User',
-            'action' => 'show',
-            'conditions' => ['method' => ['GET']]  // Must be array
-        ]);
-        $m->connectSecondary('user/:id', [
-            'controller' => 'User',
-            'action' => 'show',
-            'conditions' => ['method' => ['GET']]  // Must be array
-        ]);
+        $m->buildRoute(uri: 'api/users/:id')
+            ->withController('User')
+            ->withAction('show')
+            ->withMethods(['GET'])
+            ->withSecondaryRoute('user/:id')
+            ->add();
 
         // GET should match (simulated via environ)
         $m->environ = ['REQUEST_METHOD' => 'GET'];
@@ -197,8 +207,11 @@ class SecondaryRouteTest extends TestCase
     public function testGetRouteListIncludesSecondary(): void
     {
         $m = new Mapper();
-        $m->connect('users/:id', ['controller' => 'User', 'action' => 'show']);
-        $m->connectSecondary('profile/:id', ['controller' => 'User', 'action' => 'show']);
+        $m->buildRoute(uri: 'users/:id')
+            ->withController('User')
+            ->withAction('show')
+            ->withSecondaryRoute('profile/:id')
+            ->add();
 
         $routes = $m->getRouteList();
 
@@ -215,8 +228,11 @@ class SecondaryRouteTest extends TestCase
     public function testSecondaryInMatchList(): void
     {
         $m = new Mapper();
-        $m->connect('api/users/:id', ['controller' => 'User', 'action' => 'show']);
-        $m->connectSecondary('user/:id', ['controller' => 'User', 'action' => 'show']);
+        $m->buildRoute(uri: 'api/users/:id')
+            ->withController('User')
+            ->withAction('show')
+            ->withSecondaryRoute('user/:id')
+            ->add();
 
         $this->assertCount(2, $m->matchList);
         $this->assertFalse($m->matchList[0]->secondary);
@@ -231,20 +247,30 @@ class SecondaryRouteTest extends TestCase
         $m = new Mapper();
 
         // 1 arg: path only
-        $m->connectSecondary('simple/path');
+        $m->buildRoute(uri: 'simple/path')
+            ->withDefaults(['_secondary' => true])
+            ->add();
         $this->assertTrue($m->matchList[0]->secondary);
 
         // 2 args: path + kargs
-        $m->connectSecondary('path/:id', ['controller' => 'Test']);
+        $m->buildRoute(uri: 'path/:id')
+            ->withController('Test')
+            ->withDefaults(['_secondary' => true])
+            ->add();
         $this->assertTrue($m->matchList[1]->secondary);
         $this->assertEquals('Test', $m->matchList[1]->defaults['controller']);
 
         // 2 args: name + path
-        $m->connectSecondary('test_route', 'named/path');
+        $m->buildRoute(uri: 'named/path', name: 'test_route')
+            ->withDefaults(['_secondary' => true])
+            ->add();
         $this->assertTrue($m->matchList[2]->secondary);
 
         // 3 args: name + path + kargs
-        $m->connectSecondary('test_route2', 'another/:id', ['action' => 'show']);
+        $m->buildRoute(uri: 'another/:id', name: 'test_route2')
+            ->withAction('show')
+            ->withDefaults(['_secondary' => true])
+            ->add();
         $this->assertTrue($m->matchList[3]->secondary);
         $this->assertEquals('show', $m->matchList[3]->defaults['action']);
     }
@@ -255,8 +281,16 @@ class SecondaryRouteTest extends TestCase
     public function testAllRoutesSecondary(): void
     {
         $m = new Mapper();
-        $m->connectSecondary('user/:id', ['controller' => 'User', 'action' => 'show']);
-        $m->connectSecondary('profile/:id', ['controller' => 'User', 'action' => 'show']);
+        $m->buildRoute(uri: 'user/:id')
+            ->withController('User')
+            ->withAction('show')
+            ->withDefaults(['_secondary' => true])
+            ->add();
+        $m->buildRoute(uri: 'profile/:id')
+            ->withController('User')
+            ->withAction('show')
+            ->withDefaults(['_secondary' => true])
+            ->add();
 
         // Matching should still work
         $this->assertNotNull($m->match('/user/123'));
