@@ -49,3 +49,4 @@ run-tests.log
 /phpstan.neon
 # PHPStan cache directory
 /.phpstan.cache/
+/.phpunit.cache/
