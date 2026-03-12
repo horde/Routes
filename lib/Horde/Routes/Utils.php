@@ -6,6 +6,8 @@
  * by Ben Bangert (http://routes.groovie.org).  Routes is based
  * largely on ideas from Ruby on Rails (http://www.rubyonrails.org).
  *
+ * Copyright 2013-2026 The Horde Project (http://www.horde.org/)
+ *
  * @author  Maintainable Software, LLC. (http://www.maintainable.com)
  * @author  Mike Naberezny <mike@maintainable.com>
  * @license http://www.horde.org/licenses/bsd BSD
@@ -154,13 +156,7 @@ class Horde_Routes_Utils
 
             if ($static) {
                 if (!empty($kargs)) {
-                    $url .= '?';
-                    $query_args = array();
-                    foreach ($kargs as $key => $val) {
-                        $query_args[] = urlencode(mb_convert_encoding($key, 'ISO-8859-1', 'UTF-8')) . '=' .
-                            urlencode(mb_convert_encoding($val, 'ISO-8859-1', 'UTF-8'));
-                    }
-                    $url .= implode('&', $query_args);
+                    $url .= '?' . http_build_query($kargs, '', '&', PHP_QUERY_RFC1738);
                 }
             }
         }
@@ -196,7 +192,7 @@ class Horde_Routes_Utils
         }
 
         if (!empty($anchor)) {
-            $url .= '#' . self::urlQuote($anchor, $encoding);
+            $url .= '#' . self::urlQuote($anchor);
         }
 
         if (!empty($host) || !empty($qualified) || !empty($protocol)) {
@@ -401,22 +397,17 @@ class Horde_Routes_Utils
     }
 
     /**
-     * Quote a string containing a URL in a given encoding.
+     * Quote a string for use in a URL path segment
      *
-     * @todo This is a placeholder.  Multiple encodings aren't yet supported.
+     * Applies URL encoding (RFC 1738) while preserving forward slashes.
+     * Assumes UTF-8 input, which is the PHP 8.x standard.
      *
-     * @param  string  $url       URL to encode
-     * @param  string  $encoding  Encoding to use
+     * @param  string  $url  URL segment to encode
+     * @return string        URL-encoded string with forward slashes preserved
      */
-    public static function urlQuote($url, $encoding = null)
+    public static function urlQuote($url)
     {
-        if ($encoding === null) {
-            return str_replace('%2F', '/', urlencode($url));
-        } else {
-            // Convert from UTF-8 to ISO-8859-1 for URL encoding
-            $converted = mb_convert_encoding($url, 'ISO-8859-1', 'UTF-8');
-            return str_replace('%2F', '/', urlencode($converted));
-        }
+        return str_replace('%2F', '/', urlencode($url));
     }
 
     /**

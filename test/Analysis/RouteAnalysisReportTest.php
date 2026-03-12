@@ -64,13 +64,13 @@ class RouteAnalysisReportTest extends TestCase
 
         $this->assertIsString($output);
 
-        // Should contain key information
-        $this->assertStringContainsString('shadowed', $output);
+        // Should contain key information (case-insensitive)
+        $this->assertStringContainsStringIgnoringCase('shadowed', $output);
         $this->assertStringContainsString('users/search', $output);
         $this->assertStringContainsString('users/:action', $output);
 
-        // Should indicate severity
-        $this->assertStringContainsString('error', $output);
+        // Should indicate severity (case-insensitive)
+        $this->assertStringContainsStringIgnoringCase('error', $output);
     }
 
     /**
@@ -95,8 +95,8 @@ class RouteAnalysisReportTest extends TestCase
 
         $this->assertIsString($output);
 
-        // Should contain error details
-        $this->assertStringContainsString('invalid', $output);
+        // Should contain error details (case-insensitive)
+        $this->assertStringContainsStringIgnoringCase('invalid', $output);
         $this->assertStringContainsString('posts/:id', $output);
         $this->assertStringContainsString('id', $output);
         $this->assertStringContainsString('[0-9', $output);

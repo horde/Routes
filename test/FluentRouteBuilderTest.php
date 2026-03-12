@@ -49,11 +49,11 @@ class FluentRouteBuilderTest extends TestCase
         $fluent = new FluentRouteBuilder($m, 'users/:id');
 
         // All RouteBuilder methods should be available
-        $result = $fluent->controller('User')
-                         ->action('show')
+        $result = $fluent->withController('User')
+                         ->withAction('show')
                          ->requires('id', '\d+')
                          ->get()
-                         ->middleware(['Auth']);
+                         ->withMiddleware(['Auth']);
 
         // Should return FluentRouteBuilder (self) for chaining
         $this->assertInstanceOf(FluentRouteBuilder::class, $result);
@@ -78,8 +78,8 @@ class FluentRouteBuilderTest extends TestCase
         $m = new Mapper();
         $fluent = new FluentRouteBuilder($m, 'users/:id');
 
-        $result = $fluent->controller('User')
-                         ->action('show')
+        $result = $fluent->withController('User')
+                         ->withAction('show')
                          ->add();
 
         // Should return the original Mapper
@@ -99,30 +99,30 @@ class FluentRouteBuilderTest extends TestCase
 
         // Chain multiple routes
         $m->route('users')
-          ->controller('User')
-          ->action('index')
+          ->withController('User')
+          ->withAction('index')
           ->get()
           ->add()
           ->route('users')
-          ->controller('User')
-          ->action('create')
+          ->withController('User')
+          ->withAction('create')
           ->post()
           ->add()
           ->route('users/:id')
-          ->controller('User')
-          ->action('show')
+          ->withController('User')
+          ->withAction('show')
           ->requires('id', '\d+')
           ->get()
           ->add()
           ->route('users/:id')
-          ->controller('User')
-          ->action('update')
+          ->withController('User')
+          ->withAction('update')
           ->requires('id', '\d+')
           ->put()
           ->add()
           ->route('users/:id')
-          ->controller('User')
-          ->action('delete')
+          ->withController('User')
+          ->withAction('delete')
           ->requires('id', '\d+')
           ->delete()
           ->add();
@@ -147,9 +147,9 @@ class FluentRouteBuilderTest extends TestCase
         $m = new Mapper();
 
         $m->route('users/:id')
-          ->name('user_show')
-          ->controller('User')
-          ->action('show')
+          ->withName('user_show')
+          ->withController('User')
+          ->withAction('show')
           ->add();
 
         // Named route should be registered
@@ -164,13 +164,9 @@ class FluentRouteBuilderTest extends TestCase
         $m = new Mapper();
 
         $m->route('users/:id')
-          ->controller('User')
-          ->action('show')
-          ->add()
-          ->route('profile/:id')
-          ->controller('User')
-          ->action('show')
-          ->secondary()
+          ->withController('User')
+          ->withAction('show')
+          ->withSecondaryRoute('/profile/:id')
           ->add();
 
         $this->assertCount(2, $m->matchList);
@@ -235,27 +231,27 @@ class FluentRouteBuilderTest extends TestCase
 
         // Define an API with multiple endpoints
         $m->route('api/v1/users')
-          ->name('api_users_list')
-          ->controller('Api\\V1\\User')
-          ->action('index')
-          ->middleware(['ApiAuth', 'RateLimit'])
+          ->withName('api_users_list')
+          ->withController('Api\\V1\\User')
+          ->withAction('index')
+          ->withMiddleware(['ApiAuth', 'RateLimit'])
           ->get()
           ->add()
 
           ->route('api/v1/users/:id')
-          ->name('api_users_show')
-          ->controller('Api\\V1\\User')
-          ->action('show')
+          ->withName('api_users_show')
+          ->withController('Api\\V1\\User')
+          ->withAction('show')
           ->requires('id', '\d+')
-          ->middleware(['ApiAuth', 'RateLimit'])
+          ->withMiddleware(['ApiAuth', 'RateLimit'])
           ->methods(['GET', 'HEAD'])
           ->add()
 
           ->route('api/v1/users')
-          ->name('api_users_create')
-          ->controller('Api\\V1\\User')
-          ->action('create')
-          ->middleware(['ApiAuth', 'RateLimit', 'ValidateJson'])
+          ->withName('api_users_create')
+          ->withController('Api\\V1\\User')
+          ->withAction('create')
+          ->withMiddleware(['ApiAuth', 'RateLimit', 'ValidateJson'])
           ->post()
           ->add();
 

@@ -58,22 +58,6 @@ class RecognitionTest extends TestCase
         $this->assertEquals($matchdata, $m->match('/hello/world/how/are/you'));
     }
 
-    public function testUnicode()
-    {
-        // Stop here and mark this test as incomplete.
-        $this->markTestIncomplete(
-            'This test has not been implemented yet.'
-        );
-    }
-
-    public function testDisablingUnicode()
-    {
-        // Stop here and mark this test as incomplete.
-        $this->markTestIncomplete(
-             'This test has not been implemented yet.'
-        );
-    }
-
     public function testBasicDynamic()
     {
         foreach(array('hi/:name', 'hi/:(name)') as $path) {

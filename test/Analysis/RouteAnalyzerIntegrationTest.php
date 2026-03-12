@@ -58,8 +58,8 @@ class RouteAnalyzerIntegrationTest extends TestCase
             }
         }
 
-        $this->assertContains('users/search', implode(',', $shadowedPaths));
-        $this->assertContains('users/export', implode(',', $shadowedPaths));
+        $this->assertContains('users/search', $shadowedPaths);
+        $this->assertContains('users/export', $shadowedPaths);
     }
 
     /**

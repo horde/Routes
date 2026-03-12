@@ -6,6 +6,8 @@
  * by Ben Bangert (http://routes.groovie.org).  Routes is based
  * largely on ideas from Ruby on Rails (http://www.rubyonrails.org).
  *
+ * Copyright 2013-2026 The Horde Project (http://www.horde.org/)
+ *
  * @author  Maintainable Software, LLC. (http://www.maintainable.com)
  * @author  Mike Naberezny <mike@maintainable.com>
  * @license http://www.horde.org/licenses/bsd BSD
@@ -27,13 +29,15 @@ class Horde_Routes_Route
     public $routePath;
 
     /**
-     * Encoding of this route (not yet supported)
+     * Encoding of this route
+     * @deprecated No longer needed - Routes assumes UTF-8 throughout (PHP 8.x standard)
      * @var string
      */
     public $encoding = 'utf-8';
 
     /**
      * What to do on decoding errors?  'ignore' or 'replace'
+     * @deprecated No longer used - PHP 8.x handles UTF-8 natively
      * @var string
      */
     public $decodeErrors = 'replace';
@@ -807,7 +811,7 @@ class Horde_Routes_Route
                     return null;
                 }
 
-                $urlList[] = Horde_Routes_Utils::urlQuote($val, $this->encoding);
+                $urlList[] = Horde_Routes_Utils::urlQuote($val);
                 if ($hasArg) {
                     unset($kargs[$arg]);
                 }
@@ -816,7 +820,7 @@ class Horde_Routes_Route
                 $arg = $part['name'];
                 $kar = (isset($kargs[$arg])) ? $kargs[$arg] : null;
                 if ($kar != null) {
-                    $urlList[] = Horde_Routes_Utils::urlQuote($kar, $this->encoding);
+                    $urlList[] = Horde_Routes_Utils::urlQuote($kar);
                     $gaps = true;
                 }
             } elseif (!empty($part) && in_array(substr($part, -1), $this->_splitChars)) {
