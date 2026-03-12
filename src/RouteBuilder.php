@@ -49,9 +49,16 @@ namespace Horde\Routes;
 class RouteBuilder
 {
     /**
-     * Route path pattern
+     * Primary route path pattern (used for URL generation)
      */
-    private string $path;
+    private ?string $path = null;
+
+    /**
+     * Secondary route paths (match only, not generated)
+     *
+     * @var array<string>
+     */
+    private array $secondaryPaths = [];
 
     /**
      * Optional route name for named routes
@@ -96,22 +103,34 @@ class RouteBuilder
     /**
      * Create a new route builder
      *
-     * @param string $path Route path pattern (e.g., 'users/:id')
+     * @param string|null $path Route path pattern (e.g., 'users/:id'), optional if set via withUri()
      */
-    public function __construct(string $path)
+    public function __construct(?string $path = null)
     {
         $this->path = $path;
     }
 
     /**
-     * Set route name for named routes
+     * Set route URI/path (PSR-style with* method)
+     *
+     * @param string $uri Route path pattern (e.g., '/users/:id')
+     * @return self
+     */
+    public function withUri(string $uri): self
+    {
+        $this->path = $uri;
+        return $this;
+    }
+
+    /**
+     * Set route name (PSR-style with* method)
      *
      * Named routes can be referenced by name during URL generation.
      *
      * @param string $name Route name
      * @return self
      */
-    public function name(string $name): self
+    public function withName(string $name): self
     {
         $this->name = $name;
         return $this;
@@ -128,24 +147,45 @@ class RouteBuilder
     }
 
     /**
-     * Set controller default
+     * Add secondary route path (matches but doesn't generate)
+     *
+     * Secondary paths are alternative URLs that route to the same controller
+     * but are not used for URL generation. Useful for legacy URL support.
+     *
+     * Example:
+     * <code>
+     * $builder->withSecondaryRoute('/old-url')
+     *         ->withSecondaryRoute('/legacy.php');
+     * </code>
+     *
+     * @param string $path Secondary path pattern
+     * @return self
+     */
+    public function withSecondaryRoute(string $path): self
+    {
+        $this->secondaryPaths[] = $path;
+        return $this;
+    }
+
+    /**
+     * Set controller (PSR-style with* method)
      *
      * @param string $controller Controller name or class
      * @return self
      */
-    public function controller(string $controller): self
+    public function withController(string $controller): self
     {
         $this->defaults['controller'] = $controller;
         return $this;
     }
 
     /**
-     * Set action default
+     * Set action (PSR-style with* method)
      *
      * @param string $action Action name
      * @return self
      */
-    public function action(string $action): self
+    public function withAction(string $action): self
     {
         $this->defaults['action'] = $action;
         return $this;
@@ -259,26 +299,39 @@ class RouteBuilder
     }
 
     /**
-     * Restrict route to specific HTTP methods
+     * Restrict route to specific HTTP methods (PSR-style with* method)
      *
      * @param array<string> $methods Array of HTTP method names (e.g., ['GET', 'HEAD'])
      * @return self
      */
-    public function methods(array $methods): self
+    public function withMethods(array $methods): self
     {
         $this->conditions['method'] = $methods;
         return $this;
     }
 
     /**
-     * Restrict route to specific subdomain
+     * Restrict route to specific HTTP methods (alias for withMethods)
+     *
+     * Convenience alias that's more concise than withMethods().
+     *
+     * @param array<string> $methods Array of HTTP method names (e.g., ['GET', 'HEAD'])
+     * @return self
+     */
+    public function methods(array $methods): self
+    {
+        return $this->withMethods($methods);
+    }
+
+    /**
+     * Restrict route to specific subdomain (PSR-style with* method)
      *
      * @param string $subdomain Subdomain name
      * @return self
      */
-    public function subdomain(string $subdomain): self
+    public function withSubdomain(string $subdomain): self
     {
-        $this->conditions['subdomain'] = $subdomain;
+        $this->conditions['subDomain'] = $subdomain;
         return $this;
     }
 
@@ -297,7 +350,7 @@ class RouteBuilder
     }
 
     /**
-     * Set middleware stack for this route
+     * Set middleware stack (PSR-style with* method)
      *
      * Middleware is executed in order for PSR-15 applications using
      * the Rampage framework. Not supported in legacy Horde_Controller.
@@ -305,7 +358,7 @@ class RouteBuilder
      * @param array<string> $middleware Array of middleware class names
      * @return self
      */
-    public function middleware(array $middleware): self
+    public function withMiddleware(array $middleware): self
     {
         $this->stack = $middleware;
         return $this;
@@ -321,29 +374,6 @@ class RouteBuilder
     public function noMiddleware(): self
     {
         $this->stack = [];
-        return $this;
-    }
-
-    /**
-     * Mark route as secondary/legacy (matches but doesn't generate)
-     *
-     * Secondary routes are useful for supporting alternative URLs (e.g., legacy
-     * URLs during migration) without affecting URL generation. They participate
-     * in matching but are excluded from the generation dictionary.
-     *
-     * Designed for modern PSR-7/PSR-15 applications using the Rampage middleware
-     * framework. Legacy Horde_Controller applications may have limited support.
-     *
-     * @param bool $secondary True to mark as secondary, false to unmark
-     * @return self
-     */
-    public function secondary(bool $secondary = true): self
-    {
-        if ($secondary) {
-            $this->flags['_secondary'] = true;
-        } else {
-            unset($this->flags['_secondary']);
-        }
         return $this;
     }
 
@@ -424,24 +454,108 @@ class RouteBuilder
     }
 
     /**
-     * Build Route object from builder configuration
+     * Build Route object(s) from builder configuration
      *
-     * Creates a Route object from the builder's configuration. Note that the
-     * route name is not passed to the Route constructor - it's stored separately
-     * and registered by Mapper when the route is added.
+     * Creates primary Route and optional secondary Routes. If no explicit name
+     * is set, generates one from HTTP verbs + path components in CamelCase.
      *
-     * @return Route Built route object
+     * Returns single Route if no secondary paths, array of Routes otherwise.
+     *
+     * @return Route|array<Route> Built route(s)
+     * @throws \InvalidArgumentException If path is not set
      */
-    public function build(): Route
+    public function build(): Route|array
     {
-        $config = $this->toArray();
-        $route = new Route($this->path, $config);
-
-        // Store the route name on the Route object for Mapper to register
-        if ($this->name !== null) {
-            $route->routeName = $this->name;
+        if ($this->path === null) {
+            throw new \InvalidArgumentException(
+                'Route path must be set via constructor or withUri() before building'
+            );
         }
 
-        return $route;
+        $config = $this->toArray();
+
+        // Generate route name if not explicitly set
+        $routeName = $this->name ?? $this->generateRouteName($this->path);
+
+        // Create primary route
+        $primaryRoute = new Route($this->path, $config);
+        $primaryRoute->routeName = $routeName;
+
+        // No secondary paths? Return single Route
+        if (empty($this->secondaryPaths)) {
+            return $primaryRoute;
+        }
+
+        // Create secondary routes with same config but marked as secondary
+        $config['_secondary'] = true;
+        $routes = [$primaryRoute];
+
+        foreach ($this->secondaryPaths as $secondaryPath) {
+            $secondaryRoute = new Route($secondaryPath, $config);
+            // Secondary routes don't get registered by name
+            $routes[] = $secondaryRoute;
+        }
+
+        return $routes;
+    }
+
+    /**
+     * Generate route name from HTTP verbs and path components
+     *
+     * Converts path pattern to CamelCase name, optionally prefixed with HTTP verbs.
+     * Controller and middleware are NOT included as they're implementation details.
+     *
+     * Examples:
+     *   - /users/:id → UsersId
+     *   - /api/v2/posts/:slug → ApiV2PostsSlug
+     *   - /users/:id (GET) → GetUsersId
+     *   - /users (POST) → PostUsers
+     *
+     * @param string $path Route path pattern
+     * @return string Generated route name
+     */
+    private function generateRouteName(string $path): string
+    {
+        $parts = [];
+
+        // Add HTTP method prefix if specified
+        if (!empty($this->conditions['method'])) {
+            $methods = $this->conditions['method'];
+            if (count($methods) === 1) {
+                // Single method: GetUsersId, PostUsers
+                $parts[] = ucfirst(strtolower($methods[0]));
+            } elseif (count($methods) <= 3) {
+                // Few methods: GetPostUsersId
+                foreach ($methods as $method) {
+                    $parts[] = ucfirst(strtolower($method));
+                }
+            }
+            // Many methods: omit prefix
+        }
+
+        // Parse path components
+        $pathParts = explode('/', trim($path, '/'));
+        foreach ($pathParts as $part) {
+            if (empty($part)) {
+                continue;
+            }
+
+            // Remove parameter markers (:id, :slug, etc.) but keep the name
+            $cleaned = str_replace(':', '', $part);
+
+            // Convert to CamelCase
+            $camelPart = str_replace(['-', '_', '.'], ' ', $cleaned);
+            $camelPart = ucwords($camelPart);
+            $camelPart = str_replace(' ', '', $camelPart);
+
+            $parts[] = $camelPart;
+        }
+
+        // Handle root path
+        if (empty($parts)) {
+            return 'Root';
+        }
+
+        return implode('', $parts);
     }
 }

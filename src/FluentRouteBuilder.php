@@ -57,9 +57,9 @@ class FluentRouteBuilder
      * Create a new fluent route builder
      *
      * @param Mapper $mapper Mapper instance
-     * @param string $path Route path pattern
+     * @param string|null $path Route path pattern (optional if set via withUri)
      */
-    public function __construct(Mapper $mapper, string $path)
+    public function __construct(Mapper $mapper, ?string $path = null)
     {
         $this->mapper = $mapper;
         $this->builder = new RouteBuilder($path);
@@ -93,7 +93,7 @@ class FluentRouteBuilder
     /**
      * Proxy all other method calls to the underlying RouteBuilder
      *
-     * All RouteBuilder methods (name, controller, action, requires, etc.)
+     * All RouteBuilder methods (name, controller, action, requires, withSecondaryRoute, etc.)
      * are forwarded to the builder. The builder returns itself, which is
      * then wrapped back into this FluentRouteBuilder for continued chaining.
      *

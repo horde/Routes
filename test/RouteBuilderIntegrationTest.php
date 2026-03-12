@@ -34,8 +34,8 @@ class RouteBuilderIntegrationTest extends TestCase
 
         // Create builder
         $builder = new RouteBuilder('api/users/:id');
-        $builder->controller('User')
-                ->action('show')
+        $builder->withController('User')
+                ->withAction('show')
                 ->requires('id', '\d+')
                 ->get();
 
@@ -61,8 +61,8 @@ class RouteBuilderIntegrationTest extends TestCase
 
         // Use fluent API
         $result = $m->route('users/:id')
-                    ->controller('User')
-                    ->action('show')
+                    ->withController('User')
+                    ->withAction('show')
                     ->requires('id', '\d+')
                     ->get()
                     ->add();
@@ -75,13 +75,13 @@ class RouteBuilderIntegrationTest extends TestCase
 
         // Can chain multiple routes
         $m->route('users')
-          ->controller('User')
-          ->action('index')
+          ->withController('User')
+          ->withAction('index')
           ->get()
           ->add()
           ->route('users')
-          ->controller('User')
-          ->action('create')
+          ->withController('User')
+          ->withAction('create')
           ->post()
           ->add();
 
@@ -98,10 +98,10 @@ class RouteBuilderIntegrationTest extends TestCase
 
         // Build route with fluent API
         $m->route('api/users/:id')
-          ->controller('User')
-          ->action('show')
+          ->withController('User')
+          ->withAction('show')
           ->requires('id', '\d+')
-          ->middleware(['Auth', 'JsonResponse'])
+          ->withMiddleware(['Auth', 'JsonResponse'])
           ->get()
           ->add();
 
@@ -133,9 +133,9 @@ class RouteBuilderIntegrationTest extends TestCase
 
         // Add route with name
         $m->route('users/:id/profile')
-          ->name('user_profile')
-          ->controller('User')
-          ->action('profile')
+          ->withName('user_profile')
+          ->withController('User')
+          ->withAction('profile')
           ->requires('id', '\d+')
           ->add();
 
@@ -164,8 +164,8 @@ class RouteBuilderIntegrationTest extends TestCase
 
         // Add builder-based route
         $m->route('new/path/:id')
-          ->controller('New')
-          ->action('show')
+          ->withController('New')
+          ->withAction('show')
           ->add();
 
         // Both should work
@@ -186,23 +186,17 @@ class RouteBuilderIntegrationTest extends TestCase
     }
 
     /**
-     * Test builder with secondary flag
+     * Test builder with withSecondaryRoute()
      */
-    public function testBuilderWithSecondary(): void
+    public function testBuilderWithSecondaryRoute(): void
     {
         $m = new Mapper();
 
-        // Primary route
+        // Primary route with secondary paths
         $m->route('users/:id')
-          ->controller('User')
-          ->action('show')
-          ->add();
-
-        // Secondary route (legacy)
-        $m->route('profile/:id')
-          ->controller('User')
-          ->action('show')
-          ->secondary()
+          ->withController('User')
+          ->withAction('show')
+          ->withSecondaryRoute('/profile/:id')
           ->add();
 
         // Both should match
@@ -222,9 +216,9 @@ class RouteBuilderIntegrationTest extends TestCase
         $m = new Mapper();
 
         $m->route('api/v2/users/:id')
-          ->name('api_user_show')
-          ->controller('Api\\User')
-          ->action('show')
+          ->withName('api_user_show')
+          ->withController('Api\\User')
+          ->withAction('show')
           ->requires('id', '\d+')
           ->add();
 
@@ -246,8 +240,8 @@ class RouteBuilderIntegrationTest extends TestCase
 
         // Public route with no middleware
         $m->route('public/health')
-          ->controller('Public')
-          ->action('health')
+          ->withController('Public')
+          ->withAction('health')
           ->noMiddleware()
           ->add();
 
@@ -268,30 +262,30 @@ class RouteBuilderIntegrationTest extends TestCase
 
         // Define RESTful resource
         $m->route('posts')
-          ->controller('Post')
-          ->action('index')
+          ->withController('Post')
+          ->withAction('index')
           ->get()
           ->add()
           ->route('posts')
-          ->controller('Post')
-          ->action('create')
+          ->withController('Post')
+          ->withAction('create')
           ->post()
           ->add()
           ->route('posts/:id')
-          ->controller('Post')
-          ->action('show')
+          ->withController('Post')
+          ->withAction('show')
           ->requires('id', '\d+')
           ->get()
           ->add()
           ->route('posts/:id')
-          ->controller('Post')
-          ->action('update')
+          ->withController('Post')
+          ->withAction('update')
           ->requires('id', '\d+')
           ->put()
           ->add()
           ->route('posts/:id')
-          ->controller('Post')
-          ->action('delete')
+          ->withController('Post')
+          ->withAction('delete')
           ->requires('id', '\d+')
           ->delete()
           ->add();

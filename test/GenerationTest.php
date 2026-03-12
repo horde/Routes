@@ -457,10 +457,9 @@ class GenerationTest extends TestCase
         $m->connect('archive/:(year)/:(month)/:(day)', array('controller' => 'blog', 'action' => 'view',
                                                              'month' => null, 'day' => null));
 
-        //Stop here and mark this test as incomplete.
-        $this->markTestIncomplete(
-            'This test has not been implemented yet.'
-        );
+        $this->assertEquals('/archive/2004',
+            $m->generate(array('controller' => 'blog', 'action' => 'view',
+                                               'year' => 2004)));
     }
 
     public function testTheSmallestRoute()
@@ -926,22 +925,6 @@ class GenerationTest extends TestCase
         $this->assertNull($utils->urlFor('category_preview_new_message', array('method' => 'get')));
     }
 
-    public function testUnicode()
-    {
-        // Stop here and mark this test as incomplete.
-        $this->markTestIncomplete(
-            'This test has not been implemented yet.'
-        );
-    }
-
-    public function testUnicodeStatic()
-    {
-        // Stop here and mark this test as incomplete.
-        $this->markTestIncomplete(
-            'This test has not been implemented yet.'
-        );
-    }
-
     public function testOtherSpecialChars()
     {
         $m = new Mapper();
@@ -994,6 +977,60 @@ class GenerationTest extends TestCase
                             $m->generate(array_merge($options, array('action' => 'delete',
                                                                      'method' => 'delete',
                                                                      'id'     => '1'))));
+    }
+
+    /**
+     * Test UTF-8 path parameters encode and decode correctly
+     */
+    public function testUTF8PathParameters()
+    {
+        $m = new Mapper();
+        $m->connect('users/:name', ['controller' => 'user', 'action' => 'show']);
+        $m->createRegs([]);
+
+        // Generate with UTF-8 characters
+        $url = $m->generate(['controller' => 'user', 'action' => 'show', 'name' => 'José']);
+        $this->assertEquals('/users/Jos%C3%A9', $url);
+
+        // Match the encoded URL back
+        $match = $m->match('/users/Jos%C3%A9');
+        $this->assertEquals('José', $match['name']);
+
+        // Test with emoji
+        $url = $m->generate(['controller' => 'user', 'action' => 'show', 'name' => '😀']);
+        $this->assertStringContainsString('%F0%9F%98%80', $url);
+    }
+
+    /**
+     * Test UTF-8 query parameters encode correctly
+     */
+    public function testUTF8QueryParameters()
+    {
+        $utils = new \Horde\Routes\Utils(new Mapper());
+
+        // Static route with UTF-8 query params
+        $url = $utils->urlFor('/search', ['q' => 'café']);
+        $this->assertStringContainsString('q=caf%C3%A9', $url);
+    }
+
+    /**
+     * Test query string with special characters using http_build_query
+     */
+    public function testQueryStringWithSpecialCharacters()
+    {
+        $utils = new \Horde\Routes\Utils(new Mapper());
+
+        // Test various special characters
+        $url = $utils->urlFor('/search', [
+            'q' => 'hello world',
+            'filter' => 'a+b',
+            'tag' => 'foo&bar'
+        ]);
+
+        // Verify proper encoding
+        $this->assertStringContainsString('q=hello+world', $url);
+        $this->assertStringContainsString('filter=a%2Bb', $url);
+        $this->assertStringContainsString('tag=foo%26bar', $url);
     }
 
 }

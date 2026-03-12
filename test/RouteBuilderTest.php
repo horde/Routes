@@ -43,12 +43,12 @@ class RouteBuilderTest extends TestCase
     }
 
     /**
-     * Test name() method sets route name
+     * Test withName() method sets route name
      */
-    public function testNameMethod(): void
+    public function testWithNameMethod(): void
     {
         $builder = new RouteBuilder('users/:id');
-        $result = $builder->name('user_show');
+        $result = $builder->withName('user_show');
 
         // Should return self for chaining
         $this->assertSame($builder, $result);
@@ -58,12 +58,12 @@ class RouteBuilderTest extends TestCase
     }
 
     /**
-     * Test controller() method sets controller default
+     * Test withController() method sets controller default
      */
-    public function testControllerMethod(): void
+    public function testWithControllerMethod(): void
     {
         $builder = new RouteBuilder('users/:id');
-        $result = $builder->controller('User');
+        $result = $builder->withController('User');
 
         $this->assertSame($builder, $result);
 
@@ -72,12 +72,12 @@ class RouteBuilderTest extends TestCase
     }
 
     /**
-     * Test action() method sets action default
+     * Test withAction() method sets action default
      */
-    public function testActionMethod(): void
+    public function testWithActionMethod(): void
     {
         $builder = new RouteBuilder('users/:id');
-        $result = $builder->action('show');
+        $result = $builder->withAction('show');
 
         $this->assertSame($builder, $result);
 
@@ -189,17 +189,17 @@ class RouteBuilderTest extends TestCase
     }
 
     /**
-     * Test subdomain() condition
+     * Test withSubdomain() condition
      */
-    public function testSubdomainCondition(): void
+    public function testWithSubdomainCondition(): void
     {
         $builder = new RouteBuilder('api/users');
-        $result = $builder->subdomain('api');
+        $result = $builder->withSubdomain('api');
 
         $this->assertSame($builder, $result);
 
         $config = $builder->toArray();
-        $this->assertEquals('api', $config['conditions']['subdomain']);
+        $this->assertEquals('api', $config['conditions']['subDomain']);
     }
 
     /**
@@ -222,12 +222,12 @@ class RouteBuilderTest extends TestCase
     // ============================================================
 
     /**
-     * Test middleware() sets middleware stack
+     * Test withMiddleware() sets middleware stack
      */
-    public function testMiddlewareStack(): void
+    public function testWithMiddlewareStack(): void
     {
         $builder = new RouteBuilder('api/users');
-        $result = $builder->middleware(['ApiAuth', 'RateLimit']);
+        $result = $builder->withMiddleware(['ApiAuth', 'RateLimit']);
 
         $this->assertSame($builder, $result);
 
@@ -248,26 +248,6 @@ class RouteBuilderTest extends TestCase
         $config = $builder->toArray();
         $this->assertIsArray($config['stack']);
         $this->assertEmpty($config['stack']);
-    }
-
-    /**
-     * Test secondary() flag marks route as non-generative
-     */
-    public function testSecondaryFlag(): void
-    {
-        $builder = new RouteBuilder('legacy/users/:id');
-        $result = $builder->secondary();
-
-        $this->assertSame($builder, $result);
-
-        $config = $builder->toArray();
-        $this->assertTrue($config['_secondary']);
-
-        // Test with explicit false
-        $builder2 = new RouteBuilder('users/:id');
-        $builder2->secondary(false);
-        $config2 = $builder2->toArray();
-        $this->assertArrayNotHasKey('_secondary', $config2);
     }
 
     /**
@@ -294,11 +274,11 @@ class RouteBuilderTest extends TestCase
     public function testToArrayFormat(): void
     {
         $builder = new RouteBuilder('api/users/:id');
-        $builder->controller('User')
-                ->action('show')
+        $builder->withController('User')
+                ->withAction('show')
                 ->requires('id', '\d+')
                 ->get()
-                ->middleware(['Auth']);
+                ->withMiddleware(['Auth']);
 
         $config = $builder->toArray();
 
@@ -324,8 +304,8 @@ class RouteBuilderTest extends TestCase
     public function testBuildCreatesRoute(): void
     {
         $builder = new RouteBuilder('users/:id');
-        $builder->controller('User')
-                ->action('show')
+        $builder->withController('User')
+                ->withAction('show')
                 ->requires('id', '\d+');
 
         $route = $builder->build();
@@ -346,13 +326,12 @@ class RouteBuilderTest extends TestCase
 
         // Chain multiple methods
         $result = $builder
-            ->name('user_show')
-            ->controller('User')
-            ->action('show')
+            ->withName('user_show')
+            ->withController('User')
+            ->withAction('show')
             ->requires('id', '\d+')
             ->get()
-            ->middleware(['Auth'])
-            ->secondary(false)
+            ->withMiddleware(['Auth'])
             ->absolute(false);
 
         // Final result should be the same builder instance
@@ -373,8 +352,8 @@ class RouteBuilderTest extends TestCase
     public function testMethodCalledTwiceLastWins(): void
     {
         $builder = new RouteBuilder('users/:id');
-        $builder->controller('User')
-                ->controller('Admin');
+        $builder->withController('User')
+                ->withController('Admin');
 
         $config = $builder->toArray();
         $this->assertEquals('Admin', $config['controller']);
@@ -386,7 +365,7 @@ class RouteBuilderTest extends TestCase
     public function testWithDefaultsMerges(): void
     {
         $builder = new RouteBuilder('posts/:id');
-        $builder->controller('Post')
+        $builder->withController('Post')
                 ->withDefaults([
                     'action' => 'show',
                     'format' => 'html'
@@ -417,10 +396,10 @@ class RouteBuilderTest extends TestCase
     public function testComplexRealWorldRoute(): void
     {
         $builder = new RouteBuilder('api/v2/:resource/:id');
-        $builder->name('api_resource_show')
+        $builder->withName('api_resource_show')
                 ->requires('id', '\d+')
                 ->methods(['GET', 'HEAD'])
-                ->middleware(['ApiAuth', 'RateLimit', 'JsonResponse'])
+                ->withMiddleware(['ApiAuth', 'RateLimit', 'JsonResponse'])
                 ->withDefaults([
                     'version' => 'v2',
                     'format' => 'json'
