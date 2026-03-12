@@ -482,7 +482,18 @@ with a default and the wildcard:
 
 3.5   Unicode
 
-Not currently supported in the PHP version.
+Routes assumes UTF-8 encoding throughout. PHP 8.x handles UTF-8 strings
+natively, so no special encoding configuration is needed.
+
+UTF-8 characters in route parameters are automatically URL-encoded during
+generation and decoded during matching:
+
+    $m->connect('users/:name');
+    $m->generate(['name' => 'José']);  // Returns: /users/Jos%C3%A9
+    $m->match('/users/Jos%C3%A9');     // Returns: ['name' => 'José']
+
+The $encoding and $decodeErrors properties on Mapper and Route are deprecated
+and no longer have any effect. They remain for backward compatibility only.
 
 
 4   Using Routes

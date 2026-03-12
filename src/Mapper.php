@@ -6,6 +6,8 @@
  * by Ben Bangert (http://routes.groovie.org).  Routes is based
  * largely on ideas from Ruby on Rails (http://www.rubyonrails.org).
  *
+ * Copyright 2013-2026 The Horde Project (http://www.horde.org/)
+ *
  * @author  Maintainable Software, LLC. (http://www.maintainable.com)
  * @author  Mike Naberezny <mike@maintainable.com>
  * @license http://www.horde.org/licenses/bsd BSD
@@ -107,13 +109,15 @@ class Mapper
     public $urlCache = [];
 
     /**
-     * Encoding of routes URLs (not yet supported)
+     * Encoding of routes URLs
+     * @deprecated No longer needed - Routes assumes UTF-8 throughout (PHP 8.x standard)
      * @var string
      */
     public $encoding = 'utf-8';
 
     /**
      * What to do on decoding errors?  'ignore' or 'replace'
+     * @deprecated No longer used - PHP 8.x handles UTF-8 natively
      * @var string
      */
     public $decodeErrors = 'ignore';
@@ -287,11 +291,6 @@ class Mapper
 
         $route = new Route($routePath, $kargs);
 
-        if ($this->encoding != 'utf-8' || $this->decodeErrors != 'ignore') {
-            $route->encoding = $this->encoding;
-            $route->decodeErrors = $this->decodeErrors;
-        }
-
         $this->matchList[] = $route;
 
         if (isset($routeName)) {
@@ -453,12 +452,6 @@ class Mapper
             $route = $routeOrBuilder->build();
         } else {
             $route = $routeOrBuilder;
-        }
-
-        // Apply encoding settings
-        if ($this->encoding != 'utf-8' || $this->decodeErrors != 'ignore') {
-            $route->encoding = $this->encoding;
-            $route->decodeErrors = $this->decodeErrors;
         }
 
         // Add to match list

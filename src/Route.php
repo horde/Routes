@@ -6,6 +6,8 @@
  * by Ben Bangert (http://routes.groovie.org).  Routes is based
  * largely on ideas from Ruby on Rails (http://www.rubyonrails.org).
  *
+ * Copyright 2013-2026 The Horde Project (http://www.horde.org/)
+ *
  * @author  Maintainable Software, LLC. (http://www.maintainable.com)
  * @author  Mike Naberezny <mike@maintainable.com>
  * @license http://www.horde.org/licenses/bsd BSD
@@ -31,13 +33,15 @@ class Route
     public $routePath;
 
     /**
-     * Encoding of this route (not yet supported)
+     * Encoding of this route
+     * @deprecated No longer needed - Routes assumes UTF-8 throughout (PHP 8.x standard)
      * @var string
      */
     public $encoding = 'utf-8';
 
     /**
      * What to do on decoding errors?  'ignore' or 'replace'
+     * @deprecated No longer used - PHP 8.x handles UTF-8 natively
      * @var string
      */
     public string $decodeErrors = 'replace';
@@ -658,8 +662,8 @@ class Route
         }
 
         // Match the regexps we generated
-        $match = preg_match('@' . str_replace('@', '\@', $this->regexp) . '@', $url, $matches);
-        if ($match == 0) {
+        $match = @preg_match('@' . str_replace('@', '\@', $this->regexp) . '@', $url, $matches);
+        if ($match === false || $match == 0) {
             return null;
         }
 
@@ -827,7 +831,7 @@ class Route
                     return null;
                 }
 
-                $urlList[] = Utils::urlQuote($val, $this->encoding);
+                $urlList[] = Utils::urlQuote($val);
                 if ($hasArg) {
                     unset($kargs[$arg]);
                 }
@@ -836,7 +840,7 @@ class Route
                 $arg = $part['name'];
                 $kar = (isset($kargs[$arg])) ? $kargs[$arg] : null;
                 if ($kar != null) {
-                    $urlList[] = Utils::urlQuote($kar, $this->encoding);
+                    $urlList[] = Utils::urlQuote($kar);
                     $gaps = true;
                 }
             } elseif (!empty($part) && in_array(substr($part, -1), $this->_splitChars)) {
