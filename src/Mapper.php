@@ -319,6 +319,209 @@ class Mapper
     }
 
     /**
+     * Connect a secondary/legacy route that matches but doesn't generate
+     *
+     * Secondary routes are useful for supporting alternative URLs (e.g., during
+     * migration from legacy URL schemes) without affecting canonical URL generation.
+     *
+     * Usage:
+     *   // Primary route (used for generation)
+     *   $m->connect('api/users/:id', ['middleware' => ['ApiAuth']]);
+     *
+     *   // Secondary routes (match only, not generated) - e.g., legacy URLs
+     *   $m->connectSecondary('user/:id', ['middleware' => ['ApiAuth']]);
+     *   $m->connectSecondary('profile/:id', ['middleware' => ['ApiAuth']]);
+     *
+     * Note: Designed for modern PSR-7/PSR-15 applications using Horde\Http\Server.
+     * For legacy Horde_Controller applications, consider migrating to PSR-15.
+     * See: horde-development/libraries/controller/controller-deprecation-notice.md
+     *
+     * @param  mixed  $first   First argument (route name or path)
+     * @param  mixed  $second  Second argument (path or kargs)
+     * @param  mixed  $third   Third argument (kargs if named route)
+     * @return void
+     */
+    public function connectSecondary($first, $second = null, $third = null): void
+    {
+        // Parse arguments same as connect()
+        if ($third !== null) {
+            // 3 args: connect('route_name', '/path', array('kargs'=>'here'))
+            $routeName = $first;
+            $routePath = $second;
+            $kargs = $third;
+        } elseif ($second !== null) {
+            if (is_array($second)) {
+                // 2 args: connect('/path', array('kargs'=>'here'))
+                $routeName = null;
+                $routePath = $first;
+                $kargs = $second;
+            } else {
+                // 2 args: connect('route_name', '/path')
+                $routeName = $first;
+                $routePath = $second;
+                $kargs = [];
+            }
+        } else {
+            // 1 arg: connect('/path')
+            $routeName = null;
+            $routePath = $first;
+            $kargs = [];
+        }
+
+        // Mark as secondary
+        $kargs['_secondary'] = true;
+
+        // Use existing connect logic
+        if ($routeName === null) {
+            $this->connect($routePath, $kargs);
+        } else {
+            $this->connect($routeName, $routePath, $kargs);
+        }
+    }
+
+    /**
+     * Get list of all routes with metadata
+     *
+     * Returns array of route information including path, name, type (primary/secondary),
+     * static flag, defaults, and conditions. Useful for debugging and route documentation.
+     *
+     * Example return:
+     *   [
+     *     ['path' => 'api/users/:id', 'name' => 'api_user', 'type' => 'primary', ...],
+     *     ['path' => 'user/:id', 'name' => null, 'type' => 'secondary', ...],
+     *   ]
+     *
+     * @return array Array of route metadata arrays
+     */
+    public function getRouteList(): array
+    {
+        $routes = [];
+
+        foreach ($this->matchList as $route) {
+            // Find the route name if it exists
+            $name = null;
+            foreach ($this->routeNames as $routeName => $routeObj) {
+                if ($routeObj === $route) {
+                    $name = $routeName;
+                    break;
+                }
+            }
+
+            $routes[] = [
+                'path' => $route->routePath,
+                'name' => $name,
+                'type' => $route->secondary ? 'secondary' : 'primary',
+                'static' => $route->static,
+                'defaults' => $route->defaults,
+                'conditions' => $route->conditions,
+            ];
+        }
+
+        return $routes;
+    }
+
+    /**
+     * Add a route using RouteBuilder or Route object
+     *
+     * This method accepts either a RouteBuilder instance (which will be built)
+     * or a Route object directly. It provides integration between the fluent
+     * builder API and the traditional array-based Mapper.
+     *
+     * Example with RouteBuilder:
+     * <code>
+     * $builder = new RouteBuilder('users/:id');
+     * $builder->controller('User')->action('show')->get();
+     * $mapper->addRoute($builder);
+     * </code>
+     *
+     * Example with Route:
+     * <code>
+     * $route = new Route('users/:id', null, ['controller' => 'User']);
+     * $mapper->addRoute($route);
+     * </code>
+     *
+     * Designed for modern PSR-7/PSR-15 applications using the Rampage middleware
+     * framework. Legacy Horde_Controller applications may have limited support.
+     *
+     * @param RouteBuilder|Route $routeOrBuilder RouteBuilder or Route object to add
+     * @return void
+     */
+    public function addRoute(RouteBuilder|Route $routeOrBuilder): void
+    {
+        // If it's a RouteBuilder, build it first
+        if ($routeOrBuilder instanceof RouteBuilder) {
+            $route = $routeOrBuilder->build();
+        } else {
+            $route = $routeOrBuilder;
+        }
+
+        // Apply encoding settings
+        if ($this->encoding != 'utf-8' || $this->decodeErrors != 'ignore') {
+            $route->encoding = $this->encoding;
+            $route->decodeErrors = $this->decodeErrors;
+        }
+
+        // Add to match list
+        $this->matchList[] = $route;
+
+        // If route has a name, add to named routes dictionary
+        $routeName = $route->routeName;
+        if ($routeName !== null) {
+            $this->routeNames[$routeName] = $route;
+        }
+
+        // If not static, add to maxKeys for generation
+        if (!$route->static) {
+            $exists = false;
+            foreach ($this->maxKeys as $key => $value) {
+                if (unserialize($key) == $route->maxKeys) {
+                    $this->maxKeys[$key][] = $route;
+                    $exists = true;
+                    break;
+                }
+            }
+
+            if (!$exists) {
+                $this->maxKeys[serialize($route->maxKeys)] = [$route];
+            }
+        }
+
+        // Invalidate generation cache
+        $this->createdGens = false;
+    }
+
+    /**
+     * Start a fluent route definition
+     *
+     * Returns a FluentRouteBuilder that proxies to RouteBuilder and adds
+     * an ->add() method for chaining multiple route definitions.
+     *
+     * Example:
+     * <code>
+     * $mapper->route('users/:id')
+     *        ->controller('User')
+     *        ->action('show')
+     *        ->requires('id', '\d+')
+     *        ->get()
+     *        ->add()
+     *        ->route('users')
+     *        ->controller('User')
+     *        ->action('index')
+     *        ->add();
+     * </code>
+     *
+     * Designed for modern PSR-7/PSR-15 applications using the Rampage middleware
+     * framework. Legacy Horde_Controller applications may have limited support.
+     *
+     * @param string $path Route path pattern
+     * @return FluentRouteBuilder Fluent builder wrapper
+     */
+    public function route(string $path): FluentRouteBuilder
+    {
+        return new FluentRouteBuilder($this, $path);
+    }
+
+    /**
      * Set an optional Horde_Cache object for the created rules.
      *
      * @param Horde_Cache $cache Cache object
@@ -354,7 +557,7 @@ class Mapper
 
         // Assemble all the hardcoded/defaulted actions/controllers used
         foreach ($this->matchList as $route) {
-            if ($route->static) {
+            if ($route->static || $route->secondary) {
                 continue;
             }
             if (isset($route->defaults['controller'])) {
@@ -373,7 +576,7 @@ class Mapper
         // Otherwise we add it to every hardcode since it can be changed.
         $gendict = [];  // Our generated two-deep hash
         foreach ($this->matchList as $route) {
-            if ($route->static) {
+            if ($route->static || $route->secondary) {
                 continue;
             }
             $clist = $controllerList;

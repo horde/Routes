@@ -314,6 +314,108 @@ class Horde_Routes_Mapper
     }
 
     /**
+     * Connect a secondary/legacy route that matches but doesn't generate
+     *
+     * Secondary routes are useful for supporting alternative URLs (e.g., during
+     * migration from legacy URL schemes) without affecting canonical URL generation.
+     *
+     * Usage:
+     *   // Primary route (used for generation)
+     *   $m->connect('api/users/:id', array('middleware' => array('ApiAuth')));
+     *
+     *   // Secondary routes (match only, not generated) - e.g., legacy URLs
+     *   $m->connectSecondary('user/:id', array('middleware' => array('ApiAuth')));
+     *   $m->connectSecondary('profile/:id', array('middleware' => array('ApiAuth')));
+     *
+     * Note: Designed for modern PSR-7/PSR-15 applications using Horde\Http\Server.
+     * For legacy Horde_Controller applications, consider migrating to PSR-15.
+     * See: horde-development/libraries/controller/controller-deprecation-notice.md
+     *
+     * @param  mixed  $first   First argument (route name or path)
+     * @param  mixed  $second  Second argument (path or kargs)
+     * @param  mixed  $third   Third argument (kargs if named route)
+     * @return void
+     */
+    public function connectSecondary($first, $second = null, $third = null)
+    {
+        // Parse arguments same as connect()
+        if ($third !== null) {
+            // 3 args: connect('route_name', '/path', array('kargs'=>'here'))
+            $routeName = $first;
+            $routePath = $second;
+            $kargs = $third;
+        } elseif ($second !== null) {
+            if (is_array($second)) {
+                // 2 args: connect('/path', array('kargs'=>'here'))
+                $routeName = null;
+                $routePath = $first;
+                $kargs = $second;
+            } else {
+                // 2 args: connect('route_name', '/path')
+                $routeName = $first;
+                $routePath = $second;
+                $kargs = array();
+            }
+        } else {
+            // 1 arg: connect('/path')
+            $routeName = null;
+            $routePath = $first;
+            $kargs = array();
+        }
+
+        // Mark as secondary
+        $kargs['_secondary'] = true;
+
+        // Use existing connect logic
+        if ($routeName === null) {
+            $this->connect($routePath, $kargs);
+        } else {
+            $this->connect($routeName, $routePath, $kargs);
+        }
+    }
+
+    /**
+     * Get list of all routes with metadata
+     *
+     * Returns array of route information including path, name, type (primary/secondary),
+     * static flag, defaults, and conditions. Useful for debugging and route documentation.
+     *
+     * Example return:
+     *   array(
+     *     array('path' => 'api/users/:id', 'name' => 'api_user', 'type' => 'primary', ...),
+     *     array('path' => 'user/:id', 'name' => null, 'type' => 'secondary', ...),
+     *   )
+     *
+     * @return array Array of route metadata arrays
+     */
+    public function getRouteList()
+    {
+        $routes = array();
+
+        foreach ($this->matchList as $route) {
+            // Find the route name if it exists
+            $name = null;
+            foreach ($this->_routeNames as $routeName => $routeObj) {
+                if ($routeObj === $route) {
+                    $name = $routeName;
+                    break;
+                }
+            }
+
+            $routes[] = array(
+                'path' => $route->routePath,
+                'name' => $name,
+                'type' => $route->secondary ? 'secondary' : 'primary',
+                'static' => $route->static,
+                'defaults' => $route->defaults,
+                'conditions' => $route->conditions,
+            );
+        }
+
+        return $routes;
+    }
+
+    /**
      * Set an optional Horde_Cache object for the created rules.
      *
      * @param Horde_Cache $cache Cache object
@@ -349,7 +451,7 @@ class Horde_Routes_Mapper
 
         // Assemble all the hardcoded/defaulted actions/controllers used
         foreach ($this->matchList as $route) {
-            if ($route->static) {
+            if ($route->static || $route->secondary) {
                 continue;
             }
             if (isset($route->defaults['controller'])) {
@@ -368,7 +470,7 @@ class Horde_Routes_Mapper
         // Otherwise we add it to every hardcode since it can be changed.
         $gendict = array();  // Our generated two-deep hash
         foreach ($this->matchList as $route) {
-            if ($route->static) {
+            if ($route->static || $route->secondary) {
                 continue;
             }
             $clist = $controllerList;
