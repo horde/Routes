@@ -116,9 +116,11 @@ class Printer
 
             // route data for output
             foreach ($methods as $method) {
+                // Ensure path starts with single slash (routePath may already include prefix with leading slash)
+                $path = '/' . ltrim($route->routePath, '/');
                 $routes[] = ['name'      => $routeName,
                               'method'    => $method,
-                              'path'      => '/' . $route->routePath,
+                              'path'      => $path,
                               'hardcodes' => $hardcodes, ];
             }
         }
