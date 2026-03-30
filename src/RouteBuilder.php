@@ -10,7 +10,7 @@
  *  - Integration with PSR-7/PSR-15 middleware stacks
  *
  * @author  Maintainable Software, LLC. (http://www.maintainable.com)
- * @author  Ralf Lang <lang@b1-systems.de>
+ * @author  Ralf Lang <ralf.lang@ralf-lang.de>
  * @license http://www.horde.org/licenses/bsd BSD
  * @package Routes
  */

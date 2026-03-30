@@ -2,7 +2,7 @@
 /**
  * Horde Routes package
  *
- * @author  Ralf Lang <lang@b1-systems.de>
+ * @author  Ralf Lang <ralf.lang@ralf-lang.de>
  * @license http://www.horde.org/licenses/bsd BSD
  * @package Routes
  */
