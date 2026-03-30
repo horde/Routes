@@ -114,14 +114,41 @@ class Printer
             }
             $hardcodes = empty($hardcodes) ? '' : '{'. implode(', ', $hardcodes) .'}';
 
+            // Collect secondary paths for the same named route
+            $secondaryPaths = [];
+            if (!empty($routeName) && !$route->secondary) {
+                // This is a primary route - find its secondary routes
+                foreach ($this->_mapper->matchList as $potentialSecondary) {
+                    if ($potentialSecondary->secondary) {
+                        // Check if this secondary route belongs to our primary route
+                        // by comparing hardcoded values (controller, defaults)
+                        $isSame = true;
+                        foreach ($route->hardCoded as $key) {
+                            if (($route->defaults[$key] ?? null) !== ($potentialSecondary->defaults[$key] ?? null)) {
+                                $isSame = false;
+                                break;
+                            }
+                        }
+                        if ($isSame) {
+                            $secondaryPath = '/' . ltrim($potentialSecondary->routePath, '/');
+                            $secondaryPaths[] = $secondaryPath;
+                        }
+                    }
+                }
+            }
+
             // route data for output
             foreach ($methods as $method) {
                 // Ensure path starts with single slash (routePath may already include prefix with leading slash)
                 $path = '/' . ltrim($route->routePath, '/');
-                $routes[] = ['name'      => $routeName,
-                              'method'    => $method,
-                              'path'      => $path,
-                              'hardcodes' => $hardcodes, ];
+                $routes[] = [
+                    'name'           => $routeName,
+                    'method'         => $method,
+                    'path'           => $path,
+                    'hardcodes'      => $hardcodes,
+                    'secondary'      => $route->secondary,
+                    'secondaryPaths' => $secondaryPaths,
+                ];
             }
         }
 
