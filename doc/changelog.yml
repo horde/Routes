@@ -61,6 +61,18 @@
     identifier: BSD-2-Clause
     uri: http://www.horde.org/licenses/bsd
   notes: ~
+3.0.0-beta1:
+  api: 3.0.0-beta1
+  state:
+    release: beta
+    api: beta
+  date: 2026-03-30
+  license:
+    identifier: BSD-2-Clause
+    uri: https://spdx.org/licenses/BSD-2-Clause.html
+  notes: |-
+    chore: It was good while it lasted
+    fix: Routes printer should not use duplicate slashes
 3.0.0-alpha9:
   api: 3.0.0-alpha9
   state:
