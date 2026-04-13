@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Horde Routes package
  *
@@ -11,8 +12,11 @@
  * @license http://www.horde.org/licenses/bsd BSD
  * @package Routes
  */
+
 namespace Horde\Routes\Test;
-use \Horde\Routes\Mapper;
+
+use Horde\Routes\Mapper;
+
 /**
  * @package Routes
  */
@@ -21,7 +25,7 @@ class TestHelper
     /**
      * Update a Mapper instance with a new $environ.  If PATH_INFO
      * is present, try to match it and update mapperDict.
-     * 
+     *
      * @param  Mapper  $mapper   Mapper instance to update
      * @param  array                $environ  Environ to set in Mapper
      * @return void

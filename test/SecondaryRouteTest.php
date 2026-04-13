@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Horde Routes package
  *
@@ -16,6 +17,7 @@ use Horde\Routes\Mapper;
  * Tests for secondary/legacy route feature
  *
  * @package Routes
+ * @coversNothing
  */
 class SecondaryRouteTest extends TestCase
 {
@@ -154,7 +156,7 @@ class SecondaryRouteTest extends TestCase
             'action' => 'show',
             'year' => '2024',
             'month' => '03',
-            'slug' => 'hello-world'
+            'slug' => 'hello-world',
         ]);
         $this->assertEquals('/posts/2024/03/hello-world', $url);
     }

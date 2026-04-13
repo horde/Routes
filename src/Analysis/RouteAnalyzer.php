@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Horde Routes package
  *
@@ -206,7 +207,7 @@ class RouteAnalyzer
                         'parameter' => $param,
                         'pattern' => $pattern,
                         'error' => $error['message'] ?? 'Unknown error',
-                        'severity' => 'error'
+                        'severity' => 'error',
                     ];
                 }
             }
@@ -234,7 +235,7 @@ class RouteAnalyzer
                     'type' => 'duplicate',
                     'message' => 'Duplicate route definition',
                     'route' => $route->routePath,
-                    'severity' => 'warning'
+                    'severity' => 'warning',
                 ];
             } else {
                 $seen[$signature] = true;
@@ -255,7 +256,7 @@ class RouteAnalyzer
         $parts = [
             'path' => $route->routePath,
             'conditions' => $route->conditions ?? [],
-            'requirements' => $route->reqs ?? []
+            'requirements' => $route->reqs ?? [],
         ];
 
         return md5(serialize($parts));
@@ -309,7 +310,7 @@ class RouteAnalyzer
                         'shadowing_route' => $shadowingRoute->routePath,
                         'test_url' => $testUrl,
                         'matched_route' => $shadowingRoute->routePath,
-                        'severity' => 'error'
+                        'severity' => 'error',
                     ];
 
                     // Only report once per route
@@ -355,7 +356,7 @@ class RouteAnalyzer
         $variants = [
             ['numeric' => true],
             ['alpha' => true],
-            ['mixed' => true]
+            ['mixed' => true],
         ];
 
         foreach ($variants as $variant) {
@@ -364,7 +365,7 @@ class RouteAnalyzer
 
             $tests[] = [
                 'url' => $url,
-                'environ' => $environ
+                'environ' => $environ,
             ];
         }
 
@@ -383,7 +384,7 @@ class RouteAnalyzer
         $path = $route->routePath;
 
         // Replace placeholders with test values
-        $path = preg_replace_callback('/:([a-zA-Z_][a-zA-Z0-9_]*)/', function($matches) use ($route, $options) {
+        $path = preg_replace_callback('/:([a-zA-Z_][a-zA-Z0-9_]*)/', function ($matches) use ($route, $options) {
             $param = $matches[1];
 
             // Check if there's a requirement for this parameter
@@ -418,12 +419,12 @@ class RouteAnalyzer
         }
 
         if (preg_match('/^\\\d\{(\d+)\}$/', $pattern, $matches)) {
-            $length = (int)$matches[1];
+            $length = (int) $matches[1];
             return str_repeat('1', $length);
         }
 
         if (preg_match('/^\\\d\{(\d+),(\d+)\}$/', $pattern, $matches)) {
-            $minLength = (int)$matches[1];
+            $minLength = (int) $matches[1];
             return str_repeat('1', $minLength);
         }
 
@@ -528,7 +529,7 @@ class RouteAnalyzer
                 'environ' => $this->mapper->environ,
                 'subDomains' => $this->mapper->subDomains,
                 'subDomainsIgnore' => $this->mapper->subDomainsIgnore,
-                'domainMatch' => $this->mapper->domainMatch ?? ''
+                'domainMatch' => $this->mapper->domainMatch ?? '',
             ]);
 
             if ($match !== null) {

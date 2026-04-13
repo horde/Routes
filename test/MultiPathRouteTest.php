@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Horde Routes package
  *
@@ -12,11 +13,13 @@ namespace Horde\Routes\Test;
 use PHPUnit\Framework\TestCase;
 use Horde\Routes\Mapper;
 use Horde\Routes\RouteBuilder;
+use InvalidArgumentException;
 
 /**
  * Tests for multi-path route feature with auto-naming
  *
  * @package Routes
+ * @coversNothing
  */
 class MultiPathRouteTest extends TestCase
 {
@@ -73,12 +76,18 @@ class MultiPathRouteTest extends TestCase
         $m->addSecondary('/smartmobile.php', 'ResponsiveRules');
 
         // All paths should match with same controller
-        $this->assertEquals('ResponsiveController',
-            $m->match('/responsive')['controller']);
-        $this->assertEquals('ResponsiveController',
-            $m->match('/smartmobile')['controller']);
-        $this->assertEquals('ResponsiveController',
-            $m->match('/smartmobile.php')['controller']);
+        $this->assertEquals(
+            'ResponsiveController',
+            $m->match('/responsive')['controller']
+        );
+        $this->assertEquals(
+            'ResponsiveController',
+            $m->match('/smartmobile')['controller']
+        );
+        $this->assertEquals(
+            'ResponsiveController',
+            $m->match('/smartmobile.php')['controller']
+        );
 
         // Only primary generates
         $url = $m->generate(['controller' => 'ResponsiveController']);
@@ -161,15 +170,19 @@ class MultiPathRouteTest extends TestCase
         $routes = $m->getRouteList();
 
         // Find routes
-        $getUserRoute = array_filter($routes, fn($r) =>
-            $r['path'] === '/users/:id' &&
-            isset($r['conditions']['method']) &&
-            in_array('GET', $r['conditions']['method'])
+        $getUserRoute = array_filter(
+            $routes,
+            fn($r)
+            => $r['path'] === '/users/:id'
+            && isset($r['conditions']['method'])
+            && in_array('GET', $r['conditions']['method'])
         );
-        $postUserRoute = array_filter($routes, fn($r) =>
-            $r['path'] === '/users' &&
-            isset($r['conditions']['method']) &&
-            in_array('POST', $r['conditions']['method'])
+        $postUserRoute = array_filter(
+            $routes,
+            fn($r)
+            => $r['path'] === '/users'
+            && isset($r['conditions']['method'])
+            && in_array('POST', $r['conditions']['method'])
         );
         $apiRoute = array_filter($routes, fn($r) => $r['path'] === '/api/data');
 
@@ -243,7 +256,7 @@ class MultiPathRouteTest extends TestCase
      */
     public function testAddSecondaryInvalidRoute(): void
     {
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage("named route 'NonExistent' does not exist");
 
         $m = new Mapper();

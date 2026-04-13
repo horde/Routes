@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Horde Routes package
  *
@@ -22,6 +23,7 @@ use Horde\Routes\Route;
  *
  * @package Routes
  * @group integration
+ * @coversNothing
  */
 class RouteBuilderIntegrationTest extends TestCase
 {
@@ -143,7 +145,7 @@ class RouteBuilderIntegrationTest extends TestCase
         $url = $m->generate([
             'controller' => 'User',
             'action' => 'profile',
-            'id' => '42'
+            'id' => '42',
         ]);
 
         $this->assertEquals('/users/42/profile', $url);
@@ -159,7 +161,7 @@ class RouteBuilderIntegrationTest extends TestCase
         // Add array-based route
         $m->connect('old/path/:id', [
             'controller' => 'Old',
-            'action' => 'show'
+            'action' => 'show',
         ]);
 
         // Add builder-based route

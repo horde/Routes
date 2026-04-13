@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Tests for stack parameter handling in legacy Routes (PSR-0)
  *
@@ -13,9 +14,11 @@
 namespace Horde\Routes\Test;
 
 use PHPUnit\Framework\TestCase;
+use Horde_Routes_Mapper;
 
 /**
  * @package Routes
+ * @coversNothing
  */
 class StackLegacyTest extends TestCase
 {
@@ -24,7 +27,7 @@ class StackLegacyTest extends TestCase
      */
     public function testEmptyStackArrayPreservedLegacy(): void
     {
-        $mapper = new \Horde_Routes_Mapper();
+        $mapper = new Horde_Routes_Mapper();
         $mapper->connect('test', '/path', ['controller' => 'Test', 'stack' => []]);
         $match = $mapper->match('/path');
 
@@ -40,7 +43,7 @@ class StackLegacyTest extends TestCase
      */
     public function testNullStackPreservedLegacy(): void
     {
-        $mapper = new \Horde_Routes_Mapper();
+        $mapper = new Horde_Routes_Mapper();
         $mapper->connect('test', '/path', ['controller' => 'Test', 'stack' => null]);
         $match = $mapper->match('/path');
 
@@ -55,7 +58,7 @@ class StackLegacyTest extends TestCase
     public function testPopulatedStackPreservedLegacy(): void
     {
         $stack = ['AuthMiddleware', 'LoggerMiddleware'];
-        $mapper = new \Horde_Routes_Mapper();
+        $mapper = new Horde_Routes_Mapper();
         $mapper->connect('test', '/path', ['controller' => 'Test', 'stack' => $stack]);
         $match = $mapper->match('/path');
 
@@ -69,7 +72,7 @@ class StackLegacyTest extends TestCase
      */
     public function testUnsetStackNotInResultLegacy(): void
     {
-        $mapper = new \Horde_Routes_Mapper();
+        $mapper = new Horde_Routes_Mapper();
         $mapper->connect('test', '/path', ['controller' => 'Test']);
         $match = $mapper->match('/path');
 
@@ -82,10 +85,10 @@ class StackLegacyTest extends TestCase
      */
     public function testEmptyStackWithMapperLegacy(): void
     {
-        $mapper = new \Horde_Routes_Mapper();
+        $mapper = new Horde_Routes_Mapper();
         $mapper->connect('public', '/public', [
             'controller' => 'PublicController',
-            'stack' => []
+            'stack' => [],
         ]);
 
         $match = $mapper->match('/public');
@@ -100,10 +103,10 @@ class StackLegacyTest extends TestCase
      */
     public function testNullStackWithMapperLegacy(): void
     {
-        $mapper = new \Horde_Routes_Mapper();
+        $mapper = new Horde_Routes_Mapper();
         $mapper->connect('default', '/default', [
             'controller' => 'DefaultController',
-            'stack' => null
+            'stack' => null,
         ]);
 
         $match = $mapper->match('/default');
@@ -119,10 +122,10 @@ class StackLegacyTest extends TestCase
     public function testPopulatedStackWithMapperLegacy(): void
     {
         $stack = ['Auth', 'CSRF', 'Logging'];
-        $mapper = new \Horde_Routes_Mapper();
+        $mapper = new Horde_Routes_Mapper();
         $mapper->connect('protected', '/protected', [
             'controller' => 'ProtectedController',
-            'stack' => $stack
+            'stack' => $stack,
         ]);
 
         $match = $mapper->match('/protected');
@@ -137,9 +140,9 @@ class StackLegacyTest extends TestCase
      */
     public function testUnsetStackWithMapperLegacy(): void
     {
-        $mapper = new \Horde_Routes_Mapper();
+        $mapper = new Horde_Routes_Mapper();
         $mapper->connect('unset', '/unset', [
-            'controller' => 'UnsetController'
+            'controller' => 'UnsetController',
         ]);
 
         $match = $mapper->match('/unset');
@@ -153,7 +156,7 @@ class StackLegacyTest extends TestCase
      */
     public function testEmptyStackVsUnsetStackLegacy(): void
     {
-        $mapper = new \Horde_Routes_Mapper();
+        $mapper = new Horde_Routes_Mapper();
 
         // Empty stack route
         $mapper->connect('empty', '/empty', ['controller' => 'Empty', 'stack' => []]);
@@ -178,11 +181,11 @@ class StackLegacyTest extends TestCase
      */
     public function testEmptyStackWithParametersLegacy(): void
     {
-        $mapper = new \Horde_Routes_Mapper();
+        $mapper = new Horde_Routes_Mapper();
         $mapper->connect('item', '/item/:id', [
             'controller' => 'ItemController',
             'action' => 'view',
-            'stack' => []
+            'stack' => [],
         ]);
 
         $match = $mapper->match('/item/123');
@@ -208,7 +211,7 @@ class StackLegacyTest extends TestCase
         $modernMatch = $modernMapper->match('/path');
 
         // Legacy
-        $legacyMapper = new \Horde_Routes_Mapper();
+        $legacyMapper = new Horde_Routes_Mapper();
         $legacyMapper->connect('test', '/path', $params);
         $legacyMatch = $legacyMapper->match('/path');
 

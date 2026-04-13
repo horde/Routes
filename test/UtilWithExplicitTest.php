@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Horde Routes package
  *
@@ -11,32 +12,37 @@
  * @license http://www.horde.org/licenses/bsd BSD
  * @package Routes
  */
+
 namespace Horde\Routes\Test;
+
 use PHPUnit\Framework\TestCase;
-use \Horde\Routes\Mapper;
+use Horde\Routes\Mapper;
 
 require_once __DIR__ . '/TestHelper.php';
 
 /**
  * @package Routes
+ * @coversNothing
  */
-class UtilWithExplicitTest extends TestCase {
-
+class UtilWithExplicitTest extends TestCase
+{
     protected $mapper;
     protected $utils;
 
     public function setUp(): void
     {
-        $m = new Mapper(array('explicit' => true));
-        $m->connect('archive/:year/:month/:day',
-            array('controller' => 'blog',
-                  'action' => 'view',
-                  'month' => null,
-                  'day' => null,
-                  'requirements' => array('month' => '\d{1,2}', 'day' => '\d{1,2}')));
-        $m->connect('viewpost/:id', array('controller' => 'post', 'action' => 'view', 'id' => null));
+        $m = new Mapper(['explicit' => true]);
+        $m->connect(
+            'archive/:year/:month/:day',
+            ['controller' => 'blog',
+                'action' => 'view',
+                'month' => null,
+                'day' => null,
+                'requirements' => ['month' => '\d{1,2}', 'day' => '\d{1,2}']]
+        );
+        $m->connect('viewpost/:id', ['controller' => 'post', 'action' => 'view', 'id' => null]);
         $m->connect(':controller/:action/:id');
-        $m->environ = array('SERVER_NAME' => 'www.test.com');
+        $m->environ = ['SERVER_NAME' => 'www.test.com'];
         $this->mapper = $m;
         $this->utils = $m->utils;
     }
@@ -44,67 +50,82 @@ class UtilWithExplicitTest extends TestCase {
     public function testUrlFor()
     {
         $utils = $this->utils;
-        $utils->mapperDict = array();
+        $utils->mapperDict = [];
 
-        $this->assertNull($utils->urlFor(array('controller' => 'blog')));
+        $this->assertNull($utils->urlFor(['controller' => 'blog']));
         $this->assertNull($utils->urlFor());
-        $this->assertEquals('/blog/view/3',
-                            $utils->urlFor(array('controller' => 'blog', 'action' => 'view',
-                                                'id' => 3)));
-        $this->assertEquals('https://www.test.com/viewpost',
-                            $utils->urlFor(array('controller' => 'post', 'action' => 'view',
-                                                'protocol' => 'https')));
-        $this->assertEquals('http://www.test.org/content/view/2',
-                            $utils->urlFor(array('host' => 'www.test.org', 'controller' => 'content',
-                                                'action' => 'view', 'id' => 2)));
+        $this->assertEquals(
+            '/blog/view/3',
+            $utils->urlFor(['controller' => 'blog', 'action' => 'view',
+                'id' => 3])
+        );
+        $this->assertEquals(
+            'https://www.test.com/viewpost',
+            $utils->urlFor(['controller' => 'post', 'action' => 'view',
+                'protocol' => 'https'])
+        );
+        $this->assertEquals(
+            'http://www.test.org/content/view/2',
+            $utils->urlFor(['host' => 'www.test.org', 'controller' => 'content',
+                'action' => 'view', 'id' => 2])
+        );
 
         $m = $this->mapper;
 
         $utils = $m->utils;
-        $utils->mapperDict = array();
+        $utils->mapperDict = [];
 
-        $m->connect('home', '', array('controller' => 'blog', 'action' => 'splash'));
-        $m->connect('category_home', 'category/:section',
-                    array('controller' => 'blog', 'action' => 'view', 'section' => 'home'));
-        $m->createRegs(array('content', 'blog', 'admin/comments'));
+        $m->connect('home', '', ['controller' => 'blog', 'action' => 'splash']);
+        $m->connect(
+            'category_home',
+            'category/:section',
+            ['controller' => 'blog', 'action' => 'view', 'section' => 'home']
+        );
+        $m->createRegs(['content', 'blog', 'admin/comments']);
 
-        $this->assertEquals('/content/splash/2',
-                            $utils->urlFor(array('controller' => 'content', 'action' => 'splash',
-                                                 'id' => 2)));
+        $this->assertEquals(
+            '/content/splash/2',
+            $utils->urlFor(['controller' => 'content', 'action' => 'splash',
+                'id' => 2])
+        );
     }
 
     public function testUrlForWithDefaults()
     {
         $utils = $this->utils;
-        $utils->mapperDict = array('controller' => 'blog', 'action' => 'view', 'id' => 4);
+        $utils->mapperDict = ['controller' => 'blog', 'action' => 'view', 'id' => 4];
 
         $this->assertNull($utils->urlFor());
-        $this->assertNull($utils->urlFor(array('controller' => 'post')));
-        $this->assertNull($utils->urlFor(array('id' => 2)));
-        $this->assertEquals('/viewpost/4',
-                            $utils->urlFor(array('controller' => 'post', 'action' => 'view',
-                                                'id' => 4)));
+        $this->assertNull($utils->urlFor(['controller' => 'post']));
+        $this->assertNull($utils->urlFor(['id' => 2]));
+        $this->assertEquals(
+            '/viewpost/4',
+            $utils->urlFor(['controller' => 'post', 'action' => 'view',
+                'id' => 4])
+        );
 
-        $utils->mapperDict = array('controller' => 'blog', 'action' => 'view', 'year' => 2004);
-        $this->assertNull($utils->urlFor(array('month' => 10)));
-        $this->assertNull($utils->urlFor(array('month' => 9, 'day' => 2)));
-        $this->assertNull($utils->urlFor(array('controller' => 'blog', 'year' => null)));
+        $utils->mapperDict = ['controller' => 'blog', 'action' => 'view', 'year' => 2004];
+        $this->assertNull($utils->urlFor(['month' => 10]));
+        $this->assertNull($utils->urlFor(['month' => 9, 'day' => 2]));
+        $this->assertNull($utils->urlFor(['controller' => 'blog', 'year' => null]));
     }
 
     public function testUrlForWithMoreDefaults()
     {
         $utils = $this->utils;
-        $utils->mapperDict = array('controller' => 'blog', 'action' => 'view', 'id' => 4);
+        $utils->mapperDict = ['controller' => 'blog', 'action' => 'view', 'id' => 4];
 
         $this->assertNull($utils->urlFor());
-        $this->assertNull($utils->urlFor(array('controller' => 'post')));
-        $this->assertNull($utils->urlFor(array('id' => 2)));
-        $this->assertEquals('/viewpost/4',
-                            $utils->urlFor(array('controller' => 'post', 'action' => 'view',
-                                                'id' => 4)));
+        $this->assertNull($utils->urlFor(['controller' => 'post']));
+        $this->assertNull($utils->urlFor(['id' => 2]));
+        $this->assertEquals(
+            '/viewpost/4',
+            $utils->urlFor(['controller' => 'post', 'action' => 'view',
+                'id' => 4])
+        );
 
-        $utils->mapperDict = array('controller' => 'blog', 'action' => 'view', 'year' => 2004);
-        $this->assertNull($utils->urlFor(array('month' => 10)));
+        $utils->mapperDict = ['controller' => 'blog', 'action' => 'view', 'year' => 2004];
+        $this->assertNull($utils->urlFor(['month' => 10]));
         $this->assertNull($utils->urlFor());
     }
 
@@ -113,33 +134,42 @@ class UtilWithExplicitTest extends TestCase {
         $utils = $this->utils;
 
         $m = $this->mapper;
-        $m->connect('home', '', array('controller' => 'blog', 'action' => 'splash'));
-        $m->connect('category_home', 'category/:section',
-                    array('controller' => 'blog', 'action' => 'view', 'section' => 'home'));
+        $m->connect('home', '', ['controller' => 'blog', 'action' => 'splash']);
+        $m->connect(
+            'category_home',
+            'category/:section',
+            ['controller' => 'blog', 'action' => 'view', 'section' => 'home']
+        );
         $m->connect(':controller/:action/:id');
-        $m->createRegs(array('content', 'blog', 'admin/comments'));
+        $m->createRegs(['content', 'blog', 'admin/comments']);
 
-        $environ = array('SCRIPT_NAME' => '', 'SERVER_NAME' => 'www.example.com',
-                         'SERVER_PORT' => '80', 'PATH_INFO' => '/blog/view/4');
+        $environ = ['SCRIPT_NAME' => '', 'SERVER_NAME' => 'www.example.com',
+            'SERVER_PORT' => '80', 'PATH_INFO' => '/blog/view/4'];
         TestHelper::updateMapper($m, $environ);
 
         $this->assertNull($utils->urlFor());
-        $this->assertNull($utils->urlFor(array('controller' => 'post')));
-        $this->assertNull($utils->urlFor(array('id' => 2)));
-        $this->assertNull($utils->urlFor(array('qualified' => true, 'controller' => 'blog', 'id' => 4)));
-        $this->assertEquals('http://www.example.com/blog/view/4',
-                            $utils->urlFor(array('qualified' => true, 'controller' => 'blog',
-                                                'action' => 'view', 'id' => 4)));
-        $this->assertEquals('/viewpost/4',
-                            $utils->urlFor(array('controller' => 'post', 'action' => 'view', 'id' => 4)));
+        $this->assertNull($utils->urlFor(['controller' => 'post']));
+        $this->assertNull($utils->urlFor(['id' => 2]));
+        $this->assertNull($utils->urlFor(['qualified' => true, 'controller' => 'blog', 'id' => 4]));
+        $this->assertEquals(
+            'http://www.example.com/blog/view/4',
+            $utils->urlFor(['qualified' => true, 'controller' => 'blog',
+                'action' => 'view', 'id' => 4])
+        );
+        $this->assertEquals(
+            '/viewpost/4',
+            $utils->urlFor(['controller' => 'post', 'action' => 'view', 'id' => 4])
+        );
 
-        $environ = array('SCRIPT_NAME' => '', 'HTTP_HOST' => 'www.example.com:8080', 'PATH_INFO' => '/blog/view/4');
+        $environ = ['SCRIPT_NAME' => '', 'HTTP_HOST' => 'www.example.com:8080', 'PATH_INFO' => '/blog/view/4'];
         TestHelper::updateMapper($m, $environ);
 
-        $this->assertNull($utils->urlFor(array('controller' => 'post')));
-        $this->assertEquals('http://www.example.com:8080/blog/view/4',
-                            $utils->urlFor(array('qualified' => true, 'controller' => 'blog',
-                                                'action' => 'view', 'id' => 4)));
+        $this->assertNull($utils->urlFor(['controller' => 'post']));
+        $this->assertEquals(
+            'http://www.example.com:8080/blog/view/4',
+            $utils->urlFor(['qualified' => true, 'controller' => 'blog',
+                'action' => 'view', 'id' => 4])
+        );
     }
 
     public function testWithRouteNames()
@@ -147,22 +177,29 @@ class UtilWithExplicitTest extends TestCase {
         $m = $this->mapper;
 
         $utils = $m->utils;
-        $utils->mapperDict = array();
+        $utils->mapperDict = [];
 
-        $m->connect('home', '', array('controller' => 'blog', 'action' => 'splash'));
-        $m->connect('category_home', 'category/:section',
-                    array('controller' => 'blog', 'action' => 'view', 'section' => 'home'));
-        $m->createRegs(array('content', 'blog', 'admin/comments'));
+        $m->connect('home', '', ['controller' => 'blog', 'action' => 'splash']);
+        $m->connect(
+            'category_home',
+            'category/:section',
+            ['controller' => 'blog', 'action' => 'view', 'section' => 'home']
+        );
+        $m->createRegs(['content', 'blog', 'admin/comments']);
 
-        $this->assertNull($utils->urlFor(array('controller' => 'content', 'action' => 'view')));
-        $this->assertNull($utils->urlFor(array('controller' => 'content')));
-        $this->assertNull($utils->urlFor(array('controller' => 'admin/comments')));
-        $this->assertEquals('/category',
-                            $utils->urlFor('category_home'));
-        $this->assertEquals('/category/food',
-                            $utils->urlFor('category_home', array('section' => 'food')));
-        $this->assertNull($utils->urlFor('home', array('action' => 'view', 'section' => 'home')));
-        $this->assertNull($utils->urlFor('home', array('controller' => 'content')));
+        $this->assertNull($utils->urlFor(['controller' => 'content', 'action' => 'view']));
+        $this->assertNull($utils->urlFor(['controller' => 'content']));
+        $this->assertNull($utils->urlFor(['controller' => 'admin/comments']));
+        $this->assertEquals(
+            '/category',
+            $utils->urlFor('category_home')
+        );
+        $this->assertEquals(
+            '/category/food',
+            $utils->urlFor('category_home', ['section' => 'food'])
+        );
+        $this->assertNull($utils->urlFor('home', ['action' => 'view', 'section' => 'home']));
+        $this->assertNull($utils->urlFor('home', ['controller' => 'content']));
         $this->assertEquals('/', $utils->urlFor('home'));
     }
 
@@ -171,22 +208,30 @@ class UtilWithExplicitTest extends TestCase {
         $m = $this->mapper;
 
         $utils = $m->utils;
-        $utils->mapperDict = array();
+        $utils->mapperDict = [];
 
-        $m->connect('home', '', array('controller' => 'blog', 'action' => 'splash'));
-        $m->connect('category_home', 'category/:section',
-                    array('controller' => 'blog', 'action' => 'view', 'section' => 'home'));
-        $m->connect('building', 'building/:campus/:building/alljacks',
-                    array('controller' => 'building', 'action' => 'showjacks'));
-        $m->createRegs(array('content', 'blog', 'admin/comments', 'building'));
+        $m->connect('home', '', ['controller' => 'blog', 'action' => 'splash']);
+        $m->connect(
+            'category_home',
+            'category/:section',
+            ['controller' => 'blog', 'action' => 'view', 'section' => 'home']
+        );
+        $m->connect(
+            'building',
+            'building/:campus/:building/alljacks',
+            ['controller' => 'building', 'action' => 'showjacks']
+        );
+        $m->createRegs(['content', 'blog', 'admin/comments', 'building']);
 
-        $utils->mapperDict = array('controller' => 'building', 'action' => 'showjacks',
-                                  'campus' => 'wilma', 'building' => 'port');
+        $utils->mapperDict = ['controller' => 'building', 'action' => 'showjacks',
+            'campus' => 'wilma', 'building' => 'port'];
 
         $this->assertNull($utils->urlFor());
-        $this->assertEquals('/building/wilma/port/alljacks',
-                            $utils->urlFor(array('controller' => 'building', 'action' => 'showjacks',
-                                                'campus' => 'wilma', 'building' => 'port')));
+        $this->assertEquals(
+            '/building/wilma/port/alljacks',
+            $utils->urlFor(['controller' => 'building', 'action' => 'showjacks',
+                'campus' => 'wilma', 'building' => 'port'])
+        );
         $this->assertEquals('/', $utils->urlFor('home'));
     }
 
@@ -194,40 +239,63 @@ class UtilWithExplicitTest extends TestCase {
     {
         $m = new Mapper();
         $utils = $m->utils;
-        $utils->mapperDict = array();
+        $utils->mapperDict = [];
 
-        $m->resource('message', 'messages',
-                     array('member'     => array('mark' => 'GET'),
-                           'collection' => array('rss' => 'GET')));
-        $m->createRegs(array('messages'));
+        $m->resource(
+            'message',
+            'messages',
+            ['member'     => ['mark' => 'GET'],
+                'collection' => ['rss' => 'GET']]
+        );
+        $m->createRegs(['messages']);
 
-        $this->assertNull($utils->urlFor(array('controller' => 'content', 'action' => 'view')));
-        $this->assertNull($utils->urlFor(array('controller' => 'content')));
-        $this->assertNull($utils->urlFor(array('controller' => 'admin/comments')));
-        $this->assertEquals('/messages',
-                            $utils->urlFor('messages'));
-        $this->assertEquals('/messages/rss',
-                            $utils->urlFor('rss_messages'));
-        $this->assertEquals('/messages/4',
-                            $utils->urlFor('message', array('id' => 4)));
-        $this->assertEquals('/messages/4/edit',
-                            $utils->urlFor('edit_message', array('id' => 4)));
-        $this->assertEquals('/messages/4/mark',
-                            $utils->urlFor('mark_message', array('id' => 4)));
-        $this->assertEquals('/messages/new',
-                            $utils->urlFor('new_message'));
-        $this->assertEquals('/messages.xml',
-                            $utils->urlFor('formatted_messages', array('format' => 'xml')));
-        $this->assertEquals('/messages/rss.xml',
-                            $utils->urlFor('formatted_rss_messages', array('format' => 'xml')));
-        $this->assertEquals('/messages/4.xml',
-                            $utils->urlFor('formatted_message', array('id' => 4, 'format' => 'xml')));
-        $this->assertEquals('/messages/4/edit.xml',
-                            $utils->urlFor('formatted_edit_message', array('id' => 4, 'format' => 'xml')));
+        $this->assertNull($utils->urlFor(['controller' => 'content', 'action' => 'view']));
+        $this->assertNull($utils->urlFor(['controller' => 'content']));
+        $this->assertNull($utils->urlFor(['controller' => 'admin/comments']));
+        $this->assertEquals(
+            '/messages',
+            $utils->urlFor('messages')
+        );
+        $this->assertEquals(
+            '/messages/rss',
+            $utils->urlFor('rss_messages')
+        );
+        $this->assertEquals(
+            '/messages/4',
+            $utils->urlFor('message', ['id' => 4])
+        );
+        $this->assertEquals(
+            '/messages/4/edit',
+            $utils->urlFor('edit_message', ['id' => 4])
+        );
+        $this->assertEquals(
+            '/messages/4/mark',
+            $utils->urlFor('mark_message', ['id' => 4])
+        );
+        $this->assertEquals(
+            '/messages/new',
+            $utils->urlFor('new_message')
+        );
+        $this->assertEquals(
+            '/messages.xml',
+            $utils->urlFor('formatted_messages', ['format' => 'xml'])
+        );
+        $this->assertEquals(
+            '/messages/rss.xml',
+            $utils->urlFor('formatted_rss_messages', ['format' => 'xml'])
+        );
+        $this->assertEquals(
+            '/messages/4.xml',
+            $utils->urlFor('formatted_message', ['id' => 4, 'format' => 'xml'])
+        );
+        $this->assertEquals(
+            '/messages/4/edit.xml',
+            $utils->urlFor('formatted_edit_message', ['id' => 4, 'format' => 'xml'])
+        );
         $this->assertEquals('/messages/4/mark.xml',
-                            $utils->urlFor('formatted_mark_message', array('id' => 4, 'format' => 'xml')));
+            $utils->urlFor('formatted_mark_message', ['id' => 4, 'format' => 'xml']));
         $this->assertEquals('/messages/new.xml',
-                            $utils->urlFor('formatted_new_message', array('format' => 'xml')));
+            $utils->urlFor('formatted_new_message', ['format' => 'xml']));
     }
 
 }

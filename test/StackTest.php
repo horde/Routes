@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Tests for stack parameter handling in Routes
  *
@@ -20,6 +21,7 @@ use Horde\Routes\Mapper;
 
 /**
  * @package Routes
+ * @coversNothing
  */
 class StackTest extends TestCase
 {
@@ -31,7 +33,7 @@ class StackTest extends TestCase
         $mapper = new Mapper();
         $mapper->connect('public', '/public', [
             'controller' => 'PublicController',
-            'stack' => []
+            'stack' => [],
         ]);
 
         $match = $mapper->match('/public');
@@ -49,7 +51,7 @@ class StackTest extends TestCase
         $mapper = new Mapper();
         $mapper->connect('default', '/default', [
             'controller' => 'DefaultController',
-            'stack' => null
+            'stack' => null,
         ]);
 
         $match = $mapper->match('/default');
@@ -68,7 +70,7 @@ class StackTest extends TestCase
         $mapper = new Mapper();
         $mapper->connect('protected', '/protected', [
             'controller' => 'ProtectedController',
-            'stack' => $stack
+            'stack' => $stack,
         ]);
 
         $match = $mapper->match('/protected');
@@ -85,7 +87,7 @@ class StackTest extends TestCase
     {
         $mapper = new Mapper();
         $mapper->connect('unset', '/unset', [
-            'controller' => 'UnsetController'
+            'controller' => 'UnsetController',
         ]);
 
         $match = $mapper->match('/unset');
@@ -128,7 +130,7 @@ class StackTest extends TestCase
         $mapper->connect('item', '/item/:id', [
             'controller' => 'ItemController',
             'action' => 'view',
-            'stack' => []
+            'stack' => [],
         ]);
 
         $match = $mapper->match('/item/123');

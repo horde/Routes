@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Horde Routes package
  *
@@ -22,6 +23,4 @@ use Horde_Exception_Wrapped;
  *
  * @package Routes
  */
-class Exception extends Horde_Exception_Wrapped
-{
-}
+class Exception extends Horde_Exception_Wrapped {}

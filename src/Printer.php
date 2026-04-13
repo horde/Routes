@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Horde Routes package
  *
@@ -69,7 +70,7 @@ class Printer
 
         // print the output
         foreach ($routes as $r) {
-            fwrite($stream, str_pad($r['name'], $widths['name'], ' ', STR_PAD_LEFT)  . ' ');
+            fwrite($stream, str_pad($r['name'], $widths['name'], ' ', STR_PAD_LEFT) . ' ');
             fwrite($stream, str_pad($r['method'], $widths['method'], ' ', STR_PAD_RIGHT) . ' ');
             fwrite($stream, str_pad($r['path'], $widths['path'], ' ', STR_PAD_RIGHT) . ' ');
             fwrite($stream, $r['hardcodes'] . $eol);
@@ -112,7 +113,7 @@ class Printer
                 $dump = ":{$key}=>\"{$value}\"";
                 ($key == 'controller') ? array_unshift($hardcodes, $dump) : $hardcodes[] = $dump;
             }
-            $hardcodes = empty($hardcodes) ? '' : '{'. implode(', ', $hardcodes) .'}';
+            $hardcodes = empty($hardcodes) ? '' : '{' . implode(', ', $hardcodes) . '}';
 
             // Collect secondary paths for the same named route
             $secondaryPaths = [];

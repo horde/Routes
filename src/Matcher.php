@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Helper class to generate the match dictionary for the incoming request.
  *
@@ -15,11 +16,12 @@ namespace Horde\Routes;
 use Horde_Controller_Request;
 use Horde_Support_Array;
 use Psr\Http\Message\ServerRequestInterface;
+use RuntimeException;
 
 /**
  * Generates the match dictionary for the incoming request.
  *
- * Copyright 2011-2017 Horde LLC (http://www.horde.org/)
+ * Copyright 2011-2026 Horde LLC (http://www.horde.org/)
  *
  * See the enclosed file LICENSE for license information (LGPL). If you did not
  * receive this file, see
@@ -94,7 +96,7 @@ class Matcher
         } elseif (method_exists($this->request, 'getUri')) {
             $path = $this->request->getUri()->getPath();
         } else {
-            throw new \RuntimeException('Request must implement getPath() or getUri()');
+            throw new RuntimeException('Request must implement getPath() or getUri()');
         }
 
         // Strip query string

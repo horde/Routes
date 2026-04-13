@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Horde Routes package
  *
@@ -20,6 +21,7 @@ use Horde\Routes\Route;
  * They should fail until RouteBuilder is implemented.
  *
  * @package Routes
+ * @coversNothing
  */
 class RouteBuilderTest extends TestCase
 {
@@ -127,7 +129,7 @@ class RouteBuilderTest extends TestCase
         $result = $builder->withRequirements([
             'year' => '\d{4}',
             'month' => '\d{2}',
-            'day' => '\d{2}'
+            'day' => '\d{2}',
         ]);
 
         $this->assertSame($builder, $result);
@@ -208,7 +210,9 @@ class RouteBuilderTest extends TestCase
     public function testWhereFunction(): void
     {
         $builder = new RouteBuilder('special/:id');
-        $callable = function($environ) { return true; };
+        $callable = function ($environ) {
+            return true;
+        };
         $result = $builder->where($callable);
 
         $this->assertSame($builder, $result);
@@ -368,7 +372,7 @@ class RouteBuilderTest extends TestCase
         $builder->withController('Post')
                 ->withDefaults([
                     'action' => 'show',
-                    'format' => 'html'
+                    'format' => 'html',
                 ]);
 
         $config = $builder->toArray();
@@ -402,7 +406,7 @@ class RouteBuilderTest extends TestCase
                 ->withMiddleware(['ApiAuth', 'RateLimit', 'JsonResponse'])
                 ->withDefaults([
                     'version' => 'v2',
-                    'format' => 'json'
+                    'format' => 'json',
                 ]);
 
         $config = $builder->toArray();

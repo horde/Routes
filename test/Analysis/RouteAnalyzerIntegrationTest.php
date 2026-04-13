@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Horde Routes package
  *
@@ -21,6 +22,7 @@ use Horde\Routes\Analysis\RouteAnalysisReport;
  *
  * @package Routes
  * @group integration
+ * @coversNothing
  */
 class RouteAnalyzerIntegrationTest extends TestCase
 {
@@ -75,14 +77,14 @@ class RouteAnalyzerIntegrationTest extends TestCase
         $m->connect('posts/:id', [
             'controller' => 'Post',
             'action' => 'show',
-            'conditions' => ['method' => ['GET']]
+            'conditions' => ['method' => ['GET']],
         ]);
 
         // Form to create new post - shadowed by :id route
         $m->connect('posts/new', [
             'controller' => 'Post',
             'action' => 'new',
-            'conditions' => ['method' => ['GET']]
+            'conditions' => ['method' => ['GET']],
         ]);
 
         $analyzer = new RouteAnalyzer($m);
@@ -93,8 +95,8 @@ class RouteAnalyzerIntegrationTest extends TestCase
 
         $shadowedNew = false;
         foreach ($warnings as $warning) {
-            if ($warning['type'] === 'shadowed' &&
-                str_contains($warning['shadowed_route'], 'posts/new')) {
+            if ($warning['type'] === 'shadowed'
+                && str_contains($warning['shadowed_route'], 'posts/new')) {
                 $shadowedNew = true;
                 break;
             }
@@ -153,16 +155,16 @@ class RouteAnalyzerIntegrationTest extends TestCase
                     $m->connect("api/{$resource}", [
                         'controller' => "Api\\" . ucfirst($resource),
                         'action' => $action,
-                        'conditions' => ['method' => [$action === 'index' ? 'GET' : 'POST']]
+                        'conditions' => ['method' => [$action === 'index' ? 'GET' : 'POST']],
                     ]);
                 } else {
                     $m->connect("api/{$resource}/:id", [
                         'controller' => "Api\\" . ucfirst($resource),
                         'action' => $action,
                         'conditions' => ['method' => [
-                            $action === 'show' ? 'GET' :
-                            ($action === 'update' ? 'PUT' : 'DELETE')
-                        ]]
+                            $action === 'show' ? 'GET'
+                            : ($action === 'update' ? 'PUT' : 'DELETE'),
+                        ]],
                     ]);
                 }
             }
@@ -280,7 +282,7 @@ class RouteAnalyzerIntegrationTest extends TestCase
         for ($i = 0; $i < 100; $i++) {
             $m->connect("route{$i}/:id", [
                 'controller' => "Controller{$i}",
-                'action' => 'show'
+                'action' => 'show',
             ]);
         }
 

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Horde Routes package
  *
@@ -111,7 +112,7 @@ class Utils
             // urlFor('named_route')
             // urlFor('named_route', array('id' => 3, ...))
             // urlFor('static_path')
-            $routeName = (string)$first;
+            $routeName = (string) $first;
             $kargs = $second;
         }
 
@@ -157,8 +158,8 @@ class Utils
                 $url = $routeName;
             }
 
-            if ((substr($url, 0, 1) == '/') &&
-                isset($environ['SCRIPT_NAME'])) {
+            if ((substr($url, 0, 1) == '/')
+                && isset($environ['SCRIPT_NAME'])) {
                 $url = $environ['SCRIPT_NAME'] . $url;
             }
 

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Horde Routes package
  *
@@ -70,7 +71,7 @@ class Horde_Routes_Route
      * Default keyword arguments for this route
      * @var array
      */
-    public $defaults = array();
+    public $defaults = [];
 
     /**
      * Array of keyword args for special conditions (method, subDomain, function)
@@ -199,54 +200,54 @@ class Horde_Routes_Route
      *      Route is generally not called directly, a Mapper instance connect()
      *      method should be used to add routes.
      */
-    public function __construct($routePath, $kargs = array())
+    public function __construct($routePath, $kargs = [])
     {
         $this->routePath = $routePath;
 
         // Don't bother forming stuff we don't need if its a static route
-        $this->static = isset($kargs['_static']) ? $kargs['_static'] : false;
+        $this->static = $kargs['_static'] ?? false;
 
 
         if (isset($kargs['stack'])) {
             $this->stack = $kargs['stack'];
-            unset ($kargs['stack']);
+            unset($kargs['stack']);
         }
 
         // Secondary routes match but don't generate URLs
-        $this->secondary = isset($kargs['_secondary']) ? $kargs['_secondary'] : false;
+        $this->secondary = $kargs['_secondary'] ?? false;
         unset($kargs['_secondary']);
 
-        $this->filter = isset($kargs['_filter']) ? $kargs['_filter'] : null;
+        $this->filter = $kargs['_filter'] ?? null;
         unset($kargs['_filter']);
 
-        $this->absolute = isset($kargs['_absolute']) ? $kargs['_absolute'] : false;
+        $this->absolute = $kargs['_absolute'] ?? false;
         unset($kargs['_absolute']);
 
         // Pull out the member/collection name if present, this applies only to
         // map.resource
-        $this->_memberName = isset($kargs['_memberName']) ? $kargs['_memberName'] : null;
+        $this->_memberName = $kargs['_memberName'] ?? null;
         unset($kargs['_memberName']);
 
-        $this->_collectionName = isset($kargs['_collectionName']) ? $kargs['_collectionName'] : null;
+        $this->_collectionName = $kargs['_collectionName'] ?? null;
         unset($kargs['_collectionName']);
 
-        $this->_parentResource = isset($kargs['_parentResource']) ? $kargs['_parentResource'] : null;
+        $this->_parentResource = $kargs['_parentResource'] ?? null;
         unset($kargs['_parentResource']);
 
         // Pull out route conditions
-        $this->conditions = isset($kargs['conditions']) ? $kargs['conditions'] : null;
+        $this->conditions = $kargs['conditions'] ?? null;
         unset($kargs['conditions']);
 
         // Determine if explicit behavior should be used
-        $this->explicit = isset($kargs['_explicit']) ? $kargs['_explicit'] : false;
+        $this->explicit = $kargs['_explicit'] ?? false;
         unset($kargs['_explicit']);
 
         // Reserved keys that don't count
-        $reservedKeys = array('requirements');
+        $reservedKeys = ['requirements'];
 
         // Name has been changed from the Python version
         // This is a list of characters natural splitters in a URL
-        $this->_splitChars = array('/', ',', ';', '.', '#');
+        $this->_splitChars = ['/', ',', ';', '.', '#'];
 
         // trim preceding '/' if present
         if (substr($this->routePath, 0, 1) == '/') {
@@ -255,29 +256,31 @@ class Horde_Routes_Route
 
         // Build our routelist, and the keys used in the route
         $this->_routeList = $this->_pathKeys($routePath);
-        $routeKeys = array();
+        $routeKeys = [];
         foreach ($this->_routeList as $key) {
-            if (is_array($key)) { $routeKeys[] = $key['name']; }
+            if (is_array($key)) {
+                $routeKeys[] = $key['name'];
+            }
         }
 
         // Build a req list with all the regexp requirements for our args
-        $this->reqs = isset($kargs['requirements']) ? $kargs['requirements'] : array();
-        $this->_reqRegs = array();
+        $this->reqs = $kargs['requirements'] ?? [];
+        $this->_reqRegs = [];
         foreach ($this->reqs as $key => $value) {
             $this->_reqRegs[$key] = '@^' . str_replace('@', '\@', $value) . '$@';
         }
 
         // Update our defaults and set new default keys if needed. defaults
         // needs to be saved
-        list($this->defaults, $defaultKeys) = $this->_defaults($routeKeys, $reservedKeys, $kargs);
+        [$this->defaults, $defaultKeys] = $this->_defaults($routeKeys, $reservedKeys, $kargs);
 
         // Save the maximum keys we could utilize
         $this->maxKeys = array_keys(array_flip(array_merge($defaultKeys, $routeKeys)));
-        list($this->minKeys, $this->_routeBackwards) = $this->_minKeys($this->_routeList);
+        [$this->minKeys, $this->_routeBackwards] = $this->_minKeys($this->_routeList);
 
         // Populate our hardcoded keys, these are ones that are set and don't
         // exist in the route
-        $this->hardCoded = array();
+        $this->hardCoded = [];
         foreach ($this->maxKeys as $key) {
             if (!in_array($key, $routeKeys) && $this->defaults[$key] != null) {
                 $this->hardCoded[] = $key;
@@ -296,35 +299,35 @@ class Horde_Routes_Route
     {
         $collecting = false;
         $current = '';
-        $doneOn = array();
+        $doneOn = [];
         $varType = '';
         $justStarted = false;
-        $routeList = array();
+        $routeList = [];
 
         foreach (preg_split('//', $routePath, -1, PREG_SPLIT_NO_EMPTY) as $char) {
-            if (!$collecting && in_array($char, array(':', '*'))) {
+            if (!$collecting && in_array($char, [':', '*'])) {
                 $justStarted = true;
                 $collecting = true;
                 $varType = $char;
                 if (strlen($current) > 0) {
-                   $routeList[] = $current;
-                   $current = '';
+                    $routeList[] = $current;
+                    $current = '';
                 }
             } elseif ($collecting && $justStarted) {
                 $justStarted = false;
                 if ($char == '(') {
-                    $doneOn = array(')');
+                    $doneOn = [')'];
                 } else {
                     $current = $char;
                     // Basically appends '-' to _splitChars
                     // Helps it fall in line with the Python idioms.
-                    $doneOn = $this->_splitChars + array('-');
+                    $doneOn = $this->_splitChars + ['-'];
                 }
             } elseif ($collecting && !in_array($char, $doneOn)) {
                 $current .= $char;
             } elseif ($collecting) {
                 $collecting = false;
-                $routeList[] = array('type' => $varType, 'name' => $current);
+                $routeList[] = ['type' => $varType, 'name' => $current];
                 if (in_array($char, $this->_splitChars)) {
                     $routeList[] = $char;
                 }
@@ -334,7 +337,7 @@ class Horde_Routes_Route
             }
         }
         if ($collecting) {
-            $routeList[] = array('type' => $varType, 'name' => $current);
+            $routeList[] = ['type' => $varType, 'name' => $current];
         } elseif (!empty($current)) {
             $routeList[] = $current;
         }
@@ -352,7 +355,7 @@ class Horde_Routes_Route
      */
     protected function _minKeys($routeList)
     {
-        $minKeys = array();
+        $minKeys = [];
         $backCheck = array_reverse($routeList);
         $gaps = false;
         foreach ($backCheck as $part) {
@@ -363,12 +366,13 @@ class Horde_Routes_Route
                 continue;
             }
             $key = $part['name'];
-            if (array_key_exists($key, $this->defaults) && !$gaps)
+            if (array_key_exists($key, $this->defaults) && !$gaps) {
                 continue;
+            }
             $minKeys[] = $key;
             $gaps = true;
         }
-        return array($minKeys, $backCheck);
+        return [$minKeys, $backCheck];
     }
 
     /**
@@ -386,22 +390,22 @@ class Horde_Routes_Route
      */
     protected function _defaults($routeKeys, $reservedKeys, $kargs)
     {
-        $defaults = array();
+        $defaults = [];
 
         // Add in a controller/action default if they don't exist
-        if ((!in_array('controller', $routeKeys)) &&
-            (!in_array('controller', array_keys($kargs))) &&
-            (!$this->explicit)) {
+        if ((!in_array('controller', $routeKeys))
+            && (!in_array('controller', array_keys($kargs)))
+            && (!$this->explicit)) {
             $kargs['controller'] = 'content';
         }
 
-        if (!in_array('action', $routeKeys) &&
-            (!in_array('action', array_keys($kargs))) &&
-            (!$this->explicit)) {
+        if (!in_array('action', $routeKeys)
+            && (!in_array('action', array_keys($kargs)))
+            && (!$this->explicit)) {
             $kargs['action'] = 'index';
         }
 
-        $defaultKeys = array();
+        $defaultKeys = [];
         foreach (array_keys($kargs) as $key) {
             if (!in_array($key, $reservedKeys)) {
                 $defaultKeys[] = $key;
@@ -410,31 +414,31 @@ class Horde_Routes_Route
 
         foreach ($defaultKeys as $key) {
             if ($kargs[$key] !== null) {
-                $defaults[$key] = (string)$kargs[$key];
+                $defaults[$key] = (string) $kargs[$key];
             } else {
                 $defaults[$key] = null;
             }
         }
 
-        if (in_array('action', $routeKeys) &&
-            (!array_key_exists('action', $defaults)) &&
-            (!$this->explicit)) {
+        if (in_array('action', $routeKeys)
+            && (!array_key_exists('action', $defaults))
+            && (!$this->explicit)) {
             $defaults['action'] = 'index';
         }
 
-        if (in_array('id', $routeKeys) &&
-            (!array_key_exists('id', $defaults)) &&
-            (!$this->explicit)) {
+        if (in_array('id', $routeKeys)
+            && (!array_key_exists('id', $defaults))
+            && (!$this->explicit)) {
             $defaults['id'] = null;
         }
 
-        $newDefaultKeys = array();
+        $newDefaultKeys = [];
         foreach (array_keys($defaults) as $key) {
             if (!in_array($key, $reservedKeys)) {
                 $newDefaultKeys[] = $key;
             }
         }
-        return array($defaults, $newDefaultKeys);
+        return [$defaults, $newDefaultKeys];
     }
 
     /**
@@ -452,7 +456,7 @@ class Horde_Routes_Route
      */
     public function makeRegexp($clist)
     {
-        list($reg, $noreqs, $allblank) = $this->buildNextReg($this->_routeList, $clist);
+        [$reg, $noreqs, $allblank] = $this->buildNextReg($this->_routeList, $clist);
 
         if (empty($reg)) {
             $reg = '/';
@@ -487,11 +491,11 @@ class Horde_Routes_Route
         // noreqs will remember whether the remainder has either a string
         // match, or a non-defaulted regexp match on a key, allblank remembers
         // if the rest could possible be completely empty
-        list($rest, $noreqs, $allblank) = array('', true, true);
+        [$rest, $noreqs, $allblank] = ['', true, true];
 
         if (count($path) > 1) {
             $this->_prior = $part;
-            list($rest, $noreqs, $allblank) = $this->buildNextReg(array_slice($path, 1), $clist);
+            [$rest, $noreqs, $allblank] = $this->buildNextReg(array_slice($path, 1), $clist);
         }
 
         if (is_array($part) && $part['type'] == ':') {
@@ -503,7 +507,7 @@ class Horde_Routes_Route
                 $partreg = '(?P<' . $var . '>' . $this->reqs[$var] . ')';
             } elseif ($var == 'controller') {
                 $partreg = '(?P<' . $var . '>' . implode('|', array_map('preg_quote', $clist)) . ')';
-            } elseif (in_array($this->_prior, array('/', '#'))) {
+            } elseif (in_array($this->_prior, ['/', '#'])) {
                 $partreg = '(?P<' . $var . '>[^' . $this->_prior . ']+?)';
             } else {
                 if (empty($rest)) {
@@ -533,30 +537,30 @@ class Horde_Routes_Route
                 if (array_key_exists($var, $this->reqs) && array_key_exists($var, $this->defaults)) {
                     $reg = '(' . $partreg . $rest . ')?';
 
-                // Or we have a regexp match with no default, so now being
-                // completely blank form here on out isn't possible
+                    // Or we have a regexp match with no default, so now being
+                    // completely blank form here on out isn't possible
                 } elseif (array_key_exists($var, $this->reqs)) {
                     $allblank = false;
                     $reg = $partreg . $rest;
 
-                // If the character before this is a special char, it has to be
-                // followed by this
-                } elseif (array_key_exists($var, $this->defaults) && in_array($this->_prior, array(',', ';', '.'))) {
+                    // If the character before this is a special char, it has to be
+                    // followed by this
+                } elseif (array_key_exists($var, $this->defaults) && in_array($this->_prior, [',', ';', '.'])) {
                     $reg = $partreg . $rest;
 
-                // Or we have a default with no regexp, don't touch the allblank
+                    // Or we have a default with no regexp, don't touch the allblank
                 } elseif (array_key_exists($var, $this->defaults)) {
                     $reg = $partreg . '?' . $rest;
 
-                // Or we have a key with no default, and no reqs. Not possible
-                // to be all blank from here
+                    // Or we have a key with no default, and no reqs. Not possible
+                    // to be all blank from here
                 } else {
                     $allblank = false;
                     $reg = $partreg . $rest;
                 }
 
-            // In this case, we have something dangling that might need to be
-            // matched
+                // In this case, we have something dangling that might need to be
+                // matched
             } else {
                 // If they can all be blank, and we have a default here, we know
                 // its safe to make everything from here optional. Since
@@ -565,8 +569,8 @@ class Horde_Routes_Route
                 if ($allblank && array_key_exists($var, $this->defaults)) {
                     $reg = '(' . $partreg . $rest . ')?';
 
-                // Same as before, but they can't all be blank, so we have to
-                // require it all to ensure our matches line up right
+                    // Same as before, but they can't all be blank, so we have to
+                    // require it all to ensure our matches line up right
                 } else {
                     $reg = $partreg . $rest;
                 }
@@ -598,15 +602,15 @@ class Horde_Routes_Route
                 $reg = preg_quote($part) . $rest;
             }
 
-        // We have a normal string here, this is a req, and it prevents us from
-        // being all blank
+            // We have a normal string here, this is a req, and it prevents us from
+            // being all blank
         } else {
             $noreqs = false;
             $allblank = false;
             $reg = preg_quote($part) . $rest;
         }
 
-        return array($reg, $noreqs, $allblank);
+        return [$reg, $noreqs, $allblank];
     }
 
     /**
@@ -625,12 +629,12 @@ class Horde_Routes_Route
      * @param  array         Keyword arguments
      * @return null|array    Array of match data if matched, Null otherwise
      */
-    public function match($url, $kargs = array())
+    public function match($url, $kargs = [])
     {
-        $defaultKargs = array('environ'          => array(),
-                              'subDomains'       => false,
-                              'subDomainsIgnore' => array(),
-                              'domainMatch'      => '');
+        $defaultKargs = ['environ'          => [],
+            'subDomains'       => false,
+            'subDomainsIgnore' => [],
+            'domainMatch'      => ''];
         $kargs = array_merge($defaultKargs, $kargs);
 
         // Static routes don't match, they generate only
@@ -648,7 +652,7 @@ class Horde_Routes_Route
             return false;
         }
 
-        $host = isset($kargs['environ']['HTTP_HOST']) ? $kargs['environ']['HTTP_HOST'] : null;
+        $host = $kargs['environ']['HTTP_HOST'] ?? null;
         $subDomain = null;
         if ($host !== null && !empty($kargs['subDomains'])) {
             $host = substr($host, 0, strpos(':', $host));
@@ -661,7 +665,9 @@ class Horde_Routes_Route
 
         if (!empty($this->conditions)) {
             if (isset($this->conditions['method'])) {
-                if (empty($kargs['environ']['REQUEST_METHOD'])) { return false; }
+                if (empty($kargs['environ']['REQUEST_METHOD'])) {
+                    return false;
+                }
 
                 if (!in_array($kargs['environ']['REQUEST_METHOD'], $this->conditions['method'])) {
                     return false;
@@ -669,7 +675,7 @@ class Horde_Routes_Route
             }
 
             // Check sub-domains?
-            $use_sd = isset($this->conditions['subDomain']) ? $this->conditions['subDomain'] : null;
+            $use_sd = $this->conditions['subDomain'] ?? null;
             if (!empty($use_sd) && empty($subDomain)) {
                 return false;
             }
@@ -685,7 +691,7 @@ class Horde_Routes_Route
                 unset($matchDict[$key]);
             }
         }
-        $result = array();
+        $result = [];
         $extras = Horde_Routes_Utils::arraySubtract(array_keys($this->defaults), array_keys($matchDict));
 
         foreach ($matchDict as $key => $val) {
@@ -710,8 +716,8 @@ class Horde_Routes_Route
             $result['subDomain'] = $subDomain;
         }
 
-        /* 
-         * The stack can be null/unset, an empty array or an iterable 
+        /*
+         * The stack can be null/unset, an empty array or an iterable
          * An explicitly empty array expresses "no middleware",
          * a null or unset stack means default
          */
@@ -721,8 +727,8 @@ class Horde_Routes_Route
 
         // If there's a function, call it with environ and expire if it
         // returns False
-        if (!empty($this->conditions) && array_key_exists('function', $this->conditions) &&
-            !call_user_func_array($this->conditions['function'], array($kargs['environ'], $result))) {
+        if (!empty($this->conditions) && array_key_exists('function', $this->conditions)
+            && !call_user_func_array($this->conditions['function'], [$kargs['environ'], $result])) {
             return false;
         }
 
@@ -737,8 +743,8 @@ class Horde_Routes_Route
      */
     public function generate($kargs)
     {
-        $defaultKargs = array('_ignoreReqList' => false,
-                              '_appendSlash'   => false);
+        $defaultKargs = ['_ignoreReqList' => false,
+            '_appendSlash'   => false];
         $kargs = array_merge($defaultKargs, $kargs);
 
         $_appendSlash = $kargs['_appendSlash'];
@@ -763,8 +769,8 @@ class Horde_Routes_Route
         $meth = (isset($kargs['method'])) ? $kargs['method'] : null;
 
         if ($meth) {
-            if ($this->conditions && isset($this->conditions['method']) &&
-                (!in_array(Horde_String::upper($meth), $this->conditions['method']))) {
+            if ($this->conditions && isset($this->conditions['method'])
+                && (!in_array(Horde_String::upper($meth), $this->conditions['method']))) {
 
                 return null;
             }
@@ -772,7 +778,7 @@ class Horde_Routes_Route
         }
 
         $routeList = $this->_routeBackwards;
-        $urlList = array();
+        $urlList = [];
         $gaps = false;
         foreach ($routeList as $part) {
             if (is_array($part) && $part['type'] == ':') {
@@ -800,13 +806,13 @@ class Horde_Routes_Route
                 if ($hasArg && $kargs[$arg] === null && $hasDefault && !$gaps) {
                     continue;
 
-                // Otherwise if we do have an arg, use that
+                    // Otherwise if we do have an arg, use that
                 } elseif ($hasArg) {
                     $val = ($kargs[$arg] === null) ? 'null' : $kargs[$arg];
                 } elseif ($hasDefault && $this->defaults[$arg] != null) {
                     $val = $this->defaults[$arg];
 
-                // No arg at all? This won't work
+                    // No arg at all? This won't work
                 } else {
                     return null;
                 }
@@ -856,7 +862,7 @@ class Horde_Routes_Route
                 $url .= '/';
             }
             $url .= '?';
-            $newExtras = array();
+            $newExtras = [];
             foreach ($kargs as $key => $value) {
                 if (in_array($key, $extras) && ($key != 'action' || $key != 'controller')) {
                     $newExtras[$key] = $value;

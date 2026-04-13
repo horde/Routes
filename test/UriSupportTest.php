@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Horde Routes package
  *
@@ -20,6 +21,7 @@ use Psr\Http\Message\UriInterface;
  * Tests for PSR-7 Uri support in Routes
  *
  * @package Routes
+ * @coversNothing
  */
 class UriSupportTest extends TestCase
 {
@@ -46,7 +48,7 @@ class UriSupportTest extends TestCase
     {
         $route = new Route('/users/:id', [
             'controller' => 'User',
-            'requirements' => ['id' => '\d+']
+            'requirements' => ['id' => '\d+'],
         ]);
 
         $uri = $route->generateUri(['id' => 'abc']);
@@ -197,7 +199,7 @@ class UriSupportTest extends TestCase
             'controller' => 'User',
             'action' => 'show',
             'id' => '123',
-            'format' => 'json'
+            'format' => 'json',
         ]);
 
         $this->assertInstanceOf(UriInterface::class, $uri);
@@ -218,7 +220,7 @@ class UriSupportTest extends TestCase
             'controller' => 'User',
             'action' => 'show',
             'id' => '123',
-            'anchor' => 'profile'
+            'anchor' => 'profile',
         ]);
 
         $this->assertInstanceOf(UriInterface::class, $uri);
@@ -234,7 +236,7 @@ class UriSupportTest extends TestCase
         $m->environ = [
             'HTTP_HOST' => 'example.com',
             'SERVER_NAME' => 'example.com',
-            'HTTPS' => 'on'
+            'HTTPS' => 'on',
         ];
         $m->connect('/users/:id', ['controller' => 'User', 'action' => 'show']);
 
@@ -242,7 +244,7 @@ class UriSupportTest extends TestCase
             'controller' => 'User',
             'action' => 'show',
             'id' => '123',
-            'qualified' => true
+            'qualified' => true,
         ]);
 
         $this->assertInstanceOf(UriInterface::class, $uri);

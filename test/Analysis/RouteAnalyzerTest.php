@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Horde Routes package
  *
@@ -21,6 +22,7 @@ use Horde\Routes\Analysis\RouteAnalyzer;
  * avoids false positives from static regex analysis.
  *
  * @package Routes
+ * @coversNothing
  */
 class RouteAnalyzerTest extends TestCase
 {
@@ -97,8 +99,8 @@ class RouteAnalyzerTest extends TestCase
         // Find the shadowing warning
         $shadowWarning = null;
         foreach ($warnings as $warning) {
-            if ($warning['type'] === 'shadowed' &&
-                str_contains($warning['shadowed_route'], 'users/search')) {
+            if ($warning['type'] === 'shadowed'
+                && str_contains($warning['shadowed_route'], 'users/search')) {
                 $shadowWarning = $warning;
                 break;
             }
@@ -165,14 +167,14 @@ class RouteAnalyzerTest extends TestCase
         $m->connect('posts/:id', [
             'controller' => 'Post',
             'action' => 'show',
-            'requirements' => ['id' => '\d+']
+            'requirements' => ['id' => '\d+'],
         ]);
 
         // Slug route
         $m->connect('posts/:slug', [
             'controller' => 'Post',
             'action' => 'show_by_slug',
-            'requirements' => ['slug' => '[a-z][a-z0-9-]*']
+            'requirements' => ['slug' => '[a-z][a-z0-9-]*'],
         ]);
 
         $analyzer = new RouteAnalyzer($m);
@@ -241,8 +243,8 @@ class RouteAnalyzerTest extends TestCase
             'requirements' => [
                 'year' => '\d{4}',
                 'month' => '\d{2}',
-                'day' => '\d{2}'
-            ]
+                'day' => '\d{2}',
+            ],
         ]);
 
         $analyzer = new RouteAnalyzer($m);
@@ -295,7 +297,7 @@ class RouteAnalyzerTest extends TestCase
         $m->connect('posts/:id', [
             'controller' => 'Post',
             'action' => 'show',
-            'requirements' => ['id' => '[0-9']  // Invalid: unclosed [
+            'requirements' => ['id' => '[0-9'],  // Invalid: unclosed [
         ]);
 
         $analyzer = new RouteAnalyzer($m);

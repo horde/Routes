@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Tests for controller scanning utility
  *
@@ -17,6 +18,7 @@ use Horde\Routes\Utils;
 
 /**
  * @package Routes
+ * @coversNothing
  */
 class ControllerScanTest extends TestCase
 {
@@ -26,7 +28,7 @@ class ControllerScanTest extends TestCase
     {
         // Create temporary test directory
         $this->testDir = sys_get_temp_dir() . '/routes_test_' . uniqid();
-        mkdir($this->testDir, 0755, true);
+        mkdir($this->testDir, 0o755, true);
     }
 
     public function tearDown(): void
@@ -118,8 +120,8 @@ class ControllerScanTest extends TestCase
      */
     public function testRecursiveDirectoryScan(): void
     {
-        mkdir($this->testDir . '/admin', 0755, true);
-        mkdir($this->testDir . '/api', 0755, true);
+        mkdir($this->testDir . '/admin', 0o755, true);
+        mkdir($this->testDir . '/api', 0o755, true);
 
         touch($this->testDir . '/home.php');
         touch($this->testDir . '/admin/users.php');
@@ -189,7 +191,7 @@ class ControllerScanTest extends TestCase
      */
     public function testControllersAreSortedLongestFirst(): void
     {
-        mkdir($this->testDir . '/admin', 0755, true);
+        mkdir($this->testDir . '/admin', 0o755, true);
 
         touch($this->testDir . '/a.php');
         touch($this->testDir . '/longer_name.php');
@@ -208,7 +210,7 @@ class ControllerScanTest extends TestCase
      */
     public function testDirectorySeparatorNormalization(): void
     {
-        mkdir($this->testDir . '/sub/deep', 0755, true);
+        mkdir($this->testDir . '/sub/deep', 0o755, true);
         touch($this->testDir . '/sub/deep/controller.php');
 
         $controllers = Utils::controllerScan($this->testDir);
@@ -223,7 +225,7 @@ class ControllerScanTest extends TestCase
      */
     public function testCombinedTransformations(): void
     {
-        mkdir($this->testDir . '/admin', 0755, true);
+        mkdir($this->testDir . '/admin', 0o755, true);
         touch($this->testDir . '/admin/UserManagement_controller.php');
 
         $controllers = Utils::controllerScan($this->testDir, 'app_');
@@ -248,7 +250,7 @@ class ControllerScanTest extends TestCase
      */
     public function testDeeplyNestedDirectories(): void
     {
-        mkdir($this->testDir . '/a/b/c/d', 0755, true);
+        mkdir($this->testDir . '/a/b/c/d', 0o755, true);
         touch($this->testDir . '/a/b/c/d/deep.php');
 
         $controllers = Utils::controllerScan($this->testDir);
@@ -277,7 +279,7 @@ class ControllerScanTest extends TestCase
      */
     public function testRealWorldPatterns(): void
     {
-        mkdir($this->testDir . '/controllers/admin', 0755, true);
+        mkdir($this->testDir . '/controllers/admin', 0o755, true);
 
         touch($this->testDir . '/controllers/HomeController.php');
         touch($this->testDir . '/controllers/BlogPostController.php');

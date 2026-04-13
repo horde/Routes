@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Horde Routes package
  *
@@ -408,15 +409,15 @@ class Route
         $defaults = [];
 
         // Add in a controller/action default if they don't exist
-        if ((!in_array('controller', $routeKeys)) &&
-            (!in_array('controller', array_keys($kargs))) &&
-            (!$this->explicit)) {
+        if ((!in_array('controller', $routeKeys))
+            && (!in_array('controller', array_keys($kargs)))
+            && (!$this->explicit)) {
             $kargs['controller'] = 'content';
         }
 
-        if (!in_array('action', $routeKeys) &&
-            (!in_array('action', array_keys($kargs))) &&
-            (!$this->explicit)) {
+        if (!in_array('action', $routeKeys)
+            && (!in_array('action', array_keys($kargs)))
+            && (!$this->explicit)) {
             $kargs['action'] = 'index';
         }
 
@@ -429,21 +430,21 @@ class Route
 
         foreach ($defaultKeys as $key) {
             if ($kargs[$key] !== null) {
-                $defaults[$key] = (string)$kargs[$key];
+                $defaults[$key] = (string) $kargs[$key];
             } else {
                 $defaults[$key] = null;
             }
         }
 
-        if (in_array('action', $routeKeys) &&
-            (!array_key_exists('action', $defaults)) &&
-            (!$this->explicit)) {
+        if (in_array('action', $routeKeys)
+            && (!array_key_exists('action', $defaults))
+            && (!$this->explicit)) {
             $defaults['action'] = 'index';
         }
 
-        if (in_array('id', $routeKeys) &&
-            (!array_key_exists('id', $defaults)) &&
-            (!$this->explicit)) {
+        if (in_array('id', $routeKeys)
+            && (!array_key_exists('id', $defaults))
+            && (!$this->explicit)) {
             $defaults['id'] = null;
         }
 
@@ -552,30 +553,30 @@ class Route
                 if (array_key_exists($var, $this->reqs) && array_key_exists($var, $this->defaults)) {
                     $reg = '(' . $partreg . $rest . ')?';
 
-                // Or we have a regexp match with no default, so now being
-                // completely blank form here on out isn't possible
+                    // Or we have a regexp match with no default, so now being
+                    // completely blank form here on out isn't possible
                 } elseif (array_key_exists($var, $this->reqs)) {
                     $allblank = false;
                     $reg = $partreg . $rest;
 
-                // If the character before this is a special char, it has to be
-                // followed by this
+                    // If the character before this is a special char, it has to be
+                    // followed by this
                 } elseif (array_key_exists($var, $this->defaults) && in_array($this->prior, [',', ';', '.'])) {
                     $reg = $partreg . $rest;
 
-                // Or we have a default with no regexp, don't touch the allblank
+                    // Or we have a default with no regexp, don't touch the allblank
                 } elseif (array_key_exists($var, $this->defaults)) {
                     $reg = $partreg . '?' . $rest;
 
-                // Or we have a key with no default, and no reqs. Not possible
-                // to be all blank from here
+                    // Or we have a key with no default, and no reqs. Not possible
+                    // to be all blank from here
                 } else {
                     $allblank = false;
                     $reg = $partreg . $rest;
                 }
 
                 // In this case, we have something dangling that might need to be
-            // matched
+                // matched
             } else {
                 // If they can all be blank, and we have a default here, we know
                 // its safe to make everything from here optional. Since
@@ -584,8 +585,8 @@ class Route
                 if ($allblank && array_key_exists($var, $this->defaults)) {
                     $reg = '(' . $partreg . $rest . ')?';
 
-                // Same as before, but they can't all be blank, so we have to
-                // require it all to ensure our matches line up right
+                    // Same as before, but they can't all be blank, so we have to
+                    // require it all to ensure our matches line up right
                 } else {
                     $reg = $partreg . $rest;
                 }
@@ -618,7 +619,7 @@ class Route
             }
 
             // We have a normal string here, this is a req, and it prevents us from
-        // being all blank
+            // being all blank
         } else {
             $noreqs = false;
             $allblank = false;
@@ -648,9 +649,9 @@ class Route
     public function match(string $url, array $kargs = [])
     {
         $defaultKargs = ['environ'          => [],
-                              'subDomains'       => false,
-                              'subDomainsIgnore' => [],
-                              'domainMatch'      => '', ];
+            'subDomains'       => false,
+            'subDomainsIgnore' => [],
+            'domainMatch'      => '', ];
         $kargs = array_merge($defaultKargs, $kargs);
         $subdomain = '';
 
@@ -743,8 +744,8 @@ class Route
 
         // If there's a function, call it with environ and expire if it
         // returns False
-        if (!empty($this->conditions) && array_key_exists('function', $this->conditions) &&
-            !call_user_func_array($this->conditions['function'], [$kargs['environ'], $result])) {
+        if (!empty($this->conditions) && array_key_exists('function', $this->conditions)
+            && !call_user_func_array($this->conditions['function'], [$kargs['environ'], $result])) {
             return null;
         }
 
@@ -761,7 +762,7 @@ class Route
     public function generate(array $kargs): ?string
     {
         $defaultKargs = ['_ignoreReqList' => false,
-                              '_appendSlash'   => false, ];
+            '_appendSlash'   => false, ];
         $kargs = array_merge($defaultKargs, $kargs);
 
         $_appendSlash = $kargs['_appendSlash'];
@@ -786,8 +787,8 @@ class Route
         $meth = (isset($kargs['method'])) ? $kargs['method'] : null;
 
         if ($meth) {
-            if ($this->conditions && isset($this->conditions['method']) &&
-                (!in_array(Horde_String::upper($meth), $this->conditions['method']))) {
+            if ($this->conditions && isset($this->conditions['method'])
+                && (!in_array(Horde_String::upper($meth), $this->conditions['method']))) {
                 return null;
             }
             unset($kargs['method']);
@@ -822,13 +823,13 @@ class Route
                 if ($hasArg && $kargs[$arg] === null && $hasDefault && !$gaps) {
                     continue;
 
-                // Otherwise if we do have an arg, use that
+                    // Otherwise if we do have an arg, use that
                 } elseif ($hasArg) {
                     $val = ($kargs[$arg] === null) ? 'null' : $kargs[$arg];
                 } elseif ($hasDefault && $this->defaults[$arg] != null) {
                     $val = $this->defaults[$arg];
 
-                // No arg at all? This won't work
+                    // No arg at all? This won't work
                 } else {
                     return null;
                 }

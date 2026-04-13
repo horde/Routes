@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Tests for PSR-7 Matcher class
  *
@@ -46,6 +47,7 @@ class TestRequest
 
 /**
  * @package Routes
+ * @coversNothing
  */
 class MatcherTest extends TestCase
 {
@@ -222,7 +224,7 @@ class MatcherTest extends TestCase
         $mapper->connect('archive/:year/:month', [
             'controller' => 'blog',
             'action' => 'archive',
-            'month' => '01'
+            'month' => '01',
         ]);
         $mapper->createRegs();
 
@@ -244,11 +246,11 @@ class MatcherTest extends TestCase
         $mapper = new Mapper();
         $mapper->connect('public/:action', [
             'controller' => 'public',
-            'stack' => [] // No middleware
+            'stack' => [], // No middleware
         ]);
         $mapper->connect('admin/:action', [
             'controller' => 'admin',
-            'stack' => ['Auth', 'Admin'] // Specific middleware
+            'stack' => ['Auth', 'Admin'], // Specific middleware
         ]);
         $mapper->createRegs();
 
@@ -278,7 +280,7 @@ class MatcherTest extends TestCase
         $mapper = new Mapper();
         $mapper->connect('user/:username/posts/:post_id/comments/:id', [
             'controller' => 'comments',
-            'action' => 'show'
+            'action' => 'show',
         ]);
         $mapper->createRegs();
 

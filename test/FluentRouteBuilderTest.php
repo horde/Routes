@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Horde Routes package
  *
@@ -13,6 +14,7 @@ use PHPUnit\Framework\TestCase;
 use Horde\Routes\Mapper;
 use Horde\Routes\FluentRouteBuilder;
 use Horde\Routes\RouteBuilder;
+use Error;
 
 /**
  * Tests for FluentRouteBuilder wrapper
@@ -22,6 +24,7 @@ use Horde\Routes\RouteBuilder;
  *   $mapper->route('path')->controller('Foo')->add()
  *
  * @package Routes
+ * @coversNothing
  */
 class FluentRouteBuilderTest extends TestCase
 {
@@ -185,7 +188,7 @@ class FluentRouteBuilderTest extends TestCase
         // Test withDefaults (array parameter)
         $fluent->withDefaults([
             'controller' => 'Test',
-            'action' => 'show'
+            'action' => 'show',
         ]);
 
         $builder = $fluent->getBuilder();
@@ -196,7 +199,7 @@ class FluentRouteBuilderTest extends TestCase
         // Test withRequirements (array parameter)
         $fluent->withRequirements([
             'id' => '\d+',
-            'format' => 'json|xml'
+            'format' => 'json|xml',
         ]);
 
         $config = $builder->toArray();
@@ -218,7 +221,7 @@ class FluentRouteBuilderTest extends TestCase
         $m = new Mapper();
         $fluent = new FluentRouteBuilder($m, 'test');
 
-        $this->expectException(\Error::class);
+        $this->expectException(Error::class);
         $fluent->nonExistentMethod();
     }
 

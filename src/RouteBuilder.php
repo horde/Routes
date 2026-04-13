@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Horde Routes package
  *
@@ -18,6 +19,8 @@
 declare(strict_types=1);
 
 namespace Horde\Routes;
+
+use InvalidArgumentException;
 
 /**
  * Fluent route builder for creating routes with IDE-friendly autocomplete
@@ -462,12 +465,12 @@ class RouteBuilder
      * Returns single Route if no secondary paths, array of Routes otherwise.
      *
      * @return Route|array<Route> Built route(s)
-     * @throws \InvalidArgumentException If path is not set
+     * @throws InvalidArgumentException If path is not set
      */
     public function build(): Route|array
     {
         if ($this->path === null) {
-            throw new \InvalidArgumentException(
+            throw new InvalidArgumentException(
                 'Route path must be set via constructor or withUri() before building'
             );
         }

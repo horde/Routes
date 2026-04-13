@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Horde Routes package
  *
@@ -12,11 +13,13 @@ namespace Horde\Routes\Test;
 use PHPUnit\Framework\TestCase;
 use Horde\Routes\Mapper;
 use Horde\Routes\RouteBuilder;
+use InvalidArgumentException;
 
 /**
  * Tests for PSR-style route builder API
  *
  * @package Routes
+ * @coversNothing
  */
 class PsrStyleBuilderTest extends TestCase
 {
@@ -154,7 +157,7 @@ class PsrStyleBuilderTest extends TestCase
      */
     public function testBuildWithoutUriThrows(): void
     {
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('path must be set');
 
         $builder = new RouteBuilder();
@@ -429,7 +432,7 @@ class PsrStyleBuilderTest extends TestCase
      */
     public function testAddSecondaryWithInvalidRouteThrows(): void
     {
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage("named route 'NonExistent' does not exist");
 
         $m = new Mapper();
@@ -542,7 +545,7 @@ class PsrStyleBuilderTest extends TestCase
         $url = $m->generate([
             'controller' => 'UserController',
             'action' => 'show',
-            'id' => '123'
+            'id' => '123',
         ]);
         $this->assertEquals('/users/123', $url);
     }

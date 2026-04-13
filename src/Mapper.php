@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Horde Routes package
  *
@@ -20,6 +21,7 @@ use Horde_Cache;
 use Horde_String;
 use Horde\Http\Uri;
 use Psr\Http\Message\UriInterface;
+use InvalidArgumentException;
 
 /**
  * The mapper class handles URL generation and recognition for web applications
@@ -221,9 +223,9 @@ class Mapper
         $callback = [Utils::class, 'controllerScan'];
 
         $defaultKargs = ['controllerScan' => $callback,
-                              'directory'      => null,
-                              'alwaysScan'     => false,
-                              'explicit'       => false, ];
+            'directory'      => null,
+            'alwaysScan'     => false,
+            'explicit'       => false, ];
         $kargs = array_merge($defaultKargs, $kargs);
 
         // Most default assignments that were in the construct in the Python
@@ -465,13 +467,13 @@ class Mapper
      * @param string $path Secondary path pattern
      * @param string $namedRoute Name of existing route to copy configuration from
      * @return void
-     * @throws \InvalidArgumentException If named route doesn't exist
+     * @throws InvalidArgumentException If named route doesn't exist
      */
     public function addSecondary(string $path, string $namedRoute): void
     {
         // Find the named route
         if (!isset($this->routeNames[$namedRoute])) {
-            throw new \InvalidArgumentException(
+            throw new InvalidArgumentException(
                 "Cannot add secondary route: named route '$namedRoute' does not exist"
             );
         }
@@ -778,11 +780,11 @@ class Mapper
             }
 
             $match = $route->match($url, ['environ'          => $this->environ,
-                                               'subDomains'       => $this->subDomains,
-                                               'subDomainsIgnore' => $this->subDomainsIgnore,
-                                               'domainMatch'      => $this->domainMatch, ]);
+                'subDomains'       => $this->subDomains,
+                'subDomainsIgnore' => $this->subDomainsIgnore,
+                'domainMatch'      => $this->domainMatch, ]);
             if ($this->debug) {
-                $matchLog[] = ['route' => $route, 'regexp' => (bool)$match];
+                $matchLog[] = ['route' => $route, 'regexp' => (bool) $match];
             }
             if ($match) {
                 return [$match, $route, $matchLog];
@@ -907,8 +909,8 @@ class Mapper
             $keyList = $routeArgs;
         } else {
             $actionList = $this->gendict[$controller] ?? $this->gendict['*'];
-            [$keyList, $sortCache] =
-                (isset($actionList[$action])) ? $actionList[$action] : ((isset($actionList['*'])) ? $actionList['*'] : [null, null]);
+            [$keyList, $sortCache]
+                = (isset($actionList[$action])) ? $actionList[$action] : ((isset($actionList['*'])) ? $actionList['*'] : [null, null]);
             if ($keyList === null) {
                 return null;
             }
@@ -1149,11 +1151,11 @@ class Mapper
     public function resource($memberName, $collectionName, $kargs = [])
     {
         $defaultKargs = ['collection' => [],
-                              'member' => [],
-                              'new' => [],
-                              'pathPrefix' => null,
-                              'namePrefix' => null,
-                              'parentResource' => null, ];
+            'member' => [],
+            'new' => [],
+            'pathPrefix' => null,
+            'namePrefix' => null,
+            'parentResource' => null, ];
         $kargs = array_merge($defaultKargs, $kargs);
 
         // Generate ``pathPrefix`` if ``pathPrefix`` wasn't specified and
@@ -1164,7 +1166,7 @@ class Mapper
         if ($kargs['parentResource'] !== null) {
             if ($kargs['pathPrefix'] === null) {
                 $kargs['pathPrefix'] = $kargs['parentResource']['collectionName'] . '/:'
-                                     . $kargs['parentResource']['memberName']     . '_id';
+                                     . $kargs['parentResource']['memberName'] . '_id';
             }
             if ($kargs['namePrefix'] === null) {
                 $kargs['namePrefix'] = $kargs['parentResource']['memberName'] . '_';
@@ -1255,7 +1257,7 @@ class Mapper
         // Specifically add in the built-in 'index' collection method and its
         // formatted version
         $connectkargs = ['action' => 'index',
-                              'conditions' => ['method' => ['GET']], ];
+            'conditions' => ['method' => ['GET']], ];
         $this->connect(
             $kargs['namePrefix'] . $collectionName,
             $collectionPath,
@@ -1484,7 +1486,7 @@ class Mapper
         if (count($this->_arrayUnion($keys, $b)) == count($this->_arrayUnion($keys, $a))) {
             return $this->_cmp(count($a), count($b));
 
-        // Otherwise, we return the one that has the most in common
+            // Otherwise, we return the one that has the most in common
         } else {
             return $this->_cmp(count($this->_arrayUnion($keys, $b)), count($this->_arrayUnion($keys, $a)));
         }

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Horde Routes package
  *
@@ -189,7 +190,7 @@ class RouteAnalysisReport
     {
         $report = [
             'warnings' => $this->serializeWarnings(),
-            'summary' => $this->generateSummary()
+            'summary' => $this->generateSummary(),
         ];
 
         return json_encode($report, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
@@ -235,7 +236,7 @@ class RouteAnalysisReport
         $summary = [
             'total' => count($this->warnings),
             'by_type' => [],
-            'by_severity' => []
+            'by_severity' => [],
         ];
 
         foreach ($this->warnings as $warning) {

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Horde Routes package
  *
@@ -30,7 +31,7 @@ class Horde_Routes_Utils
      * Match data from last match; implements for urlFor() route memory
      * @var array
      */
-    public $mapperDict = array();
+    public $mapperDict = [];
 
     /**
      * Callback function used for redirectTo()
@@ -93,7 +94,7 @@ class Horde_Routes_Utils
      * be added if present, otherwise the string will be used as the url with
      * keyword args becoming GET query args.
      */
-    public function urlFor($first = array(), $second = array())
+    public function urlFor($first = [], $second = [])
     {
         if (is_array($first)) {
             // urlFor(array('controller' => 'foo', ...))
@@ -103,18 +104,18 @@ class Horde_Routes_Utils
             // urlFor('named_route')
             // urlFor('named_route', array('id' => 3, ...))
             // urlFor('static_path')
-            $routeName = (string)$first;
+            $routeName = (string) $first;
             $kargs = $second;
         }
 
-        $anchor    = isset($kargs['anchor'])    ? $kargs['anchor']    : null;
-        $host      = isset($kargs['host'])      ? $kargs['host']      : null;
-        $protocol  = isset($kargs['protocol'])  ? $kargs['protocol']  : null;
-        $qualified = isset($kargs['qualified']) ? $kargs['qualified'] : null;
+        $anchor    = $kargs['anchor'] ?? null;
+        $host      = $kargs['host'] ?? null;
+        $protocol  = $kargs['protocol'] ?? null;
+        $qualified = $kargs['qualified'] ?? null;
         unset($kargs['qualified']);
 
         // Remove special words from kargs, convert placeholders
-        foreach (array('anchor', 'host', 'protocol') as $key) {
+        foreach (['anchor', 'host', 'protocol'] as $key) {
             if (array_key_exists($key, $kargs)) {
                 unset($kargs[$key]);
             }
@@ -125,7 +126,7 @@ class Horde_Routes_Utils
         }
 
         $route = null;
-        $routeArgs = array();
+        $routeArgs = [];
         $static = false;
         $encoding = $this->mapper->encoding;
         $environ = $this->mapper->environ;
@@ -149,8 +150,8 @@ class Horde_Routes_Utils
                 $url = $routeName;
             }
 
-            if ((substr($url, 0, 1) == '/') &&
-                isset($environ['SCRIPT_NAME'])) {
+            if ((substr($url, 0, 1) == '/')
+                && isset($environ['SCRIPT_NAME'])) {
                 $url = $environ['SCRIPT_NAME'] . $url;
             }
 
@@ -163,7 +164,7 @@ class Horde_Routes_Utils
 
         if (! $static) {
             if ($route) {
-                $routeArgs = array($route);
+                $routeArgs = [$route];
                 $newargs = $route->defaults;
                 foreach ($kargs as $key => $value) {
                     $newargs[$key] = $value;
@@ -196,14 +197,14 @@ class Horde_Routes_Utils
         }
 
         if (!empty($host) || !empty($qualified) || !empty($protocol)) {
-            $http_host   = isset($environ['HTTP_HOST']) ? $environ['HTTP_HOST'] : null;
-            $server_name = isset($environ['SERVER_NAME']) ? $environ['SERVER_NAME'] : null;
+            $http_host   = $environ['HTTP_HOST'] ?? null;
+            $server_name = $environ['SERVER_NAME'] ?? null;
             $fullhost = !is_null($http_host) ? $http_host : $server_name;
 
             if (empty($host) && empty($qualified)) {
                 $host = explode(':', $fullhost ?? '');
                 $host = $host[0];
-            } else if (empty($host)) {
+            } elseif (empty($host)) {
                 $host = $fullhost;
             }
             if (empty($protocol)) {
@@ -234,7 +235,7 @@ class Horde_Routes_Utils
      * @param   mixed  $second  Second argument in varargs
      * @return  mixed           Result of redirect callback
      */
-    public function redirectTo($first = array(), $second = array())
+    public function redirectTo($first = [], $second = [])
     {
         $target = $this->urlFor($first, $second);
         return call_user_func($this->redirect, $target);
@@ -269,7 +270,7 @@ class Horde_Routes_Utils
      */
     public static function controllerScan($dirname = null, $prefix = '')
     {
-        $controllers = array();
+        $controllers = [];
 
         if ($dirname === null) {
             return $controllers;
@@ -278,7 +279,8 @@ class Horde_Routes_Utils
         $baseregexp = preg_quote($dirname . DIRECTORY_SEPARATOR, '/');
 
         foreach (new RecursiveIteratorIterator(
-                 new RecursiveDirectoryIterator($dirname)) as $entry) {
+            new RecursiveDirectoryIterator($dirname)
+        ) as $entry) {
             if (!$entry->isFile()) {
                 continue;
             }
@@ -291,8 +293,12 @@ class Horde_Routes_Utils
 
             // PrepareController -> prepare_controller -> prepare
             $controller = Horde_String::lower(
-                preg_replace('/([a-z])([A-Z])/',
-                             "\${1}_\${2}", $controller));
+                preg_replace(
+                    '/([a-z])([A-Z])/',
+                    "\${1}_\${2}",
+                    $controller
+                )
+            );
             if (preg_match('/_controller$/', $controller)) {
                 $controller = substr($controller, 0, -(strlen('_controller')));
             }
@@ -304,7 +310,7 @@ class Horde_Routes_Utils
             $controllers[] = $prefix . $controller;
         }
 
-        usort($controllers, array('Horde_Routes_Utils', 'longestFirst'));
+        usort($controllers, ['Horde_Routes_Utils', 'longestFirst']);
 
         return $controllers;
     }
@@ -318,7 +324,7 @@ class Horde_Routes_Utils
     {
         if ($this->mapper->explicit && $this->mapper->subDomains) {
             return $this->_subdomainCheck($kargs);
-        } else if ($this->mapper->explicit) {
+        } elseif ($this->mapper->explicit) {
             return $kargs;
         }
 
@@ -328,7 +334,7 @@ class Horde_Routes_Utils
             // If the controller name starts with '/', ignore route memory
             $kargs['controller'] = substr($kargs['controller'], 1);
             return $kargs;
-        } else if (!empty($controllerName) && !array_key_exists('action', $kargs)) {
+        } elseif (!empty($controllerName) && !array_key_exists('action', $kargs)) {
             // Fill in an action if we don't have one, but have a controller
             $kargs['action'] = 'index';
         }
@@ -337,12 +343,12 @@ class Horde_Routes_Utils
 
         // Remove keys from memory and kargs if kargs has them as null
         foreach ($kargs as $key => $value) {
-             if ($value === null) {
-                 unset($kargs[$key]);
-                 if (array_key_exists($key, $memoryKargs)) {
-                     unset($memoryKargs[$key]);
-                 }
-             }
+            if ($value === null) {
+                unset($kargs[$key]);
+                if (array_key_exists($key, $memoryKargs)) {
+                    unset($memoryKargs[$key]);
+                }
+            }
         }
 
         // Merge the new args on top of the memory args
@@ -369,8 +375,8 @@ class Horde_Routes_Utils
             unset($kargs['subDomain']);
 
             $environ = $this->mapper->environ;
-            $http_host   = isset($environ['HTTP_HOST']) ? $environ['HTTP_HOST'] : null;
-            $server_name = isset($environ['SERVER_NAME']) ? $environ['SERVER_NAME'] : null;
+            $http_host   = $environ['HTTP_HOST'] ?? null;
+            $server_name = $environ['SERVER_NAME'] ?? null;
             $fullhost = !is_null($http_host) ? $http_host : $server_name;
 
             $hostmatch = explode(':', $fullhost ?? '');
@@ -386,7 +392,7 @@ class Horde_Routes_Utils
             if ($subdomain && (substr($host, 0, strlen($subdomain)) != $subdomain)
                     && (! in_array($subdomain, $this->mapper->subDomainsIgnore))) {
                 $kargs['_host'] = $subdomain . '.' . $domain . $port;
-            } else if (($subdomain === null || in_array($subdomain, $this->mapper->subDomainsIgnore))
+            } elseif (($subdomain === null || in_array($subdomain, $this->mapper->subDomainsIgnore))
                     && $domain != $host) {
                 $kargs['_host'] = $domain . $port;
             }

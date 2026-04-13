@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Horde Routes package
  *
@@ -44,30 +45,34 @@ class Horde_Routes_Printer
     public function printRoutes($stream = null, $eol = PHP_EOL)
     {
         $routes = $this->getRoutes();
-        if (empty($routes)) { return; }
+        if (empty($routes)) {
+            return;
+        }
 
         if ($stream === null) {
             $stream = fopen('php://output', 'a');
         }
-  
+
         // find the max $widths to size the output columns {'name'=>40, 'method'=>6, ...}
-        $widths = array();
+        $widths = [];
         foreach (array_keys($routes[0]) as $key) {
-          $width = 0;
-          foreach($routes as $r) { 
-            $l = strlen($r[$key]);
-            if ($l > $width) { $width = $l; }
-          }
-          $widths[$key] = $width;
+            $width = 0;
+            foreach ($routes as $r) {
+                $l = strlen($r[$key]);
+                if ($l > $width) {
+                    $width = $l;
+                }
+            }
+            $widths[$key] = $width;
         }
 
         // print the output
         foreach ($routes as $r) {
-          fwrite($stream, str_pad($r['name'],   $widths['name'],   ' ', STR_PAD_LEFT)  . ' ');
-          fwrite($stream, str_pad($r['method'], $widths['method'], ' ', STR_PAD_RIGHT) . ' ');
-          fwrite($stream, str_pad($r['path'],   $widths['path'],   ' ', STR_PAD_RIGHT) . ' ');
-          fwrite($stream, $r['hardcodes'] . $eol);
-        }        
+            fwrite($stream, str_pad($r['name'], $widths['name'], ' ', STR_PAD_LEFT) . ' ');
+            fwrite($stream, str_pad($r['method'], $widths['method'], ' ', STR_PAD_RIGHT) . ' ');
+            fwrite($stream, str_pad($r['path'], $widths['path'], ' ', STR_PAD_RIGHT) . ' ');
+            fwrite($stream, $r['hardcodes'] . $eol);
+        }
     }
 
     /**
@@ -79,39 +84,42 @@ class Horde_Routes_Printer
     public function getRoutes()
     {
         /**
-         * Traverse all routes connected to the mapper in match order, 
+         * Traverse all routes connected to the mapper in match order,
          * and assemble an array of $routes used to build the output
          */
-        $routes = array();
+        $routes = [];
         foreach ($this->_mapper->matchList as $route) {
-          // name of this route, or empty string if anonymous
-          $routeName = '';
-          foreach ($this->_mapper->routeNames as $name => $namedRoute) {
-              if ($route === $namedRoute) { $routeName = $name; break; }
-          }
+            // name of this route, or empty string if anonymous
+            $routeName = '';
+            foreach ($this->_mapper->routeNames as $name => $namedRoute) {
+                if ($route === $namedRoute) {
+                    $routeName = $name;
+                    break;
+                }
+            }
 
-          // request_method types recognized by this route, or empty string for any
-          $methods = array('');
-          if (isset($route->conditions['method']) && is_array($route->conditions['method']) ) {
-            $methods = $route->conditions['method'];
-          }
+            // request_method types recognized by this route, or empty string for any
+            $methods = [''];
+            if (isset($route->conditions['method']) && is_array($route->conditions['method'])) {
+                $methods = $route->conditions['method'];
+            }
 
-          // hardcoded defaults that can't be overriden by the request path as {:key=>"value"}
-          $hardcodes = array();
-          foreach ($route->hardCoded as $key) {
-            $value = isset($route->defaults[$key]) ? $route->defaults[$key] : 'NULL';
-            $dump = ":{$key}=>\"{$value}\"";
-            ($key == 'controller') ? array_unshift($hardcodes, $dump) : $hardcodes[] = $dump;
-          }
-          $hardcodes = empty($hardcodes) ? '' : '{'. implode(', ', $hardcodes) .'}';  
+            // hardcoded defaults that can't be overriden by the request path as {:key=>"value"}
+            $hardcodes = [];
+            foreach ($route->hardCoded as $key) {
+                $value = $route->defaults[$key] ?? 'NULL';
+                $dump = ":{$key}=>\"{$value}\"";
+                ($key == 'controller') ? array_unshift($hardcodes, $dump) : $hardcodes[] = $dump;
+            }
+            $hardcodes = empty($hardcodes) ? '' : '{' . implode(', ', $hardcodes) . '}';
 
-          // route data for output 
-          foreach ($methods as $method) {
-            $routes[] = array('name'      => $routeName,
-                              'method'    => $method,
-                              'path'      => '/' . $route->routePath,
-                              'hardcodes' => $hardcodes);
-          }
+            // route data for output
+            foreach ($methods as $method) {
+                $routes[] = ['name'      => $routeName,
+                    'method'    => $method,
+                    'path'      => '/' . $route->routePath,
+                    'hardcodes' => $hardcodes];
+            }
         }
 
         return $routes;

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Horde Routes package
  *
@@ -18,6 +19,8 @@
 declare(strict_types=1);
 
 namespace Horde\Routes;
+
+use Error;
 
 /**
  * Fluent wrapper for RouteBuilder that enables ->add() chaining
@@ -100,7 +103,7 @@ class FluentRouteBuilder
      * @param string $method Method name
      * @param array<mixed> $args Method arguments
      * @return self This fluent builder for chaining
-     * @throws \Error If method doesn't exist on RouteBuilder
+     * @throws Error If method doesn't exist on RouteBuilder
      */
     public function __call(string $method, array $args): self
     {

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Helper class to generate the match dictionary for the incoming request.
  *
@@ -13,7 +14,7 @@
 /**
  * Generates the match dictionary for the incoming request.
  *
- * Copyright 2011-2017 Horde LLC (http://www.horde.org/)
+ * Copyright 2011-2026 Horde LLC (http://www.horde.org/)
  *
  * See the enclosed file LICENSE for license information (LGPL). If you did not
  * receive this file, see
@@ -56,8 +57,8 @@ class Horde_Routes_Matcher
      */
     public function __construct(
         Horde_Routes_Mapper $mapper,
-        $request)
-    {
+        $request
+    ) {
         $this->_mapper = $mapper;
         $this->_request = $request;
     }
@@ -72,7 +73,7 @@ class Horde_Routes_Matcher
         if ($this->_match_dict === null) {
             // Auto-populate environ from request
             if (method_exists($this->_request, 'getMethod')) {
-                $this->_mapper->environ = array('REQUEST_METHOD' => $this->_request->getMethod());
+                $this->_mapper->environ = ['REQUEST_METHOD' => $this->_request->getMethod()];
             }
 
             // Extract path from request - handle both PSR-7 and Horde_Controller_Request

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Tests for RESTful resource routing in Routes
  *
@@ -17,6 +18,7 @@ use Horde\Routes\Mapper;
 
 /**
  * @package Routes
+ * @coversNothing
  */
 class ResourceTest extends TestCase
 {
@@ -162,7 +164,7 @@ class ResourceTest extends TestCase
         // Create nested resource (comments under posts)
         $parentResource = [
             'memberName' => 'post',
-            'collectionName' => 'posts'
+            'collectionName' => 'posts',
         ];
         $mapper->resource('comment', 'comments', ['parentResource' => $parentResource]);
         $mapper->createRegs(['comments']);

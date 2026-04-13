@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Horde Routes package
  *
@@ -17,6 +18,7 @@ use Horde\Routes\Mapper;
  *
  * @package Routes
  * @group integration
+ * @coversNothing
  */
 class SecondaryRouteIntegrationTest extends TestCase
 {
@@ -53,7 +55,7 @@ class SecondaryRouteIntegrationTest extends TestCase
         $canonical = $m->generate([
             'controller' => 'Api\UserController',
             'action' => 'show',
-            'id' => '123'
+            'id' => '123',
         ]);
         $this->assertEquals('/api/v2/users/123', $canonical);
     }
@@ -119,7 +121,7 @@ class SecondaryRouteIntegrationTest extends TestCase
         // Generation uses primary
         $url = $m->generate([
             'controller' => 'Api\SecureController',
-            'action' => 'getData'
+            'action' => 'getData',
         ]);
         $this->assertEquals('/api/secure/data', $url);
     }

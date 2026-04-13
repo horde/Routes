@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Horde Routes package
  *
@@ -11,6 +12,7 @@ namespace Horde\Routes\Test\Analysis;
 
 use PHPUnit\Framework\TestCase;
 use Horde\Routes\Analysis\RouteAnalysisReport;
+use stdClass;
 
 /**
  * Tests for RouteAnalysisReport formatting
@@ -18,6 +20,7 @@ use Horde\Routes\Analysis\RouteAnalysisReport;
  * Tests the various output formats (text, JSON) for route analysis reports.
  *
  * @package Routes
+ * @coversNothing
  */
 class RouteAnalysisReportTest extends TestCase
 {
@@ -55,8 +58,8 @@ class RouteAnalysisReportTest extends TestCase
                 'shadowing_route' => 'users/:action',
                 'test_url' => '/users/search',
                 'matched_route' => 'users/:action',
-                'severity' => 'error'
-            ]
+                'severity' => 'error',
+            ],
         ];
 
         $report = new RouteAnalysisReport($warnings);
@@ -86,8 +89,8 @@ class RouteAnalysisReportTest extends TestCase
                 'parameter' => 'id',
                 'pattern' => '[0-9',
                 'error' => 'Compilation failed: missing terminating ]',
-                'severity' => 'error'
-            ]
+                'severity' => 'error',
+            ],
         ];
 
         $report = new RouteAnalysisReport($warnings);
@@ -142,14 +145,14 @@ class RouteAnalysisReportTest extends TestCase
                 'shadowing_route' => 'users/:action',
                 'test_url' => '/users/search',
                 'matched_route' => 'users/:action',
-                'severity' => 'error'
+                'severity' => 'error',
             ],
             [
                 'type' => 'duplicate',
                 'message' => 'Duplicate route definition',
                 'route' => 'posts/:id',
-                'severity' => 'warning'
-            ]
+                'severity' => 'warning',
+            ],
         ];
 
         $report = new RouteAnalysisReport($warnings);
@@ -191,9 +194,9 @@ class RouteAnalysisReportTest extends TestCase
                 'shadowing_route' => 'users/:action',
                 'severity' => 'error',
                 // These should be excluded from serialization
-                'route_object' => new \stdClass(),
-                'internal_data' => ['debug' => 'info']
-            ]
+                'route_object' => new stdClass(),
+                'internal_data' => ['debug' => 'info'],
+            ],
         ];
 
         $report = new RouteAnalysisReport($warnings);
