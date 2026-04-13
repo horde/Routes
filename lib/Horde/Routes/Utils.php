@@ -201,7 +201,7 @@ class Horde_Routes_Utils
             $fullhost = !is_null($http_host) ? $http_host : $server_name;
 
             if (empty($host) && empty($qualified)) {
-                $host = explode(':', $fullhost);
+                $host = explode(':', $fullhost ?? '');
                 $host = $host[0];
             } else if (empty($host)) {
                 $host = $fullhost;
@@ -373,7 +373,7 @@ class Horde_Routes_Utils
             $server_name = isset($environ['SERVER_NAME']) ? $environ['SERVER_NAME'] : null;
             $fullhost = !is_null($http_host) ? $http_host : $server_name;
 
-            $hostmatch = explode(':', $fullhost);
+            $hostmatch = explode(':', $fullhost ?? '');
             $host = $hostmatch[0];
             $port = '';
             if (count($hostmatch) > 1) {
