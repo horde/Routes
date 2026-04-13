@@ -61,6 +61,20 @@
     identifier: BSD-2-Clause
     uri: http://www.horde.org/licenses/bsd
   notes: ~
+3.0.0-beta2:
+  api: 3.0.0-beta2
+  state:
+    release: beta
+    api: beta
+  date: 2026-04-13
+  license:
+    identifier: BSD-2-Clause
+    uri: https://spdx.org/licenses/BSD-2-Clause.html
+  notes: |-
+    style: php-cs-fixer
+    feat: Provide an actual MatchResult object as an alternative to MatchDict
+    fix: guard explode() against null $fullhost for PHP 8.0+
+    feat(printer): Print secondary routes of a named route.
 3.0.0-beta1:
   api: 3.0.0-beta1
   state:
