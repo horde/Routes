@@ -47,11 +47,21 @@ class Matcher
     protected $request;
 
     /**
-     * The match dictionary.
+     * The match dictionary (cached).
      *
-     * @var array|Horde_Support_Array
+     * @var array|Horde_Support_Array|null
      */
     protected $match_dict;
+
+    /**
+     * The typed match result (cached).
+     */
+    protected ?MatchResult $matchResult = null;
+
+    /**
+     * Whether getMatchResult() has been called (to distinguish null result from uncalled).
+     */
+    private bool $matchResultResolved = false;
 
     /**
      * Constructor
@@ -69,6 +79,35 @@ class Matcher
     }
 
     /**
+     * Extract the request path, populating mapper environ as a side effect.
+     */
+    private function extractPath(): string
+    {
+        // Auto-populate environ from request
+        if (method_exists($this->request, 'getMethod')) {
+            $this->mapper->environ = ['REQUEST_METHOD' => $this->request->getMethod()];
+        }
+
+        // Extract path from request - handle both PSR-7 and Horde_Controller_Request
+        if (method_exists($this->request, 'getPath')) {
+            $path = $this->request->getPath();
+        } elseif (method_exists($this->request, 'getUri')) {
+            $path = $this->request->getUri()->getPath();
+        } else {
+            throw new \RuntimeException('Request must implement getPath() or getUri()');
+        }
+
+        // Strip query string
+        if (($pos = strpos($path, '?')) !== false) {
+            $path = substr($path, 0, $pos);
+        }
+        if (!$path) {
+            $path = '/';
+        }
+        return $path;
+    }
+
+    /**
      * Return the match dictionary for the incoming request.
      *
      * @return array The match dictionary.
@@ -76,31 +115,47 @@ class Matcher
     public function getMatchDict()
     {
         if ($this->match_dict === null) {
-            // Auto-populate environ from request
-            if (method_exists($this->request, 'getMethod')) {
-                $this->mapper->environ = ['REQUEST_METHOD' => $this->request->getMethod()];
-            }
-
-            // Extract path from request - handle both PSR-7 and Horde_Controller_Request
-            if (method_exists($this->request, 'getPath')) {
-                // Horde_Controller_Request or our TestRequest
-                $path = $this->request->getPath();
-            } elseif (method_exists($this->request, 'getUri')) {
-                // PSR-7 ServerRequestInterface
-                $path = $this->request->getUri()->getPath();
-            } else {
-                throw new \RuntimeException('Request must implement getPath() or getUri()');
-            }
-
-            // Strip query string
-            if (($pos = strpos($path, '?')) !== false) {
-                $path = substr($path, 0, $pos);
-            }
-            if (!$path) {
-                $path = '/';
-            }
+            $path = $this->extractPath();
             $this->match_dict = new Horde_Support_Array($this->mapper->match($path));
         }
         return $this->match_dict;
+    }
+
+    /**
+     * Return a typed MatchResult for the incoming request.
+     *
+     * Uses Mapper::routematch() to preserve the matched Route object,
+     * then resolves the route name from the Route or by reverse lookup
+     * in the Mapper's named routes.
+     *
+     * @return MatchResult|null The match result, or null if no route matched.
+     */
+    public function getMatchResult(): ?MatchResult
+    {
+        if (!$this->matchResultResolved) {
+            $path = $this->extractPath();
+            $result = $this->mapper->routematch($path);
+
+            if ($result !== null) {
+                [$matchDict, $route] = $result;
+
+                // Resolve route name: prefer Route->routeName (RouteBuilder routes),
+                // fall back to reverse lookup in Mapper->routeNames (legacy connect() routes).
+                $routeName = $route->routeName;
+                if ($routeName === null) {
+                    foreach ($this->mapper->routeNames as $name => $namedRoute) {
+                        if ($namedRoute === $route) {
+                            $routeName = $name;
+                            break;
+                        }
+                    }
+                }
+
+                $this->matchResult = new MatchResult($matchDict, $route, $routeName);
+            }
+
+            $this->matchResultResolved = true;
+        }
+        return $this->matchResult;
     }
 }
