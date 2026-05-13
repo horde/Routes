@@ -104,6 +104,26 @@ class RouteBuilder
     private array $flags = [];
 
     /**
+     * Per-route host for matching and generation
+     */
+    private ?string $host = null;
+
+    /**
+     * Per-route port for matching and generation
+     */
+    private ?int $port = null;
+
+    /**
+     * Per-route scheme for matching and generation
+     */
+    private ?string $scheme = null;
+
+    /**
+     * Per-route path prefix, stripped during match and prepended during generate
+     */
+    private ?string $pathPrefix = null;
+
+    /**
      * Create a new route builder
      *
      * @param string|null $path Route path pattern (e.g., 'users/:id'), optional if set via withUri()
@@ -339,6 +359,78 @@ class RouteBuilder
     }
 
     /**
+     * Set per-route host for matching and generation
+     *
+     * @param string $host Hostname (e.g. "wiki.example.com")
+     * @return self
+     */
+    public function withHost(string $host): self
+    {
+        $this->host = $host;
+        return $this;
+    }
+
+    /**
+     * Set per-route port for matching and generation
+     *
+     * @param int $port Port number (e.g. 8080)
+     * @return self
+     */
+    public function withPort(int $port): self
+    {
+        $this->port = $port;
+        return $this;
+    }
+
+    /**
+     * Set per-route scheme for matching and generation
+     *
+     * @param string $scheme "http" or "https"
+     * @return self
+     */
+    public function withScheme(string $scheme): self
+    {
+        $this->scheme = $scheme;
+        return $this;
+    }
+
+    /**
+     * Set per-route path prefix, stripped during match and prepended during generate
+     *
+     * @param string $prefix Path prefix (e.g. "/wicked")
+     * @return self
+     */
+    public function withPathPrefix(string $prefix): self
+    {
+        $this->pathPrefix = rtrim($prefix, '/');
+        return $this;
+    }
+
+    /**
+     * Convenience: parse a base URI and set scheme, host, port, and pathPrefix
+     *
+     * @param string $uri Full base URI (e.g. "https://wiki.example.com:8443/wicked")
+     * @return self
+     */
+    public function withBaseUri(string $uri): self
+    {
+        $parsed = parse_url($uri);
+        if (isset($parsed['scheme'])) {
+            $this->scheme = $parsed['scheme'];
+        }
+        if (isset($parsed['host'])) {
+            $this->host = $parsed['host'];
+        }
+        if (isset($parsed['port'])) {
+            $this->port = $parsed['port'];
+        }
+        if (isset($parsed['path']) && $parsed['path'] !== '/') {
+            $this->pathPrefix = rtrim($parsed['path'], '/');
+        }
+        return $this;
+    }
+
+    /**
      * Add custom condition function
      *
      * Function receives environ array and returns bool.
@@ -452,6 +544,20 @@ class RouteBuilder
 
         // Merge flags
         $config = array_merge($config, $this->flags);
+
+        // Per-route base URI components
+        if ($this->host !== null) {
+            $config['_host'] = $this->host;
+        }
+        if ($this->port !== null) {
+            $config['_port'] = $this->port;
+        }
+        if ($this->scheme !== null) {
+            $config['_scheme'] = $this->scheme;
+        }
+        if ($this->pathPrefix !== null) {
+            $config['_pathPrefix'] = $this->pathPrefix;
+        }
 
         return $config;
     }

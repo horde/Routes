@@ -200,6 +200,20 @@ class Utils
             $url = $this->mapper->generate($routeArgs, $newargs);
         }
 
+        // Auto-qualify from per-route properties when a named route has host/scheme
+        if ($url !== null && isset($routeName) && isset($this->mapper->routeNames[$routeName])) {
+            $matchedRoute = $this->mapper->routeNames[$routeName];
+            if ($matchedRoute->host !== null && empty($host)) {
+                $host = $matchedRoute->host;
+                if ($matchedRoute->port !== null && $matchedRoute->port !== 80 && $matchedRoute->port !== 443) {
+                    $host .= ':' . $matchedRoute->port;
+                }
+            }
+            if ($matchedRoute->scheme !== null && empty($protocol)) {
+                $protocol = $matchedRoute->scheme;
+            }
+        }
+
         if (!empty($anchor)) {
             $url .= '#' . self::urlQuote($anchor);
         }

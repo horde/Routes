@@ -292,10 +292,14 @@ class UtilWithExplicitTest extends TestCase
             '/messages/4/edit.xml',
             $utils->urlFor('formatted_edit_message', ['id' => 4, 'format' => 'xml'])
         );
-        $this->assertEquals('/messages/4/mark.xml',
-            $utils->urlFor('formatted_mark_message', ['id' => 4, 'format' => 'xml']));
-        $this->assertEquals('/messages/new.xml',
-            $utils->urlFor('formatted_new_message', ['format' => 'xml']));
+        $this->assertEquals(
+            '/messages/4/mark.xml',
+            $utils->urlFor('formatted_mark_message', ['id' => 4, 'format' => 'xml'])
+        );
+        $this->assertEquals(
+            '/messages/new.xml',
+            $utils->urlFor('formatted_new_message', ['format' => 'xml'])
+        );
     }
 
 }

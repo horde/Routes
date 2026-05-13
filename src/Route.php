@@ -198,6 +198,26 @@ class Route
     public bool $secondary = false;
 
     /**
+     * Per-route host for matching and generation (e.g. "wiki.example.com")
+     */
+    public ?string $host = null;
+
+    /**
+     * Per-route port for matching and generation (e.g. 8080)
+     */
+    public ?int $port = null;
+
+    /**
+     * Per-route scheme for matching and generation ("http" or "https")
+     */
+    public ?string $scheme = null;
+
+    /**
+     * Per-route path prefix, stripped during match and prepended during generate
+     */
+    public ?string $pathPrefix = null;
+
+    /**
      *  Initialize a route, with a given routepath for matching/generation
      *
      *  The set of keyword args will be used as defaults.
@@ -257,6 +277,16 @@ class Route
         // Determine if explicit behavior should be used
         $this->explicit = $kargs['_explicit'] ?? false;
         unset($kargs['_explicit']);
+
+        // Per-route base URI components
+        $this->host = $kargs['_host'] ?? null;
+        unset($kargs['_host']);
+        $this->port = isset($kargs['_port']) ? (int) $kargs['_port'] : null;
+        unset($kargs['_port']);
+        $this->scheme = $kargs['_scheme'] ?? null;
+        unset($kargs['_scheme']);
+        $this->pathPrefix = $kargs['_pathPrefix'] ?? null;
+        unset($kargs['_pathPrefix']);
 
         // Reserved keys that don't count
         $reservedKeys = ['requirements'];
@@ -664,6 +694,17 @@ class Route
             $url = substr($url, 0, -1);
         }
 
+        // Strip per-route path prefix before matching
+        if ($this->pathPrefix !== null) {
+            if (!str_starts_with($url, $this->pathPrefix)) {
+                return null;
+            }
+            $url = substr($url, strlen($this->pathPrefix)) ?: '/';
+            if (substr($url, -1) == '/' && strlen($url) > 1) {
+                $url = substr($url, 0, -1);
+            }
+        }
+
         // Match the regexps we generated
         $match = @preg_match('@' . str_replace('@', '\@', $this->regexp) . '@', $url, $matches);
         if ($match === false || $match == 0) {
@@ -700,6 +741,37 @@ class Route
                 return null;
             }
         }
+
+        // Per-route scheme check
+        if ($this->scheme !== null) {
+            $isHttps = !empty($kargs['environ']['HTTPS']) && $kargs['environ']['HTTPS'] !== 'off';
+            $currentScheme = $isHttps ? 'https' : 'http';
+            if ($currentScheme !== $this->scheme) {
+                return null;
+            }
+        }
+
+        // Per-route host check
+        if ($this->host !== null) {
+            $httpHost = $kargs['environ']['HTTP_HOST'] ?? $kargs['environ']['SERVER_NAME'] ?? '';
+            $hostOnly = explode(':', $httpHost)[0];
+            if (strcasecmp($hostOnly, $this->host) !== 0) {
+                return null;
+            }
+        }
+
+        // Per-route port check
+        if ($this->port !== null) {
+            $httpHost = $kargs['environ']['HTTP_HOST'] ?? '';
+            $parts = explode(':', $httpHost);
+            $currentPort = isset($parts[1]) ? (int) $parts[1] : (
+                (!empty($kargs['environ']['HTTPS']) && $kargs['environ']['HTTPS'] !== 'off') ? 443 : 80
+            );
+            if ($currentPort !== $this->port) {
+                return null;
+            }
+        }
+
         $matchDict = $matches;
 
         // Clear out int keys as PHP gives us both the named subgroups and numbered subgroups
@@ -889,6 +961,12 @@ class Route
         } elseif ($_appendSlash && substr($url, -1) != '/') {
             $url .= '/';
         }
+
+        // Prepend per-route path prefix
+        if ($this->pathPrefix !== null) {
+            $url = $this->pathPrefix . $url;
+        }
+
         return $url;
     }
 
