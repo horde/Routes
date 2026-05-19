@@ -191,6 +191,27 @@ class RouteBuilder
     }
 
     /**
+     * Prefix all secondary route paths (used when loading app routes under a webroot)
+     *
+     * @param string $prefix Path prefix without trailing slash (e.g. "/horde")
+     * @return self
+     */
+    public function prefixSecondaryPaths(string $prefix): self
+    {
+        if ($prefix === '') {
+            return $this;
+        }
+
+        $prefix = rtrim($prefix, '/');
+        $this->secondaryPaths = array_map(
+            fn (string $path) => $prefix . '/' . ltrim($path, '/'),
+            $this->secondaryPaths
+        );
+
+        return $this;
+    }
+
+    /**
      * Set controller (PSR-style with* method)
      *
      * @param string $controller Controller name or class
