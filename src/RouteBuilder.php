@@ -191,6 +191,24 @@ class RouteBuilder
     }
 
     /**
+     * Prefix all registered secondary paths with the given string.
+     *
+     * Used by route mappers to prepend an application webroot to
+     * secondary paths before build() constructs Route objects.
+     *
+     * @param string $prefix Path prefix (e.g. "/appname")
+     * @return self
+     */
+    public function prefixSecondaryPaths(string $prefix): self
+    {
+        $prefix = rtrim($prefix, '/');
+        foreach ($this->secondaryPaths as $i => $path) {
+            $this->secondaryPaths[$i] = $prefix . '/' . ltrim($path, '/');
+        }
+        return $this;
+    }
+
+    /**
      * Set controller (PSR-style with* method)
      *
      * @param string $controller Controller name or class
