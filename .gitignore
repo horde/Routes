@@ -58,3 +58,9 @@ run-tests.log
 # Added by horde-components QC --fix-qc-issues
 # Composer lock file (libraries should not commit lock files)
 /composer.lock
+
+# Added by horde-components QC --fix-qc-issues
+# Horde installer plugin runtime data
+/var/
+# Horde installer plugin web-accessible directory
+/web/
