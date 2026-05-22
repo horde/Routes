@@ -986,4 +986,31 @@ class Route
         $url = $this->generate($kargs);
         return $url !== null ? new Uri($url) : null;
     }
+
+    /**
+     * Export this route's state as a plain array suitable for opcache/serialization.
+     *
+     * @return array<string, mixed>
+     */
+    public function toArray(): array
+    {
+        return [
+            'routePath' => $this->routePath,
+            'regexp' => $this->regexp,
+            'defaults' => $this->defaults,
+            'reqs' => $this->reqs,
+            'conditions' => $this->conditions,
+            'host' => $this->host,
+            'scheme' => $this->scheme,
+            'port' => $this->port,
+            'pathPrefix' => $this->pathPrefix,
+            'stack' => $this->stack,
+            'secondary' => $this->secondary,
+            'routeName' => $this->routeName,
+            'maxKeys' => $this->maxKeys,
+            'minKeys' => $this->minKeys,
+            'hardCoded' => $this->hardCoded,
+            'routeList' => $this->routeList,
+        ];
+    }
 }

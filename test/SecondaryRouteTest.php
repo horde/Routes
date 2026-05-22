@@ -12,6 +12,7 @@ namespace Horde\Routes\Test;
 
 use PHPUnit\Framework\TestCase;
 use Horde\Routes\Mapper;
+use Horde\Routes\RouteBuilder;
 
 /**
  * Tests for secondary/legacy route feature
@@ -300,5 +301,103 @@ class SecondaryRouteTest extends TestCase
         // Generation should return null (no primary routes)
         $url = $m->generate(['controller' => 'User', 'action' => 'show', 'id' => '123']);
         $this->assertNull($url);
+    }
+
+    /**
+     * Test prefixSecondaryPaths prepends prefix to all secondary paths
+     */
+    public function testPrefixSecondaryPaths(): void
+    {
+        $builder = new RouteBuilder('/primary/:id');
+        $builder->withController('User')
+            ->withAction('show')
+            ->withSecondaryRoute('alt/:id')
+            ->withSecondaryRoute('other/:id')
+            ->prefixSecondaryPaths('/app');
+
+        $routes = $builder->build();
+
+        $this->assertIsArray($routes);
+        $this->assertCount(3, $routes);
+        // Primary route unchanged
+        $this->assertSame('/primary/:id', $routes[0]->routePath);
+        // Secondary routes prefixed
+        $this->assertSame('/app/alt/:id', $routes[1]->routePath);
+        $this->assertSame('/app/other/:id', $routes[2]->routePath);
+    }
+
+    /**
+     * Test prefixSecondaryPaths with trailing slash on prefix
+     */
+    public function testPrefixSecondaryPathsTrimsTrailingSlash(): void
+    {
+        $builder = new RouteBuilder('/primary');
+        $builder->withController('Test')
+            ->withSecondaryRoute('legacy/path')
+            ->prefixSecondaryPaths('/app/');
+
+        $routes = $builder->build();
+
+        $this->assertIsArray($routes);
+        $this->assertSame('/app/legacy/path', $routes[1]->routePath);
+    }
+
+    /**
+     * Test prefixSecondaryPaths with leading slash on secondary path
+     */
+    public function testPrefixSecondaryPathsHandlesLeadingSlash(): void
+    {
+        $builder = new RouteBuilder('/primary');
+        $builder->withController('Test')
+            ->withSecondaryRoute('/already/slashed')
+            ->prefixSecondaryPaths('/app');
+
+        $routes = $builder->build();
+
+        $this->assertIsArray($routes);
+        $this->assertSame('/app/already/slashed', $routes[1]->routePath);
+    }
+
+    /**
+     * Test prefixSecondaryPaths with no secondary routes is a no-op
+     */
+    public function testPrefixSecondaryPathsNoSecondaryRoutes(): void
+    {
+        $builder = new RouteBuilder('/primary');
+        $builder->withController('Test')
+            ->prefixSecondaryPaths('/app');
+
+        $route = $builder->build();
+
+        // No secondary routes means single Route returned, not array
+        $this->assertInstanceOf(\Horde\Routes\Route::class, $route);
+        $this->assertSame('/primary', $route->routePath);
+    }
+
+    /**
+     * Test prefixed secondary routes still match correctly in Mapper
+     */
+    public function testPrefixedSecondaryRoutesMatch(): void
+    {
+        $m = new Mapper();
+        $builder = $m->buildRoute(uri: 'api/users/:id')
+            ->withController('User')
+            ->withAction('show')
+            ->withSecondaryRoute('user/:id');
+        $builder->prefixSecondaryPaths('/myapp');
+        $builder->add();
+
+        // Primary still matches
+        $result = $m->match('/api/users/42');
+        $this->assertIsArray($result);
+        $this->assertEquals('42', $result['id']);
+
+        // Prefixed secondary matches
+        $result = $m->match('/myapp/user/42');
+        $this->assertIsArray($result);
+        $this->assertEquals('42', $result['id']);
+
+        // Unprefixed secondary should NOT match
+        $this->assertNull($m->match('/user/42'));
     }
 }
