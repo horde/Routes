@@ -14,6 +14,10 @@ namespace Horde\Routes;
 /**
  * Generates URLs from a precompiled route table (flat array from GroupMapper::dump()).
  *
+ * NOTE: This class is misnamed — it does not generate/compile the route table,
+ * it provides route path generation from already-compiled data. A future rename
+ * to CompiledRoutesProvider (implementing Horde\Core\Uri\RoutesProvider) is planned.
+ *
  * @package Routes
  */
 class CompiledGenerator
