@@ -1,151 +1,14 @@
 ---
-3.0.0alpha6:
-  api: 3.0.0alpha1
-  state:
-    release: alpha
-    api: alpha
-  date: 2021-10-28
-  license:
-    identifier: BSD-2-Clause
-    uri: http://www.horde.org/licenses/bsd
-  notes: |+
-3.0.0alpha5:
-  api: 3.0.0alpha1
-  state:
-    release: alpha
-    api: alpha
-  date: 2021-10-28
-  license:
-    identifier: BSD-2-Clause
-    uri: http://www.horde.org/licenses/bsd
-  notes: |+
-3.0.0alpha4:
-  api: 3.0.0alpha1
-  state:
-    release: alpha
-    api: alpha
-  date: 2021-10-08
-  license:
-    identifier: BSD-2-Clause
-    uri: http://www.horde.org/licenses/bsd
-  notes: |
-    [rla] Support horde/http_server middleware stacks.
-    |+
-3.0.0alpha3:
-  api: 3.0.0alpha1
-  state:
-    release: alpha
-    api: alpha
-  date: 2021-03-13
-  license:
-    identifier: BSD-2-Clause
-    uri: http://www.horde.org/licenses/bsd
-  notes: |+
-3.0.0alpha2:
-  api: 3.0.0alpha1
-  state:
-    release: alpha
-    api: alpha
-  date: 2021-02-24
-  license:
-    identifier: BSD-2-Clause
-    uri: http://www.horde.org/licenses/bsd
-  notes: |+
-3.0.0alpha1:
-  api: 3.0.0alpha1
+3.0.0:
+  api: 3.0.0
   state:
     release: stable
     api: stable
-  date: 2021-02-24
-  license:
-    identifier: BSD-2-Clause
-    uri: http://www.horde.org/licenses/bsd
-  notes: ~
-3.0.0-beta2:
-  api: 3.0.0-beta2
-  state:
-    release: beta
-    api: beta
-  date: 2026-04-13
+  date: 2026-06-27
   license:
     identifier: BSD-2-Clause
     uri: https://spdx.org/licenses/BSD-2-Clause.html
-  notes: |-
-    style: php-cs-fixer
-    feat: Provide an actual MatchResult object as an alternative to MatchDict
-    fix: guard explode() against null $fullhost for PHP 8.0+
-    feat(printer): Print secondary routes of a named route.
-3.0.0-beta1:
-  api: 3.0.0-beta1
-  state:
-    release: beta
-    api: beta
-  date: 2026-03-30
-  license:
-    identifier: BSD-2-Clause
-    uri: https://spdx.org/licenses/BSD-2-Clause.html
-  notes: |-
-    chore: It was good while it lasted
-    fix: Routes printer should not use duplicate slashes
-3.0.0-alpha9:
-  api: 3.0.0-alpha9
-  state:
-    release: alpha
-    api: alpha
-  date: 2026-03-15
-  license:
-    identifier: BSD-2-Clause
-    uri: https://spdx.org/licenses/BSD-2-Clause.html
-  notes: |-
-    fix: Remove composer.lock
-3.0.0-alpha8:
-  api: 3.0.0-alpha8
-  state:
-    release: alpha
-    api: alpha
-  date: 2026-03-12
-  license:
-    identifier: BSD-2-Clause
-    uri: https://spdx.org/licenses/BSD-2-Clause.html
-  notes: |-
-    test: convert leftover secondary route tests to PSR-style API
-    Feat: PSR-7 Uri input/output and RouteBuilder (#5)
-    feat(routes): Secondary Routes support and Route Analyzer
-    fix: static analyzer found potentially undefined variables
-    Merge pull request #2 from horde/feat/matcher-environ-psr7
-    feat(matcher): auto-set Request Method Verb from PSR-7 request
-3.0.0-alpha7:
-  api: 3.0.0-alpha7
-  state:
-    release: alpha
-    api: alpha
-  date: 2026-03-11
-  license:
-    identifier: BSD-2-Clause
-    uri: https://spdx.org/licenses/BSD-2-Clause.html
-  notes: |-
-    chore(test): Add more tests and modernize test infrastructure for PHPUnit 11-13
-    Update to PSR-7 2.0
-    Update metadata and workflows for PHP 8 support
-    Add PHP 8 unit tests
-    Fix github actions workflows
-    Pass PHPStan level 3
-    Modernize unit tests for src/ code.
-    Development mode for Routes-3.0.0alpha6
-    Released Routes-3.0.0alpha5
-    Add phpstan on level 1
-    Straight conversion to namespaced equivalent.
-    Fix issue with empty-array stack argument
-    Development mode for Routes-3.0.0alpha5
-    Released Routes-3.0.0alpha4
-    Properly support stacks as current implementation cripples array values.
-    Add CI job for satis repo update
-    Update bootstrap.php
-    no errors left, added ci & phpdoc.yml
-    adjusted bootstrap.php
-    no errors left
-    no errors, five risky tests (no assertions are made)
-    Development mode for Routes-3.0.0alpha5
+  notes: "chore: refresh qc fixes and platform deps\nMerge pull request #8 from horde/docs/misnamed-class\ndocs(CompiledGenerator): note misnamed class for future rename\nchore: Update workflow dependency"
 3.0.0-RC2:
   api: 3.0.0-RC2
   state:
@@ -155,8 +18,7 @@
   license:
     identifier: BSD-2-Clause
     uri: https://spdx.org/licenses/BSD-2-Clause.html
-  notes: |-
-    feat: Implement GroupMapper, CompiledMatcher and CompiledGenerator
+  notes: 'feat: Implement GroupMapper, CompiledMatcher and CompiledGenerator'
 3.0.0-RC1:
   api: 3.0.0-RC1
   state:
@@ -166,8 +28,117 @@
   license:
     identifier: BSD-2-Clause
     uri: https://spdx.org/licenses/BSD-2-Clause.html
-  notes: |-
-    feat: Support port, host and scheme matching per-route
+  notes: 'feat: Support port, host and scheme matching per-route'
+3.0.0-beta2:
+  api: 3.0.0-beta2
+  state:
+    release: beta
+    api: beta
+  date: 2026-04-13
+  license:
+    identifier: BSD-2-Clause
+    uri: https://spdx.org/licenses/BSD-2-Clause.html
+  notes: "style: php-cs-fixer\nfeat: Provide an actual MatchResult object as an alternative to MatchDict\nfix: guard explode() against null $fullhost for PHP 8.0+\nfeat(printer): Print secondary routes of a named route."
+3.0.0-beta1:
+  api: 3.0.0-beta1
+  state:
+    release: beta
+    api: beta
+  date: 2026-03-30
+  license:
+    identifier: BSD-2-Clause
+    uri: https://spdx.org/licenses/BSD-2-Clause.html
+  notes: "chore: It was good while it lasted\nfix: Routes printer should not use duplicate slashes"
+3.0.0-alpha9:
+  api: 3.0.0-alpha9
+  state:
+    release: alpha
+    api: alpha
+  date: 2026-03-15
+  license:
+    identifier: BSD-2-Clause
+    uri: https://spdx.org/licenses/BSD-2-Clause.html
+  notes: 'fix: Remove composer.lock'
+3.0.0-alpha8:
+  api: 3.0.0-alpha8
+  state:
+    release: alpha
+    api: alpha
+  date: 2026-03-12
+  license:
+    identifier: BSD-2-Clause
+    uri: https://spdx.org/licenses/BSD-2-Clause.html
+  notes: "test: convert leftover secondary route tests to PSR-style API\nFeat: PSR-7 Uri input/output and RouteBuilder (#5)\nfeat(routes): Secondary Routes support and Route Analyzer\nfix: static analyzer found potentially undefined variables\nMerge pull request #2 from horde/feat/matcher-environ-psr7\nfeat(matcher): auto-set Request Method Verb from PSR-7 request"
+3.0.0-alpha7:
+  api: 3.0.0-alpha7
+  state:
+    release: alpha
+    api: alpha
+  date: 2026-03-11
+  license:
+    identifier: BSD-2-Clause
+    uri: https://spdx.org/licenses/BSD-2-Clause.html
+  notes: "chore(test): Add more tests and modernize test infrastructure for PHPUnit 11-13\nUpdate to PSR-7 2.0\nUpdate metadata and workflows for PHP 8 support\nAdd PHP 8 unit tests\nFix github actions workflows\nPass PHPStan level 3\nModernize unit tests for src/ code.\nDevelopment mode for Routes-3.0.0alpha6\nReleased Routes-3.0.0alpha5\nAdd phpstan on level 1\nStraight conversion to namespaced equivalent.\nFix issue with empty-array stack argument\nDevelopment mode for Routes-3.0.0alpha5\nReleased Routes-3.0.0alpha4\nProperly support stacks as current implementation cripples array values.\nAdd CI job for satis repo update\nUpdate bootstrap.php\nno errors left, added ci & phpdoc.yml\nadjusted bootstrap.php\nno errors left\nno errors, five risky tests (no assertions are made)\nDevelopment mode for Routes-3.0.0alpha5"
+3.0.0alpha6:
+  api: 3.0.0alpha1
+  state:
+    release: alpha
+    api: alpha
+  date: 2021-10-28
+  license:
+    identifier: BSD-2-Clause
+    uri: http://www.horde.org/licenses/bsd
+  notes: ''
+3.0.0alpha5:
+  api: 3.0.0alpha1
+  state:
+    release: alpha
+    api: alpha
+  date: 2021-10-28
+  license:
+    identifier: BSD-2-Clause
+    uri: http://www.horde.org/licenses/bsd
+  notes: ''
+3.0.0alpha4:
+  api: 3.0.0alpha1
+  state:
+    release: alpha
+    api: alpha
+  date: 2021-10-08
+  license:
+    identifier: BSD-2-Clause
+    uri: http://www.horde.org/licenses/bsd
+  notes: "[rla] Support horde/http_server middleware stacks.\n|+\n"
+3.0.0alpha3:
+  api: 3.0.0alpha1
+  state:
+    release: alpha
+    api: alpha
+  date: 2021-03-13
+  license:
+    identifier: BSD-2-Clause
+    uri: http://www.horde.org/licenses/bsd
+  notes: ''
+3.0.0alpha2:
+  api: 3.0.0alpha1
+  state:
+    release: alpha
+    api: alpha
+  date: 2021-02-24
+  license:
+    identifier: BSD-2-Clause
+    uri: http://www.horde.org/licenses/bsd
+  notes: ''
+3.0.0alpha1:
+  api: 3.0.0alpha1
+  state:
+    release: stable
+    api: stable
+  date: 2021-02-24
+  license:
+    identifier: BSD-2-Clause
+    uri: http://www.horde.org/licenses/bsd
+  notes: null
 2.0.5:
   api: 1.1.0
   state:
@@ -177,8 +148,7 @@
   license:
     identifier: BSD-2-Clause
     uri: http://www.horde.org/licenses/bsd
-  notes: |
-    [jan] Mark PHP 7 as supported.
+  notes: "[jan] Mark PHP 7 as supported.\n"
 2.0.4:
   api: 1.1.0
   state:
@@ -188,8 +158,7 @@
   license:
     identifier: BSD-2-Clause
     uri: http://www.horde.org/licenses/bsd
-  notes: |
-    [jan] Fix issues with certain locales like Turkish.
+  notes: "[jan] Fix issues with certain locales like Turkish.\n"
 2.0.3:
   api: 1.1.0
   state:
@@ -199,8 +168,7 @@
   license:
     identifier: BSD-2-Clause
     uri: http://www.horde.org/licenses/bsd
-  notes: |
-    [jan] Add Composer definition.
+  notes: "[jan] Add Composer definition.\n"
 2.0.2:
   api: 1.1.0
   state:
@@ -210,8 +178,7 @@
   license:
     identifier: BSD-2-Clause
     uri: http://www.horde.org/licenses/bsd
-  notes: |
-    [jan] Fix generating cache key for generated URLs (remi@famillecollet.com, Bug #11894).
+  notes: "[jan] Fix generating cache key for generated URLs (remi@famillecollet.com, Bug #11894).\n"
 2.0.1:
   api: 1.1.0
   state:
@@ -221,30 +188,7 @@
   license:
     identifier: BSD-2-Clause
     uri: http://www.horde.org/licenses/bsd
-  notes: |
-    [mms] Use new Horde_Test layout.
-2.0.0beta1:
-  api: 1.1.0
-  state:
-    release: beta
-    api: stable
-  date: 2012-07-19
-  license:
-    identifier: BSD-2-Clause
-    uri: http://www.horde.org/licenses/bsd
-  notes: |
-    First beta release for Horde 5.
-2.0.0alpha1:
-  api: 1.1.0
-  state:
-    release: alpha
-    api: stable
-  date: 2012-07-05
-  license:
-    identifier: BSD-2-Clause
-    uri: http://www.horde.org/licenses/bsd
-  notes: |
-    First alpha release for Horde 5.
+  notes: "[mms] Use new Horde_Test layout.\n"
 2.0.0:
   api: 1.1.0
   state:
@@ -254,8 +198,27 @@
   license:
     identifier: BSD-2-Clause
     uri: http://www.horde.org/licenses/bsd
-  notes: |
-    First stable release for Horde 5.
+  notes: "First stable release for Horde 5.\n"
+2.0.0beta1:
+  api: 1.1.0
+  state:
+    release: beta
+    api: stable
+  date: 2012-07-19
+  license:
+    identifier: BSD-2-Clause
+    uri: http://www.horde.org/licenses/bsd
+  notes: "First beta release for Horde 5.\n"
+2.0.0alpha1:
+  api: 1.1.0
+  state:
+    release: alpha
+    api: stable
+  date: 2012-07-05
+  license:
+    identifier: BSD-2-Clause
+    uri: http://www.horde.org/licenses/bsd
+  notes: "First alpha release for Horde 5.\n"
 1.1.2:
   api: 1.1.0
   state:
@@ -265,8 +228,7 @@
   license:
     identifier: BSD-2-Clause
     uri: http://www.horde.org/licenses/bsd
-  notes: |
-    [jan] Make Horde_Routes_Utils::controllerScan() Windows compatible.
+  notes: "[jan] Make Horde_Routes_Utils::controllerScan() Windows compatible.\n"
 1.1.1:
   api: 1.1.0
   state:
@@ -276,8 +238,7 @@
   license:
     identifier: BSD-2-Clause
     uri: http://www.horde.org/licenses/bsd
-  notes: |
-    [gwr] Only remove the "_controller" suffix if it exists.
+  notes: "[gwr] Only remove the \"_controller\" suffix if it exists.\n"
 1.1.0:
   api: 1.1.0
   state:
@@ -287,41 +248,7 @@
   license:
     identifier: BSD-2-Clause
     uri: http://www.horde.org/licenses/bsd
-  notes: |
-    [mjr] Added Horde_Routes_Matcher helper class.
-1.0.0beta1:
-  api: 1.0.0
-  state:
-    release: beta
-    api: beta
-  date: 2011-03-16
-  license:
-    identifier: BSD-2-Clause
-    uri: http://www.horde.org/licenses/bsd
-  notes: |
-    First beta release for Horde 4.
-1.0.0RC2:
-  api: 1.0.0
-  state:
-    release: beta
-    api: beta
-  date: 2011-03-29
-  license:
-    identifier: BSD-2-Clause
-    uri: http://www.horde.org/licenses/bsd
-  notes: |
-    Second release candidate for Horde 4.
-1.0.0RC1:
-  api: 1.0.0
-  state:
-    release: beta
-    api: beta
-  date: 2011-03-22
-  license:
-    identifier: BSD-2-Clause
-    uri: http://www.horde.org/licenses/bsd
-  notes: |
-    First release candidate for Horde 4.
+  notes: "[mjr] Added Horde_Routes_Matcher helper class.\n"
 1.0.0:
   api: 1.0.0
   state:
@@ -331,8 +258,37 @@
   license:
     identifier: BSD-2-Clause
     uri: http://www.horde.org/licenses/bsd
-  notes: |
-    First stable release for Horde 4.
+  notes: "First stable release for Horde 4.\n"
+1.0.0RC2:
+  api: 1.0.0
+  state:
+    release: beta
+    api: beta
+  date: 2011-03-29
+  license:
+    identifier: BSD-2-Clause
+    uri: http://www.horde.org/licenses/bsd
+  notes: "Second release candidate for Horde 4.\n"
+1.0.0RC1:
+  api: 1.0.0
+  state:
+    release: beta
+    api: beta
+  date: 2011-03-22
+  license:
+    identifier: BSD-2-Clause
+    uri: http://www.horde.org/licenses/bsd
+  notes: "First release candidate for Horde 4.\n"
+1.0.0beta1:
+  api: 1.0.0
+  state:
+    release: beta
+    api: beta
+  date: 2011-03-16
+  license:
+    identifier: BSD-2-Clause
+    uri: http://www.horde.org/licenses/bsd
+  notes: "First beta release for Horde 4.\n"
 0.4.0:
   api: 0.4.0
   state:
@@ -342,5 +298,4 @@
   license:
     identifier: BSD-2-Clause
     uri: http://www.horde.org/licenses/bsd
-  notes: |
-    Added ability to pretty-print routes with Horde_Routes_Printer.
+  notes: "Added ability to pretty-print routes with Horde_Routes_Printer.\n"
