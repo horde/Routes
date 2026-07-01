@@ -1,4 +1,14 @@
 ---
+3.0.1:
+  api: 3.0.1
+  state:
+    release: stable
+    api: stable
+  date: 2026-07-01
+  license:
+    identifier: BSD-2-Clause
+    uri: https://spdx.org/licenses/BSD-2-Clause.html
+  notes: "fix(utils): support GroupMapper via getRouteNames() accessor\nchore: refresh CI bootstrap"
 3.0.0:
   api: 3.0.0
   state:
