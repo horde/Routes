@@ -50,10 +50,15 @@ class Utils
     /**
      * Constructor
      *
-     * @param  Mapper  $mapper    Mapper for these utilities
+     * @param  Mapper|GroupMapper  $mapper    Mapper for these utilities. Legacy
+     *                                        code passes Mapper; new code can
+     *                                        pass GroupMapper. Utils only reads
+     *                                        the shared surface (getRouteNames
+     *                                        or ->routeNames, environ, encoding,
+     *                                        generate()).
      * @param  callable             $redirect  Redirect callback for redirectTo()
      */
-    public function __construct(Mapper $mapper, $redirect = null)
+    public function __construct(Mapper|GroupMapper $mapper, $redirect = null)
     {
         $this->mapper   = $mapper;
         $this->redirect = $redirect;
@@ -134,17 +139,17 @@ class Utils
         }
 
         $route = null;
-        $routeArgs = [];
         $static = false;
         $encoding = $this->mapper->encoding;
         $environ = $this->mapper->environ;
         $url = '';
+        $namedRoutes = $this->namedRoutes();
 
         if (isset($routeName)) {
-            if (isset($kargs['format']) && isset($this->mapper->routeNames['formatted_' . $routeName])) {
-                $route = $this->mapper->routeNames['formatted_' . $routeName];
-            } elseif (isset($this->mapper->routeNames[$routeName])) {
-                $route = $this->mapper->routeNames[$routeName];
+            if (isset($kargs['format']) && isset($namedRoutes['formatted_' . $routeName])) {
+                $route = $namedRoutes['formatted_' . $routeName];
+            } elseif (isset($namedRoutes[$routeName])) {
+                $route = $namedRoutes[$routeName];
             }
 
             if ($route && array_key_exists('_static', $route->defaults)) {
@@ -172,7 +177,6 @@ class Utils
 
         if (! $static) {
             if ($route) {
-                $routeArgs = [$route];
                 $newargs = $route->defaults;
                 foreach ($kargs as $key => $value) {
                     $newargs[$key] = $value;
@@ -197,12 +201,21 @@ class Utils
             $protocol = (isset($newargs['_protocol'])) ? $newargs['_protocol'] : $protocol;
             unset($newargs['_protocol']);
 
-            $url = $this->mapper->generate($routeArgs, $newargs);
+            // When we've resolved a specific named route, generate from it
+            // directly. This is both the correct path when the underlying
+            // mapper is a GroupMapper (whose generate() signature differs
+            // from Mapper's), and a faster path for the legacy Mapper case
+            // than dispatching through the shared gen-dict.
+            if ($route) {
+                $url = $route->generate($newargs);
+            } else {
+                $url = $this->mapper->generate($newargs);
+            }
         }
 
         // Auto-qualify from per-route properties when a named route has host/scheme
-        if ($url !== null && isset($routeName) && isset($this->mapper->routeNames[$routeName])) {
-            $matchedRoute = $this->mapper->routeNames[$routeName];
+        if ($url !== null && isset($routeName) && isset($namedRoutes[$routeName])) {
+            $matchedRoute = $namedRoutes[$routeName];
             if ($matchedRoute->host !== null && empty($host)) {
                 $host = $matchedRoute->host;
                 if ($matchedRoute->port !== null && $matchedRoute->port !== 80 && $matchedRoute->port !== 443) {
@@ -353,6 +366,24 @@ class Utils
         usort($controllers, ['Horde_Routes_Utils', 'longestFirst']);
 
         return $controllers;
+    }
+
+    /**
+     * Look up the mapper's named-route table.
+     *
+     * The legacy Mapper class exposes routeNames as a public property.
+     * The newer GroupMapper keeps it private and exposes a public
+     * getRouteNames() accessor. This helper prefers the accessor when
+     * available so Utils works transparently against either mapper.
+     *
+     * @return array<string, Route>
+     */
+    private function namedRoutes(): array
+    {
+        if (method_exists($this->mapper, 'getRouteNames')) {
+            return $this->mapper->getRouteNames();
+        }
+        return $this->mapper->routeNames ?? [];
     }
 
     /**
